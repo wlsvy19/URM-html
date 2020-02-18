@@ -1,0 +1,66 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'java'
+    id 'war'
+    id 'org.akhikhl.gretty' version '2.0.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+
+compileJava.options.encoding = "UTF-8"
+
+sourceSets {
+  main {
+    resources.srcDirs = ["src/main/java"]
+  }
+}
+
+task reactBuild(type: Exec) {
+    workingDir 'react-front'
+    String npm = 'npm'
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        npm = 'npm.cmd'
+    }
+    commandLine npm, 'run', 'build'
+}
+
+war {
+    dependsOn reactBuild
+}
+
+gretty {
+    jvmArgs = ['-Durm.conf=./resources/urm.properties']//, '-Dism.test.mode=true']
+    httpPort = 9080
+}
+
+dependencies {
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.26'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+
+    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.1.13.Final'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.5'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
+
+    compile group: 'org.springframework', name: 'spring-context', version: '5.0.6.RELEASE'
+    compile group: 'org.springframework', name: 'spring-webmvc', version: '5.0.6.RELEASE'
+    compile group: 'javax.servlet', name: 'jstl', version: '1.2'
+
+    compile files('C:/sw/ISM/lib/jdbc/ojdbc6.jar')
+
+    providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+
+    testImplementation 'junit:junit:4.12'
+}
+

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+
+        <!-- JDBC connection pool (use the built-in) -->
+        <property name="connection.shutdown">true</property>
+        <!-- SQL dialect -->
+        <!-- Echo all executed SQL to stdout -->
+        <property name="show_sql">true</property>
+        <property name="hibernate.current_session_context_class">thread</property>
+        <property name="hibernate.query.substitutions">true 'Y', false 'N'</property>
+
+        <!-- Drop and re-create the database schema on startup -->
+        <mapping resource="com/ism/urm/vo/rule/Request.hbm.xml" />
+        <mapping resource="com/ism/urm/vo/rule/AppSystem.hbm.xml" />
+
+        <mapping resource="com/ism/urm/vo/manage/CommonCode.hbm.xml" />
+
+    </session-factory>
+</hibernate-configuration>

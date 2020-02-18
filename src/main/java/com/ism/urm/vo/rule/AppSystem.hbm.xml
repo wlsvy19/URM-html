@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2009. 8. 24 ???? 12:54:53 by Hibernate Tools 3.2.4.GA -->
+<hibernate-mapping>
+    <class name="com.ism.urm.vo.rule.AppSystem" table="TB_SYS_INF" entity-name="APPSYSTEM">
+        <id name="id" type="string">
+            <column name="SYS_ID" />
+            <generator class="assigned" />
+        </id>
+        <property name="name" type="string" column="SYS_NM" />
+        <property name="code" type="string" column="SYS_CODE" />
+        <property name="type" type="string" column="SYS_TYPE" />
+        <property name="devType" type="string" column="DEV_TYPE" />
+        <property name="jdbcType" type="string" column="JDBC_TYPE" />
+        <property name="hostId" type="string" column="HOST_ID" />
+        <property name="ip" type="string" column="IP" />
+        <property name="port" type="string" column="PORT" />
+        <property name="dbName" type="string" column="DB_NM" />
+        <property name="dbType" type="string" column="DB_KND" />
+        <property name="dbParams" type="string" column="DB_PARAMS" />
+        <property name="userId" type="string" column="USERID" />
+        <property name="password" type="string" column="PASSWORD" />
+        <property name="remark" type="string" column="REMARK" />
+        <property name="regId" type="string" column="REG_ID" />
+        <property name="regDate" type="timestamp" column="REG_DATE" />
+        <property name="chgId" type="string" column="CHG_ID" />
+        <property name="chgDate" type="timestamp" column="CHG_DATE" />
+    </class>
+</hibernate-mapping>
