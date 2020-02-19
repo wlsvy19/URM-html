@@ -71,7 +71,7 @@ class DataList extends React.Component {
     },
 
     clickEdit: (id) => {
-      this.props.edit(id)
+      //this.props.edit(id)
     },
     
     handleResize: (e, { size }) => {
@@ -87,14 +87,9 @@ class DataList extends React.Component {
       <div className="urm-list">
         <Table dataSource={this.state.items} pagination={false} bordered size={"small"} scroll={{ y: 500 }} className="table-striped">
           <Table.Column title="ID" dataIndex="id" width="130px"/>
-          <Table.Column title="Name" dataIndex="name"/>
+          <Table.Column title="Name" dataIndex="name" width="180px"/>
           <Table.Column title="Type" dataIndex="type" render={(val) => ( this.method.getTypeStr(KINDS.sysType, val) )}/>
-          <Table.Column title="DevType" dataIndex="devType" render={(val) =>  ( this.method.getTypeStr(KINDS.devType, val) )}/>
-          <Table.Column title="Host" dataIndex="hostId" width="120px"/>
-          <Table.Column title="IP" dataIndex="ip"/>
-          <Table.Column title="port" dataIndex="port"/>
-          <Table.Column title="DBType" dataIndex="dbType" render={(val) =>  ( this.method.getTypeStr(KINDS.dbType, val) )}/>
-          <Table.Column title="DBName" dataIndex="dbName"/>
+          <Table.Column title="Register" dataIndex="regId"/>
           <Table.Column title="Operations" width="100px" render={(val) => (
             <RuleListButton edit={e => { this.method.clickEdit(val.id) }} />
           )}/>

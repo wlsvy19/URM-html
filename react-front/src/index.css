@@ -23,12 +23,17 @@ div.half-row {
 }
 
 /* custom antd */
-.table-striped div.ant-table-body {
-    margin: 0;
+div.ant-table-body {
+  margin: 0;
 }
 
-.table-striped tr:nth-child(2n) > td {
+div.table-striped tr:nth-child(2n) > td {
   background-color: #fafafa;
+}
+
+.urm-panel .ant-table-small > .ant-table-content > .ant-table-scroll >
+.ant-table-body > table > .ant-table-tbody > tr > td {
+  padding: 5px 8px;
 }
 
 /* urm */
@@ -38,17 +43,20 @@ div.half-row {
 }
 
 .urm-menu div.urm-logo {
-  background-color: white;
+  display: flex;
+  background-color: #fff;
   padding: 7px;
-  display: inline-flex;
   width: 265px;
   border-right: 1px solid #e8e8e8;
-  border-bottom: 1px solid #e8e8e8; /* #1682e6; */
+  border-bottom: 1px solid #e8e8e8;
 }
 
-.urm-logo > span {
-  margin: 5px 15px;
+.urm-logo span {
+  margin-left: 15px;
   font-weight: bold;
+  color: #000;
+  line-height: 30px;
+  vertical-align: middle;
 }
 
 .urm-panel {

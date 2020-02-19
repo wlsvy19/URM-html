@@ -123,7 +123,7 @@ class RequestList extends React.Component {
       <div className="urm-list">
         <Table dataSource={this.state.items} pagination={false} bordered size={"small"} scroll={{ y: 500 }} className="table-striped">
           <Table.Column title="ID" dataIndex="id" width="130px"/>
-          <Table.Column title="Name" dataIndex="name"/>
+          <Table.Column title="Name" dataIndex="name" width="180px"/>
           <Table.Column title="Type" dataIndex="interfaceType" render={(val) => ( this.method.getTypeStr(KINDS.infType, val) )}/>
           <Table.Column title="ReqState" dataIndex="chgStat" render={(val) =>  ( this.method.getTypeStr(KINDS.chgStat, val) )}/>
           <Table.Column title="State" dataIndex="processStat" render={(val) => ( this.method.getTypeStr(KINDS.procStat, val) )}/>

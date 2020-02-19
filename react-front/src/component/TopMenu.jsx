@@ -27,8 +27,10 @@ class TopMenu extends React.Component {
     return (
       <div className="urm-menu">
         <div className="urm-logo">
-          <img src={logo} alt="logo" height="29" />
-          <span>EAI 요건 관리 시스템</span>
+          <Link to="/URM">
+            <img src={logo} alt="logo" height="29" />
+            <span>EAI 요건 관리 시스템</span>
+          </Link>
         </div>
         <Menu onClick={this.handleClick} selectedKeys={[this.state.current]} mode="horizontal">
           <Menu.Item key="request"><Link to="/URM/request">Request</Link></Menu.Item>

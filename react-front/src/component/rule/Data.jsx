@@ -12,13 +12,13 @@ class Data extends RuleMain {
     this.state = {
       path : 'data',
     }
-    //this.method.setCode(CODE)
+    this.method.setCode(CODE)
   }
 
   render() {
     return (
       <div className="urm-panel">
-        <WrappedDataSearch codeList={CODE} search={this.method.search} />
+        <WrappedDataSearch ref="searchBar" codeList={CODE} search={this.method.search} />
         <DataList ref="list" codeList={CODE} edit={this.method.handleEdit} />
       </div>
     );

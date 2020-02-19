@@ -1,8 +1,3 @@
-.urm-list {
-  border: 1px solid #aab3b3;
-}
-
-
 .advanced-search-bar, .search-bar {
   border: 1px solid #aab3b3;
   margin: 10px 0;
@@ -60,7 +55,8 @@
 }
 
 
-.urm-list div.ant-table-scroll > div.ant-table-header {
-  overflow: hidden;
+.urm-list .ant-table-small > .ant-table-content > .ant-table-scroll >
+.ant-table-body > table > .ant-table-tbody > tr > td.operations {
+  padding: 1px 8px;
 }
 
