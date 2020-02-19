@@ -22,12 +22,15 @@ class RequestEditor extends React.Component {
       let children = $form.state.children
       
       customSetter(data, children)
+      if (!this.method._customValidator(data)) {
+        return false
+      }
+      
       urmUtils.ajax('POST', '/URM/' + this.state.path, JSON.stringify(data), true, function() {
         if(this.readyState === 4 && this.status === 200) {
           console.log(this.response)
         }
       })
-      //this.props.save(data)
     },
 
     handleCancel: ($form) => {

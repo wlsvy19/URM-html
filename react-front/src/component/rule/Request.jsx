@@ -3,6 +3,8 @@ import RuleMain from './RuleMain'
 import RequestList, {WrappedRequestSearch} from './list/Request-list'
 import RequestEditor from './editor/Request-editor'
 
+import './rule.css'
+
 const CODE = []
 
 class Request extends RuleMain {

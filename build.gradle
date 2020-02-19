@@ -14,6 +14,7 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/plugins-release/' } // for ojdbc
 }
 
 sourceCompatibility = "1.7"
@@ -57,7 +58,7 @@ dependencies {
     compile group: 'org.springframework', name: 'spring-webmvc', version: '5.0.6.RELEASE'
     compile group: 'javax.servlet', name: 'jstl', version: '1.2'
 
-    compile files('C:/sw/ISM/lib/jdbc/ojdbc6.jar')
+    compile group: 'com.oracle', name: 'ojdbc6', version: '11.2.0.3'
 
     providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
 

@@ -130,8 +130,8 @@ class RequestList extends React.Component {
           <Table.Column title="InterfaceID" dataIndex="interfaceId" width="120px"/>
           <Table.Column title="SendMethod" dataIndex="sendSystemType" width="100px" render={(val) => ( this.method.getTypeStr(KINDS.sysType, val) )}/>
           <Table.Column title="rcvMethod" dataIndex="rcvSystemType" width="100px" render={(val) => ( this.method.getTypeStr(KINDS.sysType, val) )}/>
-          <Table.Column title="SendSystem" dataIndex="sendSystemId" width="110px"/>
-          <Table.Column title="rcvSystem" dataIndex="rcvSystemId" width="110px"/>
+          <Table.Column title="SendSystem" dataIndex="sendSystem.name" width="110px"/>
+          <Table.Column title="rcvSystem" dataIndex="rcvSystem.name" width="110px"/>
           <Table.Column title="Operations" width="100px" render={(val) => (
             <RuleListButton edit={e => { this.method.clickEdit(val.id) }} />
           )}/>

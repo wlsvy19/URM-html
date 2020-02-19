@@ -2,13 +2,14 @@ import React from 'react'
 import { Table, Button } from 'antd'
 import { Form, Input, Select } from 'antd'
 
+import RuleListButton from './RuleListButton'
 import {default as urmUtils} from '../../../urm-utils'
 
 const KINDS = urmUtils.codeKey
 
-class SystemSearch extends React.Component {
+class DataSearch extends React.Component {
   componentDidMount() {
-    this.props.search()
+    //this.props.search()
   }
   
   method = {
@@ -34,17 +35,10 @@ class SystemSearch extends React.Component {
         <div className="row">
           <Form.Item label="ID" colon={false}>{getFieldDecorator("id")(<Input size="small" className="search-id" />)}</Form.Item>
           <Form.Item label="Name" colon={false}>{getFieldDecorator("name")(<Input size="small" className="search-name" />)}</Form.Item>
-          <Form.Item label="Host" colon={false}>{getFieldDecorator("hostId")(<Input size="small" className="search-id" />)}</Form.Item>
           <Form.Item label="Type" colon={false}>
             {getFieldDecorator("type", {initialValue: ""})(<Select size={"small"} className="search-id">
               <Select.Option value="">ALL</Select.Option>
-              {this.method.renderOpts("sysType")}
-            </Select>)}
-          </Form.Item>
-          <Form.Item label="DevType" colon={false}>
-            {getFieldDecorator("devType", {initialValue: ""})(<Select size={"small"} className="search-id">
-              <Select.Option value="">ALL</Select.Option>
-              {this.method.renderOpts("devType")}
+              {this.method.renderOpts("dataType")}
             </Select>)}
           </Form.Item>
           <Form.Item style={{marginLeft: "15px"}}>
@@ -57,7 +51,7 @@ class SystemSearch extends React.Component {
   }
 }
 
-class SystemList extends React.Component {
+class DataList extends React.Component {
   state = {
     items: [],
   }
@@ -77,7 +71,7 @@ class SystemList extends React.Component {
     },
 
     clickEdit: (id) => {
-      //this.props.edit(id)
+      this.props.edit(id)
     },
     
     handleResize: (e, { size }) => {
@@ -102,7 +96,7 @@ class SystemList extends React.Component {
           <Table.Column title="DBType" dataIndex="dbType" render={(val) =>  ( this.method.getTypeStr(KINDS.dbType, val) )}/>
           <Table.Column title="DBName" dataIndex="dbName"/>
           <Table.Column title="Operations" width="100px" render={(val) => (
-            <Button onClick={e => { this.method.clickEdit(val.id) }} icon="edit" />
+            <RuleListButton edit={e => { this.method.clickEdit(val.id) }} />
           )}/>
         </Table>
       </div>
@@ -110,6 +104,6 @@ class SystemList extends React.Component {
   }
 }
 
-const WrappedSystemSearch = Form.create({name:'system_search'})(SystemSearch)
-export default SystemList
-export {WrappedSystemSearch}
+const WrappedDataSearch = Form.create({name:'data_search'})(DataSearch)
+export default DataList
+export {WrappedDataSearch}

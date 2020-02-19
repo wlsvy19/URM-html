@@ -12,6 +12,7 @@ class App extends React.Component {
         <TopMenu />
         <Route exact path="/URM" render={props => <RouteComp component={Comp.Main} />} />
         <Route path="/URM/request" render={props => <RouteComp component={Comp.Request} />} />
+        <Route path="/URM/data" render={props => <RouteComp component={Comp.Data} />} />
         <Route path="/URM/system" render={props => <RouteComp component={Comp.System} />} />
       </div>
     );

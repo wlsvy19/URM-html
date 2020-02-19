@@ -31,12 +31,12 @@ class TopMenu extends React.Component {
           <span>EAI 요건 관리 시스템</span>
         </div>
         <Menu onClick={this.handleClick} selectedKeys={[this.state.current]} mode="horizontal">
-          <Menu.Item key="request"><Link to="request">Request</Link></Menu.Item>
-          <Menu.Item key="data"><Link to="data">Data</Link></Menu.Item>
-          <Menu.Item key="system"><Link to="system">System</Link></Menu.Item>
+          <Menu.Item key="request"><Link to="/URM/request">Request</Link></Menu.Item>
+          <Menu.Item key="data"><Link to="/URM/data">Data</Link></Menu.Item>
+          <Menu.Item key="system"><Link to="/URM/system">System</Link></Menu.Item>
           <Menu.SubMenu title={<span>Manage</span>}>
-            <Menu.Item key="user"><Link to="user">User</Link></Menu.Item>
-            <Menu.Item key="biz"><Link to="biz">Business Code</Link></Menu.Item>
+            <Menu.Item key="user"><Link to="/URM/user">User</Link></Menu.Item>
+            <Menu.Item key="biz"><Link to="/URM/biz">Business Code</Link></Menu.Item>
           </Menu.SubMenu>
           <Menu.SubMenu title={<span>Result</span>}>
             <Menu.Item key="log"><Link to="/URM">Process Log</Link></Menu.Item>

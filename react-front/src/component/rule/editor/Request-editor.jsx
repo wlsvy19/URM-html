@@ -30,6 +30,19 @@ class RequestEditor extends RuleEditor {
       data.rcvSystemId = children.rcvSystem ? children.rcvSystem.id : this.state.item.rcvSystemId
       console.log(data)
     },
+    
+    _customValidator: (data) => {
+      if (!data.name || data.name.trim().length === 0) {
+        return false
+      }
+      if (!data.sendSystemId || data.sendSystemId.trim().length === 0) {
+        return false
+      }
+      if (!data.rcvSystemId || data.rcvSystemId.trim().length === 0) {
+        return false
+      }
+      return true
+    }
   }
 
   render() {
