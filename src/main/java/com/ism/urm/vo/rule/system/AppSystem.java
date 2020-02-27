@@ -1,4 +1,6 @@
-package com.ism.urm.vo.rule;
+package com.ism.urm.vo.rule.system;
+
+import com.ism.urm.vo.rule.RuleVo;
 
 public class AppSystem extends RuleVo {
 
@@ -6,16 +8,15 @@ public class AppSystem extends RuleVo {
     String type;
     String devType;
     String hostId;
+    String ip;
+    String port;
     String userId;
     String password;
     String dbType;
-    String dbName;
-    String ip;
-    String port;
     String jdbcType;
+    String dbName;
     String dbParams;
     String remark;
-
     public String getCode() {
         return code;
     }
@@ -40,6 +41,18 @@ public class AppSystem extends RuleVo {
     public void setHostId(String hostId) {
         this.hostId = hostId;
     }
+    public String getIp() {
+        return ip;
+    }
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+    public String getPort() {
+        return port;
+    }
+    public void setPort(String port) {
+        this.port = port;
+    }
     public String getUserId() {
         return userId;
     }
@@ -58,29 +71,17 @@ public class AppSystem extends RuleVo {
     public void setDbType(String dbType) {
         this.dbType = dbType;
     }
-    public String getDbName() {
-        return dbName;
-    }
-    public void setDbName(String dbName) {
-        this.dbName = dbName;
-    }
-    public String getIp() {
-        return ip;
-    }
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-    public String getPort() {
-        return port;
-    }
-    public void setPort(String port) {
-        this.port = port;
-    }
     public String getJdbcType() {
         return jdbcType;
     }
     public void setJdbcType(String jdbcType) {
         this.jdbcType = jdbcType;
+    }
+    public String getDbName() {
+        return dbName;
+    }
+    public void setDbName(String dbName) {
+        this.dbName = dbName;
     }
     public String getDbParams() {
         return dbParams;

@@ -26,26 +26,32 @@ public abstract class RuleService<T extends RuleVo> {
     }
 
     public List<T> search(Map<String, String> params) throws Exception {
+        Session session = null;
         try {
-            Session session = sessionFactory.getCurrentSession();
+            session = sessionFactory.openSession();
             session.beginTransaction();
             List<T> rtn = dao.search(session, params);
             return rtn;
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error("Failed to search", e);
             throw e;
+        } finally {
+            if (session != null) session.close();
         }
     }
     
     public T get(String id) throws Exception {
+        Session session = null;
         try {
-            Session session = sessionFactory.getCurrentSession();
+            session = sessionFactory.openSession();
             session.beginTransaction();
             T rtn =  dao.get(session, id);
             return rtn;
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error("Failed to get " + dao.getEntityName(), e);
             throw e;
+        } finally {
+            if (session != null) session.close();
         }
     }
     
@@ -69,6 +75,9 @@ public abstract class RuleService<T extends RuleVo> {
             Date now = new Date();
             vo.setRegDate(now);
             vo.setChgDate(now);
+            // TODO get user id from session
+            vo.setRegId("eai");
+            vo.setChgId("eai");
             
             dao.save(session, vo);
             tx.commit();
@@ -77,7 +86,7 @@ public abstract class RuleService<T extends RuleVo> {
             
             return rtn;
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error("Failed to save " + dao.getEntityName(), e);
             if (tx != null)    tx.rollback();
             throw e;
         } finally {
@@ -85,7 +94,7 @@ public abstract class RuleService<T extends RuleVo> {
         }
     }
     
-    protected String createId() {
+    protected String createId() throws Exception {
         String id = null;
         Session session = null;
         try {
@@ -93,7 +102,7 @@ public abstract class RuleService<T extends RuleVo> {
             session.beginTransaction();
             id = dao.createId(session);
         } catch (Exception e) {
-            logger.error("", e);
+            throw e;
         } finally {
             if (session != null) session.close();
         }

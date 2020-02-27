@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ism.urm.service.rule.AppSystemService;
 import com.ism.urm.service.rule.RequestService;
-import com.ism.urm.vo.rule.Request;
+import com.ism.urm.vo.rule.request.Request;
 
 @RestController
 public class RequestController {

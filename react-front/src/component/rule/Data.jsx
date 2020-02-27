@@ -1,6 +1,7 @@
 import React from 'react'
 import RuleMain from './RuleMain'
 import DataList, {WrappedDataSearch} from './list/Data-list'
+import DataEditor from './editor/Data-editor'
 
 import './rule.css'
 
@@ -18,8 +19,9 @@ class Data extends RuleMain {
   render() {
     return (
       <div className="urm-panel">
-        <WrappedDataSearch ref="searchBar" codeList={CODE} search={this.method.search} />
-        <DataList ref="list" codeList={CODE} edit={this.method.handleEdit} />
+        <WrappedDataSearch ref="searchBar" codeList={CODE} search={this.method.search} add={this.method.handleAdd} />
+        <DataList ref="list" codeList={CODE} edit={this.method.handleEdit} operation={true} />
+        <DataEditor ref="editor" />
       </div>
     );
   }

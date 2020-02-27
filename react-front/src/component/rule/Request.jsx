@@ -20,7 +20,7 @@ class Request extends RuleMain {
     return (
       <div className="urm-panel">
         <WrappedRequestSearch ref="searchBar" codeList={CODE} search={this.method.search} add={this.method.handleAdd} />
-        <RequestList ref="list" codeList={CODE} edit={this.method.handleEdit} />
+        <RequestList ref="list" codeList={CODE} edit={this.method.handleEdit} operation={true} />
         <RequestEditor ref="editor" codeList={CODE} />
       </div>
     );

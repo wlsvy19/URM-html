@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ism.urm.service.manage.CodeService;
+import com.ism.urm.vo.manage.BusinessCode;
 import com.ism.urm.vo.manage.CommonCode;
 
 @RestController
@@ -24,4 +25,14 @@ public class CodeController {
         return rtn;
     }
 
+    @GetMapping("/code/business")
+    public List<BusinessCode> getBusinessCode() {
+        List<BusinessCode> rtn = null;
+        try {
+            rtn = service.getBusinessCodeList();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return rtn;
+    }
 }

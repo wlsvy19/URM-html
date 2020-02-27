@@ -1,6 +1,7 @@
 import React from 'react'
 import RuleMain from './RuleMain'
 import SystemList, {WrappedSystemSearch} from './list/System-list'
+import SystemEditor from './editor/System-editor'
 
 import './rule.css'
 
@@ -18,8 +19,9 @@ class System extends RuleMain {
   render() {
     return (
       <div className="urm-panel">
-        <WrappedSystemSearch ref="searchBar" codeList={CODE} search={this.method.search} />
-        <SystemList ref="list" codeList={CODE} edit={this.method.handleEdit} />
+        <WrappedSystemSearch ref="searchBar" codeList={CODE} search={this.method.search} add={this.method.handleAdd} />
+        <SystemList ref="list" codeList={CODE} edit={this.method.handleEdit} operation={true} />
+        <SystemEditor ref="editor" codeList={CODE} />
       </div>
     );
   }

@@ -9,9 +9,10 @@ class RuleMain extends React.Component {
   method = {
     setCode: (list) => {
       let $this = this
-      urmUtils.ajax('GET', '/URM/code/common', '', true, function() {
-        if(this.readyState === 4 && this.status === 200) {
-          let res = JSON.parse(this.response)
+      urmUtils.ajax({
+        type: 'GET',
+        url:  '/URM/code/common',
+        success: function(res) {
           res.forEach(function(it) {
             list.push(it);
           })
@@ -33,14 +34,11 @@ class RuleMain extends React.Component {
       }
     
       let $this = this
-      urmUtils.ajax('GET', '/URM/' + this.state.path + '?' + paramStr.substring(1), '', true, function() {
-        let $list = $this.refs.list
-        if(this.readyState === 4 && this.status === 200) {
-          let list = JSON.parse(this.response)
-          list.forEach(function (it, idx) {
-            it.key = idx
-          })
-
+      urmUtils.ajax({
+        type: 'GET',
+        url: '/URM/' + this.state.path + '?' + paramStr.substring(1),
+        success: function(list) {
+          let $list = $this.refs.list
           $list.setState({items: list})
         }
       })
@@ -56,10 +54,11 @@ class RuleMain extends React.Component {
     
     _get: (id) => {
       let $this = this
-      urmUtils.ajax('GET', '/URM/' + this.state.path + '/' + id, '', true, function() {
-        let $editor = $this.refs.editor
-        if(this.readyState === 4 && this.status === 200) {
-          let obj = JSON.parse(this.response)
+      urmUtils.ajax({
+        type: 'GET',
+        url: '/URM/' + this.state.path + '/' + id,
+        success: function(obj) {
+          let $editor = $this.refs.editor
           console.log(obj)
           $editor.setState({visible: true, item: obj})
         }

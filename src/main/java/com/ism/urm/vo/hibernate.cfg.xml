@@ -8,14 +8,17 @@
         <!-- SQL dialect -->
         <!-- Echo all executed SQL to stdout -->
         <property name="show_sql">true</property>
-        <property name="hibernate.current_session_context_class">thread</property>
         <property name="hibernate.query.substitutions">true 'Y', false 'N'</property>
 
         <!-- Drop and re-create the database schema on startup -->
-        <mapping resource="com/ism/urm/vo/rule/Request.hbm.xml" />
-        <mapping resource="com/ism/urm/vo/rule/AppSystem.hbm.xml" />
+        <mapping resource="com/ism/urm/vo/rule/request/Request.hbm.xml" />
+        <mapping resource="com/ism/urm/vo/rule/system/AppSystem.hbm.xml" />
+        <mapping resource="com/ism/urm/vo/rule/mapping/DataMap.hbm.xml" />
+        <mapping resource="com/ism/urm/vo/rule/data/Data.hbm.xml" />
+        <mapping resource="com/ism/urm/vo/rule/data/Field.hbm.xml" />
 
         <mapping resource="com/ism/urm/vo/manage/CommonCode.hbm.xml" />
+        <mapping resource="com/ism/urm/vo/manage/BusinessCode.hbm.xml" />
 
     </session-factory>
 </hibernate-configuration>

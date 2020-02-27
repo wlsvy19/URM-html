@@ -6,15 +6,16 @@ import java.util.Date;
 
 import org.hibernate.Session;
 
-import com.ism.urm.vo.rule.Request;
+import com.ism.urm.vo.rule.request.Request;
 
 public class RequestDao extends RuleDao<Request> {
     
-    AppSystemDao sysDao = new AppSystemDao();
+    private AppSystemDao sysDao;
     
     public RequestDao() {
         super();
         entityName = "REQUEST";
+        sysDao = new AppSystemDao();
     }
 
     public void delete(Session session, String key) throws SQLException {
@@ -49,7 +50,8 @@ public class RequestDao extends RuleDao<Request> {
 //        int seq = 0;
 //        sb.append(String.format("%05d", seq));
         
-        return (String) session.createSQLQuery("SELECT 'REQ' || TO_CHAR(SYSDATE,'YYMMDD') || LPAD(REQ_ID_SEQ.NEXTVAL,5,'0') AS reqId FROM DUAL").uniqueResult();
+        return (String) session.createSQLQuery("SELECT 'REQ' || TO_CHAR(SYSDATE,'YYMMDD') || LPAD(REQ_ID_SEQ.NEXTVAL,5,'0') AS reqId FROM DUAL")
+                               .uniqueResult();
     }
 
     @Override

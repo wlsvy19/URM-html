@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ism.urm.service.rule.AppSystemService;
-import com.ism.urm.vo.rule.AppSystem;
+import com.ism.urm.vo.rule.system.AppSystem;
 
 @RestController
 public class SystemController {

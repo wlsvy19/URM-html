@@ -11,7 +11,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.ism.urm.dao.rule.AppSystemDao;
-import com.ism.urm.vo.rule.AppSystem;
+import com.ism.urm.vo.rule.system.AppSystem;
 
  
 public class AppSystemService extends RuleService<AppSystem> {
@@ -28,11 +28,6 @@ public class AppSystemService extends RuleService<AppSystem> {
         sysDao = (AppSystemDao) dao;
     }
 
-    /**
-     * �䱸���� ����
-     * @param reqId
-     * @throws Exception
-     */
     public void deleteRequest(String reqId) throws Exception {
         
         logger.info("RequestService.deleteRequest() call.");
@@ -56,12 +51,6 @@ public class AppSystemService extends RuleService<AppSystem> {
         }
     }
 
-    /**
-     * �䱸���� ���� �����丮 ��ȸ
-     * @param reqId
-     * @return
-     * @throws Exception
-     */
 //    public List<Request> getRequestHistroy(String reqId) throws Exception {
 //        
 //        debug.info("RequestService.getRequest() call. - " + reqId);
@@ -76,27 +65,6 @@ public class AppSystemService extends RuleService<AppSystem> {
 //        }
 //    }
 
-    /**
-     * �䱸���� ����Ʈ ��ȸ - Excel
-     * @param params - ��ȸ ���ǿ� �ش��ϴ� value ������ Map 
-     *<P>            Hashtable params = new Hashtable();          
-     *<P>           params.put("reqNm","");//      (��Ǹ�)      
-     *<P>            params.put("jobType","");//    (��������)       
-     *<P>            params.put("prcStat","");//    (��û����)               
-     *<P>            params.put("chgStat","");//    (�������)               
-     *<P>            params.put("ifType","");//     (�������̽�����)         
-     *<P>            params.put("ifId","");//       (�������̽����̵�)       
-     *<P>            params.put("sndHostCd","");//  (�۽�ȣ��Ʈ�ڵ�)         
-     *<P>            params.put("rcvHostCd","");//  (����ȣ��Ʈ�ڵ�)         
-     *<P>            params.put("sndAdmNm","");//   (�۽Ŵ����)             
-     *<P>            params.put("rcvAdmNm","");//   (���Ŵ����)             
-     *<P>            params.put("fromRegDate","20100401");//(�����-from)    
-     *<P>            params.put("toRegDate","20100401");//  (�����-to)      
-     *<P>           params.put("loginUserId","");//(SSO �α��� ID)
-     *<P>           List<Request> reqs = getRequestList(params);
-     * @return
-     * @throws Exception
-     */
 //    public List<RequestExcel> getRequestList_Excel(Map params) throws Exception {
 //        
 //        debug.info("RequestService.getRequestList() call.");

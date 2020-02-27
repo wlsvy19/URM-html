@@ -1,16 +1,25 @@
-package com.ism.urm.vo.rule;
+package com.ism.urm.vo.rule.request;
+
+import com.ism.urm.vo.manage.BusinessCode;
+import com.ism.urm.vo.rule.RuleVo;
+import com.ism.urm.vo.rule.system.AppSystem;
 
 public class Request extends RuleVo {
 
     String jobType;
+    String processStat;
+    String chgStat;
+    String syncType;
+    boolean eaiYN;
+    boolean tpcYN;
+    String trType;
+
     String interfaceId;
     String interfaceType;
 
     String sendJobCodeId;
     String sendSystemId;
-//    String sndSystemName;
     String sendSystemType;
-//    String sndMethodNm;
     String sendPeriod;
 //    String sndPeriodNm;
     String sendServerName;
@@ -19,51 +28,39 @@ public class Request extends RuleVo {
 
     String rcvJobCodeId;
     String rcvSystemId;
-//    String rcvHostNm;
     String rcvSystemType;
-//    String rcvMethodNm;
     String rcvServerName;
     String rcvDbInfo;
     String rcvAdminId;
 
-    String processStat;
-    String chgStat;
-    String trType;
-    String syncType;
-    String syncTypeNm;
-    boolean tpcYN;
-    String dcnt;
     String testStartYMD;
     String testEndYMD;
-    String openYMD;
+    String etcRemark;
+    String eaiRemark;
 
     boolean dataMapYN;
     String reqDataMappingId;
-//    String reqDataMapNm;
     String reqSendDataId;
     String reqRcvDataId;
     String resDataMappingId;
-//    String resDataMapNm;
     String resSendDataId;
     String resRcvDataId;
 
-    String etcRemark;
-    boolean eaiYN;
     String sql;
     String sqlPlain;
     String dbCrudType;
-    String dbCrudTypeNm;
     String fileCrudType;
-    String fileCrudTypeNm;
-    String ifFileNm;
-    String eaiRemark;
+    String ifFileName;
 
+    String dcnt;
+    String openYMD;
     String delYN;
+
     AppSystem sendSystem;
     AppSystem rcvSystem;
+    BusinessCode sendJobCode;
+    BusinessCode rcvJobCode;
 
-//  BusinessCode sndJobCode;
-//  BusinessCode rcvJobCode;
 //    User regAdm;
 //    User sndAdm;
 //    User rcvAdm;
@@ -73,6 +70,42 @@ public class Request extends RuleVo {
     }
     public void setJobType(String jobType) {
         this.jobType = jobType;
+    }
+    public String getProcessStat() {
+        return processStat;
+    }
+    public void setProcessStat(String processStat) {
+        this.processStat = processStat;
+    }
+    public String getChgStat() {
+        return chgStat;
+    }
+    public void setChgStat(String chgStat) {
+        this.chgStat = chgStat;
+    }
+    public String getSyncType() {
+        return syncType;
+    }
+    public void setSyncType(String syncType) {
+        this.syncType = syncType;
+    }
+    public boolean isEaiYN() {
+        return eaiYN;
+    }
+    public void setEaiYN(boolean eaiYN) {
+        this.eaiYN = eaiYN;
+    }
+    public boolean isTpcYN() {
+        return tpcYN;
+    }
+    public void setTpcYN(boolean tpcYN) {
+        this.tpcYN = tpcYN;
+    }
+    public String getTrType() {
+        return trType;
+    }
+    public void setTrType(String trType) {
+        this.trType = trType;
     }
     public String getInterfaceId() {
         return interfaceId;
@@ -164,48 +197,6 @@ public class Request extends RuleVo {
     public void setRcvAdminId(String rcvAdminId) {
         this.rcvAdminId = rcvAdminId;
     }
-    public String getProcessStat() {
-        return processStat;
-    }
-    public void setProcessStat(String processStat) {
-        this.processStat = processStat;
-    }
-    public String getChgStat() {
-        return chgStat;
-    }
-    public void setChgStat(String chgStat) {
-        this.chgStat = chgStat;
-    }
-    public String getTrType() {
-        return trType;
-    }
-    public void setTrType(String trType) {
-        this.trType = trType;
-    }
-    public String getSyncType() {
-        return syncType;
-    }
-    public void setSyncType(String syncType) {
-        this.syncType = syncType;
-    }
-    public String getSyncTypeNm() {
-        return syncTypeNm;
-    }
-    public void setSyncTypeNm(String syncTypeNm) {
-        this.syncTypeNm = syncTypeNm;
-    }
-    public boolean isTpcYN() {
-        return tpcYN;
-    }
-    public void setTpcYN(boolean tpcYN) {
-        this.tpcYN = tpcYN;
-    }
-    public String getDcnt() {
-        return dcnt;
-    }
-    public void setDcnt(String dcnt) {
-        this.dcnt = dcnt;
-    }
     public String getTestStartYMD() {
         return testStartYMD;
     }
@@ -218,13 +209,19 @@ public class Request extends RuleVo {
     public void setTestEndYMD(String testEndYMD) {
         this.testEndYMD = testEndYMD;
     }
-    public String getOpenYMD() {
-        return openYMD;
+    public String getEtcRemark() {
+        return etcRemark;
     }
-    public void setOpenYMD(String openYMD) {
-        this.openYMD = openYMD;
+    public void setEtcRemark(String etcRemark) {
+        this.etcRemark = etcRemark;
     }
-    public boolean getDataMapYN() {
+    public String getEaiRemark() {
+        return eaiRemark;
+    }
+    public void setEaiRemark(String eaiRemark) {
+        this.eaiRemark = eaiRemark;
+    }
+    public boolean isDataMapYN() {
         return dataMapYN;
     }
     public void setDataMapYN(boolean dataMapYN) {
@@ -266,18 +263,6 @@ public class Request extends RuleVo {
     public void setResRcvDataId(String resRcvDataId) {
         this.resRcvDataId = resRcvDataId;
     }
-    public String getEtcRemark() {
-        return etcRemark;
-    }
-    public void setEtcRemark(String etcRemark) {
-        this.etcRemark = etcRemark;
-    }
-    public boolean isEaiYN() {
-        return eaiYN;
-    }
-    public void setEaiYN(boolean eaiYN) {
-        this.eaiYN = eaiYN;
-    }
     public String getSql() {
         return sql;
     }
@@ -296,35 +281,29 @@ public class Request extends RuleVo {
     public void setDbCrudType(String dbCrudType) {
         this.dbCrudType = dbCrudType;
     }
-    public String getDbCrudTypeNm() {
-        return dbCrudTypeNm;
-    }
-    public void setDbCrudTypeNm(String dbCrudTypeNm) {
-        this.dbCrudTypeNm = dbCrudTypeNm;
-    }
     public String getFileCrudType() {
         return fileCrudType;
     }
     public void setFileCrudType(String fileCrudType) {
         this.fileCrudType = fileCrudType;
     }
-    public String getFileCrudTypeNm() {
-        return fileCrudTypeNm;
+    public String getIfFileName() {
+        return ifFileName;
     }
-    public void setFileCrudTypeNm(String fileCrudTypeNm) {
-        this.fileCrudTypeNm = fileCrudTypeNm;
+    public void setIfFileName(String ifFileName) {
+        this.ifFileName = ifFileName;
     }
-    public String getIfFileNm() {
-        return ifFileNm;
+    public String getDcnt() {
+        return dcnt;
     }
-    public void setIfFileNm(String ifFileNm) {
-        this.ifFileNm = ifFileNm;
+    public void setDcnt(String dcnt) {
+        this.dcnt = dcnt;
     }
-    public String getEaiRemark() {
-        return eaiRemark;
+    public String getOpenYMD() {
+        return openYMD;
     }
-    public void setEaiRemark(String eaiRemark) {
-        this.eaiRemark = eaiRemark;
+    public void setOpenYMD(String openYMD) {
+        this.openYMD = openYMD;
     }
     public String getDelYN() {
         return delYN;
@@ -343,6 +322,18 @@ public class Request extends RuleVo {
     }
     public void setRcvSystem(AppSystem rcvSystem) {
         this.rcvSystem = rcvSystem;
+    }
+    public BusinessCode getSendJobCode() {
+        return sendJobCode;
+    }
+    public void setSendJobCode(BusinessCode sendJobCode) {
+        this.sendJobCode = sendJobCode;
+    }
+    public BusinessCode getRcvJobCode() {
+        return rcvJobCode;
+    }
+    public void setRcvJobCode(BusinessCode rcvJobCode) {
+        this.rcvJobCode = rcvJobCode;
     }
 
 }

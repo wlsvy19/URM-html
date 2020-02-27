@@ -14,11 +14,11 @@ import com.ism.urm.service.rule.DataService;
 import com.ism.urm.vo.rule.data.Data;
 
 @RestController
-public class DataController {
+public class DataMapController {
 
     DataService service = new DataService();
 
-    @GetMapping("/data")
+    @GetMapping("/datamap")
     public List<Data> search(@RequestParam Map<String, String> params) {
         List<Data> rtn = null;
         try {
@@ -29,7 +29,7 @@ public class DataController {
         return rtn;
     }
 
-    @GetMapping("/data/{id}")
+    @GetMapping("/datamap/{id}")
     public Data get(@PathVariable String id) {
         Data rtn = null;
         try {
@@ -41,7 +41,7 @@ public class DataController {
     }
     
 
-    @PostMapping("/data")
+    @PostMapping("/datamap")
     public Data save(@RequestBody Data data) {
         Data rtn = null;
         try {

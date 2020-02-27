@@ -10,22 +10,22 @@ import java.io.InputStream;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import com.ism.urm.dao.rule.RequestDao;
-import com.ism.urm.vo.rule.request.Request;
+import com.ism.urm.dao.rule.data.DataDao;
+import com.ism.urm.vo.rule.data.Data;
 
  
-public class RequestService extends RuleService<Request> {
+public class DataService extends RuleService<Data> {
 
-    private RequestDao requestDao;
+    private DataDao dataDao;
 
     private static int _seq = 0;
     
     private static Object _lock = new Object();
     
-    public RequestService() {
+    public DataService() {
         super();
-        dao = new RequestDao();
-        requestDao = (RequestDao) dao;
+        dao = new DataDao();
+        dataDao = (DataDao) dao;
     }
 
     public void deleteRequest(String reqId) throws Exception {
@@ -40,7 +40,7 @@ public class RequestService extends RuleService<Request> {
             session = sessionFactory.getCurrentSession();
             tx = session.beginTransaction();
             
-            requestDao.delete(session, reqId);
+            dataDao.delete(session, reqId);
             tx.commit();
         } catch (Exception e) {
             logger.error("", e);

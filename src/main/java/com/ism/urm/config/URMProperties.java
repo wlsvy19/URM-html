@@ -27,6 +27,7 @@ public class URMProperties {
             if (!file.exists()) {
                 throw new IllegalStateException("urm.conf file[" + confFileName + "] does not exist.");
             }
+            System.out.println("URMProperties init - " + file.getAbsolutePath());
             
             FileInputStream fis = null;
             try {

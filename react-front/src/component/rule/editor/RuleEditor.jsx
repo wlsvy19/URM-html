@@ -11,41 +11,56 @@ class RequestEditor extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
     if (this.state.visible !== nextState.visible) {
       return true
-    } else {
-      return false
     }
+    return false
   }
 
   method = {
-    clickSave: ($form, customSetter) => {
-      let data = $form.props.form.getFieldsValue()
-      let children = $form.state.children
-      
-      customSetter(data, children)
-      if (!this.method._customValidator(data)) {
+    handleCancel: e => {
+      this.setState({visible: false})
+    },
+    
+    validator: (data) => {
+      if (!data.name || data.name.trim().length === 0) {
+        return false
+      }
+      if (this.customMethod && this.customMethod.validator(data)) {
+        return false
+      }
+      return true
+    },
+  }
+  
+  childMethod = {
+    save: (form, children, customSetter) => {
+      let data = form.getFieldsValue()
+      let saveItem = {}
+
+      if (customSetter) customSetter(saveItem, data, children)
+      if (!this.method.validator(data)) {
         return false
       }
       
-      urmUtils.ajax('POST', '/URM/' + this.state.path, JSON.stringify(data), true, function() {
-        if(this.readyState === 4 && this.status === 200) {
+      urmUtils.ajax({
+        type: 'POST',
+        url: '/URM/' + this.state.path,
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: function(res) {
           console.log(this.response)
         }
       })
     },
-
-    handleCancel: ($form) => {
-      this.setState({visible: false})
-    },
     
-    setItem(form, item, customSetter) {
+    setItem: (form, item, customSetter) => {
       if (item.id) {
         let fields = form.getFieldsValue()
-        let setter = {}
+        let formItem = {}
         for (let key in fields) {
-          setter[key] = item[key]
+          formItem[key] = item[key]
         }
-        customSetter(setter, item)
-        form.setFieldsValue(setter)
+        if (customSetter) customSetter(formItem, item)
+        form.setFieldsValue(formItem)
       } else {
         form.resetFields()
       }

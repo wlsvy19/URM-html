@@ -1,6 +1,5 @@
 package com.ism.urm.dao.rule;
 
-import java.lang.reflect.ParameterizedType;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
@@ -10,30 +9,19 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import com.ism.urm.dao.BasicDao;
 import com.ism.urm.vo.rule.RuleVo;
 
-public abstract class RuleDao<T extends RuleVo> {
-    
-    protected Class<T> entityClass;
-    protected String entityName;
+public abstract class RuleDao<T extends RuleVo> extends BasicDao<T> {
 
     public RuleDao() {
-        ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
-        entityClass = (Class<T>) type.getActualTypeArguments()[0];
+       // TODO Auto-generated constructor stub
     }
-    
-    public void save(Session session, T vo) throws SQLException {
-        session.saveOrUpdate(entityName, vo);
-    }
-    
+
     public T get(Session session, String id) throws SQLException {
         T rtn = (T) session.get(entityName, id);
         setChild(session, rtn);
         return rtn;
-    }
-    
-    public List<T> list(Session session) throws SQLException {
-        return session.createCriteria(entityClass).list();
     }
 
     public List<T> search(Session session, Map<String, String> map)throws SQLException {
@@ -51,6 +39,6 @@ public abstract class RuleDao<T extends RuleVo> {
         return list;
     }
 
-    public abstract String createId(Session session) throws SQLException; 
+    public abstract String createId(Session session) throws SQLException;
     protected abstract void setChild(Session session, T vo) throws SQLException;
 }
