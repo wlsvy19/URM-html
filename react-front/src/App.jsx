@@ -22,6 +22,7 @@ class App extends React.Component {
         <Route path="/URM/request" render={props => <RouteComp component={Comp.Request} />} />
         <Route path="/URM/data" render={props => <RouteComp component={Comp.Data} />} />
         <Route path="/URM/system" render={props => <RouteComp component={Comp.System} />} />
+        <Route path="/URM/user" render={props => <RouteComp component={Comp.User} />} />
       </div>
     );
   }

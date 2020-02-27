@@ -16,9 +16,11 @@
         <mapping resource="com/ism/urm/vo/rule/mapping/DataMap.hbm.xml" />
         <mapping resource="com/ism/urm/vo/rule/data/Data.hbm.xml" />
         <mapping resource="com/ism/urm/vo/rule/data/Field.hbm.xml" />
-
+  
         <mapping resource="com/ism/urm/vo/manage/CommonCode.hbm.xml" />
         <mapping resource="com/ism/urm/vo/manage/BusinessCode.hbm.xml" />
+        <mapping resource="com/ism/urm/vo/manage/User.hbm.xml" />
+        
 
     </session-factory>
 </hibernate-configuration>
