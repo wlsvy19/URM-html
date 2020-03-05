@@ -6,18 +6,14 @@ public class DataMapLine {
     String sourceFieldId;
     String targetFieldId;
 
-    public String getMapId() {
-        return mapId;
-    }
     public void setMapId(String mapId) {
         this.mapId = mapId;
     }
-    public int getLineSeq() {
-        return lineSeq;
-    }
+
     public void setLineSeq(int lineSeq) {
         this.lineSeq = lineSeq;
     }
+
     public String getSourceFieldId() {
         return sourceFieldId;
     }

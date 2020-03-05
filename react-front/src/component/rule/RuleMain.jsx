@@ -1,5 +1,5 @@
 import React from 'react'
-import {default as urmUtils} from '../../urm-utils'
+import * as urmsc from '../../urm-utils'
 
 class RuleMain extends React.Component {
   componentDidMount() {
@@ -7,63 +7,43 @@ class RuleMain extends React.Component {
   }
 
   method = {
-    setCode: (list) => {
-      let $this = this
-      urmUtils.ajax({
-        type: 'GET',
-        url:  '/URM/code/common',
-        success: function(res) {
-          res.forEach(function(it) {
-            list.push(it);
-          })
-          $this.refs.searchBar.setState({})
-        }
-      })
-    },
-    
-    search: (param) => {
-      //page === undefined && (page = 1)
-      //console.log('page : ', page)
-
-      let paramStr = ''
-      for (let key in param) {
-        let value = param[key]
-        if (value !== undefined && value.length > 0) {
-          paramStr += '&' + key + '=' + value
-        }
+    setCode: () => {
+      if (this.props.commonCode === undefined) {
+        let $this = this
+        urmsc.ajax({
+          type: 'GET',
+          url:  '/URM/code/common',
+          success: function(res) {
+            $this.props.initCode(res)
+          },
+          error: function(res) {
+            console.log(res, this.response)
+          }
+        })
       }
-    
-      let $this = this
-      urmUtils.ajax({
-        type: 'GET',
-        url: '/URM/' + this.state.path + '?' + paramStr.substring(1),
-        success: function(list) {
-          let $list = $this.refs.list
-          $list.setState({items: list})
-        }
-      })
-    },
-  
-    handleAdd: () => {
-      this.refs.editor.setState({visible: true, item: {}})
     },
 
     handleEdit: (id) => {
-      this.method._get(id)
+      if (id) {
+        let $this = this
+        urmsc.ajax({
+          type: 'GET',
+          url: '/URM/' + this.state.path + '/' + id,
+          success: function(obj) {
+            let $editor = $this.refs.editor
+            console.log(obj)
+            $editor.setState({visible: true, item: obj})
+          }
+        })
+      } else {
+        this.refs.editor.setState({visible: true, item: {}})
+      }
     },
-    
-    _get: (id) => {
-      let $this = this
-      urmUtils.ajax({
-        type: 'GET',
-        url: '/URM/' + this.state.path + '/' + id,
-        success: function(obj) {
-          let $editor = $this.refs.editor
-          console.log(obj)
-          $editor.setState({visible: true, item: obj})
-        }
-      })
-    },
+  }
+
+  getCode = () => {
+    let codeList = this.props.commonCode
+    return codeList ? codeList : []
   }
 }
 

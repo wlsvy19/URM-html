@@ -1,25 +1,32 @@
+import 'react-app-polyfill/ie9'; // For IE 9-11 support
+import 'react-app-polyfill/stable';
+
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-keep-alive'
-//import { createStore } from 'redux'
-//import { Provider } from 'react-redux'
+import { createStore } from 'redux'
+import { Provider as ReduxProvider } from 'react-redux'
 
 import './index.css'
+import './component/urm.css'
 import 'antd/dist/antd.css'
 
 import App from './App'
 import * as serviceWorker from './serviceWorker'
+import rootReducer from './store'
 
-//const store = createStore(reducer);
+const store = createStore(rootReducer)
 
 const Root = () => (
+  <ReduxProvider store={store}>
     <BrowserRouter>
       <Provider>
         <App/>
       </Provider>
     </BrowserRouter>
-)
+  </ReduxProvider>
+);
 
 ReactDOM.render(<Root />, document.getElementById('root'))
 

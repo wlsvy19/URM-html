@@ -28,6 +28,7 @@
       "not op_mini all"
     ],
     "development": [
+      ">0.2%",
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
@@ -35,7 +36,10 @@
   },
   "devDependencies": {
     "antd": "^3.26.11",
+    "konva": "^4.1.6",
+    "react-app-polyfill": "^1.0.6",
     "react-keep-alive": "^2.5.2",
+    "react-konva": "^16.12.0-0",
     "react-redux": "^7.2.0",
     "react-resizable": "^1.10.1",
     "redux": "^4.0.5"

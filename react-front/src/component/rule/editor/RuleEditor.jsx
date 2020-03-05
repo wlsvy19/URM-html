@@ -1,5 +1,5 @@
 import React from 'react'
-import {default as urmUtils} from '../../../urm-utils'
+import * as urmsc from '../../../urm-utils'
 
 class RequestEditor extends React.Component {
   state = {
@@ -41,9 +41,9 @@ class RequestEditor extends React.Component {
         return false
       }
       
-      urmUtils.ajax({
+      urmsc.ajax({
         type: 'POST',
-        url: '/URM/' + this.state.path,
+        url: '/URM/' + this.props.path,
         data: JSON.stringify(data),
         contentType: 'application/json',
         success: function(res) {

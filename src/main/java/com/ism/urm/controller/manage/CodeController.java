@@ -1,4 +1,4 @@
-package com.ism.urm.controller;
+package com.ism.urm.controller.manage;
 
 import java.util.List;
 

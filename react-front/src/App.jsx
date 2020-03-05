@@ -8,8 +8,14 @@ import TopMenu from './component/TopMenu'
 class App extends React.Component {
   render() {
     const RouteComp = (props) => {
+      let componentKey = () => {
+        let name = props.component.name
+        if (!name) name = props.component.WrappedComponent.name
+        return name
+      }
+      
       return (
-        <KeepAlive name={props.component.name}>
+        <KeepAlive name={componentKey()}>
           <props.component />
         </KeepAlive>
       );

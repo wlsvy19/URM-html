@@ -8,11 +8,6 @@ import {default as urmUtils} from '../../../urm-utils'
 const KINDS = urmUtils.codeKey
 
 class SystemEditor extends RuleEditor {
-  constructor(props) {
-    super(props)
-    this.state.path = 'system'
-  }
-  
   customMethod = {
     validator: (data) => {
       if (!data.name || data.name.trim().length === 0) {
@@ -24,7 +19,8 @@ class SystemEditor extends RuleEditor {
 
   render() {
     return (
-      <Modal visible={this.state.visible} onCancel={this.method.handleCancel} width="1080px" footer={null} >
+      <Modal visible={this.state.visible} width="1080px"
+        footer={null} onCancel={this.method.handleCancel} className="urm-modal">
         <WrappedSystemEditor codeList={this.props.codeList} item={this.state.item} {...this.childMethod} />
       </Modal>
     );

@@ -12,6 +12,7 @@
 
         <!-- Drop and re-create the database schema on startup -->
         <mapping resource="com/ism/urm/vo/rule/request/Request.hbm.xml" />
+        <mapping resource="com/ism/urm/vo/rule/request/RequestHistory.hbm.xml" />
         <mapping resource="com/ism/urm/vo/rule/system/AppSystem.hbm.xml" />
         <mapping resource="com/ism/urm/vo/rule/mapping/DataMap.hbm.xml" />
         <mapping resource="com/ism/urm/vo/rule/data/Data.hbm.xml" />

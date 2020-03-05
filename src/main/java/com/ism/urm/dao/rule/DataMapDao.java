@@ -14,7 +14,7 @@ public class DataMapDao extends RuleDao<DataMap> {
     
     public DataMapDao() {
         super();
-        entityName = "DATAMap";
+        entityName = "DATAMAP";
         dataDao = new DataDao();
     }
 
@@ -36,7 +36,8 @@ public class DataMapDao extends RuleDao<DataMap> {
 
     @Override
     protected void setChild(Session session, DataMap vo) throws SQLException {
-        
+        vo.setSourceData(dataDao.get(session, vo.getSourceDataId()));
+        vo.setTargetData(dataDao.get(session, vo.getTargetDataId()));
     }
 
 }

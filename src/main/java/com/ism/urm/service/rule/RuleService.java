@@ -2,7 +2,6 @@ package com.ism.urm.service.rule;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ism.urm.dao.rule.RuleDao;
 import com.ism.urm.vo.HiberUtill;
+import com.ism.urm.vo.RelationOp;
 import com.ism.urm.vo.rule.RuleVo;
 
 public abstract class RuleService<T extends RuleVo> {
@@ -25,12 +25,12 @@ public abstract class RuleService<T extends RuleVo> {
         sessionFactory = HiberUtill.getSessionFactory();
     }
 
-    public List<T> search(Map<String, String> params) throws Exception {
+    public List<T> search(List<RelationOp> filter) throws Exception {
         Session session = null;
         try {
             session = sessionFactory.openSession();
             session.beginTransaction();
-            List<T> rtn = dao.search(session, params);
+            List<T> rtn = dao.search(session, filter);
             return rtn;
         } catch (Exception e) {
             logger.error("Failed to search", e);
@@ -62,23 +62,24 @@ public abstract class RuleService<T extends RuleVo> {
         try {
             session = sessionFactory.openSession();
             tx = session.beginTransaction();
+
+            Date now = new Date();
+            vo.setChgDate(now);
+            // TODO get user id from session
+            vo.setChgId("eai");
             
             if (vo.getId() == null || vo.getId().trim().length() == 0) {
-                logger.info("create ID");
+                logger.info("create rule ID");
                 String newId = createId();
                 if (newId == null) {
                     throw new Exception("failed to create ID");
                 }
                 vo.setId(newId);
+                vo.setRegDate(now);
+                // TODO get user id from session
+                vo.setRegId("eai");
             }
 
-            Date now = new Date();
-            vo.setRegDate(now);
-            vo.setChgDate(now);
-            // TODO get user id from session
-            vo.setRegId("eai");
-            vo.setChgId("eai");
-            
             dao.save(session, vo);
             tx.commit();
             

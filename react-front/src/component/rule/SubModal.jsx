@@ -1,7 +1,7 @@
 import React from 'react'
 import { Modal } from 'antd'
 
-class RuleModal extends React.Component {
+class SubModal extends React.Component {
   state = {
     visible: false
   }
@@ -19,17 +19,21 @@ class RuleModal extends React.Component {
     },
     
     changeChildState: (chg) => {
-      this.refs.child.setState(chg)
+      if (this.refs.child) {
+        this.refs.child.setState(chg)
+      }
     }
   }
   
-  render() {
+//        {this.props.render ? this.props.render() : (<this.prop.component />)}
+  render() {//console.log(this.props.children, this)
     return (
-      <Modal visible={this.state.visible} width={this.props.width} footer={null} onCancel={this.method.handleCancel}>
-        {this.props.render ? this.props.render() : (<this.prop.component />)}
+      <Modal visible={this.state.visible} width={this.props.width}
+        footer={null} onCancel={this.method.handleCancel} className="urm-modal">
+        {this.props.children}
       </Modal>
     );
   }
 }
 
-export default RuleModal
+export default SubModal

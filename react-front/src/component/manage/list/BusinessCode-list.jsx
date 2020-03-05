@@ -43,6 +43,7 @@ class BizSearch extends React.Component {
 class BizList extends React.Component {
   state = {
     items: [],
+    onDbClick: undefined,
   }
 
   render() {
@@ -54,7 +55,7 @@ class BizList extends React.Component {
           size={"small"} scroll={{ y: 500 }} rowKey="id"
           onRow={(record, index) => {
             return {
-              onDoubleClick: e => { if (this.props.onDbClick) this.props.onDbClick(record) }
+              onDoubleClick: e => { if (this.state.onDbClick) this.state.onDbClick(record) }
             }
           }
         }>

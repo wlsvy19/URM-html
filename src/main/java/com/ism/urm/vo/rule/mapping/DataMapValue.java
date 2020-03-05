@@ -2,22 +2,18 @@ package com.ism.urm.vo.rule.mapping;
 
 public class DataMapValue {
     String mapId;
-    int valueSeq;
+    int valSeq;
     String fieldId;
     String defaultValue;
 
-    public String getMapId() {
-        return mapId;
-    }
     public void setMapId(String mapId) {
         this.mapId = mapId;
     }
-    public int getValueSeq() {
-        return valueSeq;
+
+    public void setValSeq(int valSeq) {
+        this.valSeq = valSeq;
     }
-    public void setValueSeq(int valueSeq) {
-        this.valueSeq = valueSeq;
-    }
+
     public String getFieldId() {
         return fieldId;
     }

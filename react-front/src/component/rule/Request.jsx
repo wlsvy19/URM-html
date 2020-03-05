@@ -1,30 +1,40 @@
 import React from 'react'
+import { connect } from 'react-redux'
+
 import RuleMain from './RuleMain'
-import RequestList, {WrappedRequestSearch} from './list/Request-list'
+import RequestList from './list/Request-list'
 import RequestEditor from './editor/Request-editor'
 
-import './rule.css'
-
-const CODE = []
+import { initCode } from '../../store/modules/rule'
 
 class Request extends RuleMain {
   constructor (props) {
     super(props)
     this.state = {
-      path : 'request',
+      path: 'request'
     }
-    this.method.setCode(CODE)
+    this.method.setCode()
   }
 
   render() {
     return (
       <div className="urm-panel">
-        <WrappedRequestSearch ref="searchBar" codeList={CODE} search={this.method.search} add={this.method.handleAdd} />
-        <RequestList ref="list" codeList={CODE} edit={this.method.handleEdit} operation={true} />
-        <RequestEditor ref="editor" codeList={CODE} />
+        <RequestList ref="list" path={this.state.path} codeList={this.getCode()} edit={this.method.handleEdit} />
+        <RequestEditor ref="editor" path={this.state.path} codeList={this.getCode()} />
       </div>
     );
   }
 }
 
-export default Request
+const mapStateToProps = ({ rule }) => ({
+  commonCode: rule.commonCode,
+})
+
+const mapDispatchToProps = dispatch => ({
+  initCode: (code) => dispatch(initCode(code)),
+})
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Request)

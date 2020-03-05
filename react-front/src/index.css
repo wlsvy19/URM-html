@@ -13,13 +13,29 @@ code {
 }
 
 
+.hide {
+  display: none;
+}
+
 /* flex */
 div.row {
   display: flex;
 }
 
-div.half-row {
+div.inline {
+  display: inline-flex;
+}
+
+div.col-1 {
   flex: 1;
+}
+
+div.col-2 {
+  flex: 2;
+}
+
+div.col-3 {
+  flex: 3;
 }
 
 /* custom antd */
@@ -36,31 +52,7 @@ div.table-striped tr:nth-child(2n) > td {
   padding: 5px 8px;
 }
 
-/* urm */
-.urm-menu {
-  display: flex;
-  border-bottom: 1px solid #e8e8e8;
+div.row div.ant-form-item {
+  display: inline-flex;
+  margin-bottom: 0;
 }
-
-.urm-menu div.urm-logo {
-  display: flex;
-  background-color: #fff;
-  padding: 7px;
-  width: 265px;
-  border-right: 1px solid #e8e8e8;
-  border-bottom: 1px solid #e8e8e8;
-}
-
-.urm-logo span {
-  margin-left: 15px;
-  font-weight: bold;
-  color: #000;
-  line-height: 30px;
-  vertical-align: middle;
-}
-
-.urm-panel {
-  margin: 0 30px;
-  min-width: 1080px;
-}
-

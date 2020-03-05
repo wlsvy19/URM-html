@@ -3,19 +3,25 @@ package com.ism.urm.dao.rule;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
+import com.ism.urm.dao.manage.BusinessCodeDao;
 import com.ism.urm.vo.rule.request.Request;
+import com.ism.urm.vo.rule.request.RequestHistory;
 
 public class RequestDao extends RuleDao<Request> {
     
     private AppSystemDao sysDao;
+    private BusinessCodeDao bizDao;
     
     public RequestDao() {
         super();
         entityName = "REQUEST";
         sysDao = new AppSystemDao();
+        bizDao = new BusinessCodeDao();
     }
 
     public void delete(Session session, String key) throws SQLException {
@@ -35,11 +41,12 @@ public class RequestDao extends RuleDao<Request> {
 //    }
 
 
-//    public List<Request> getHistory(String key)throws SQLException {
-//        
-//        List<Request> list = getSqlMapClientTemplate().queryForList("Request.history",key);
-//        return list;
-//    }
+    public List<RequestHistory> getHistory(Session session, String key)throws SQLException {
+        List<RequestHistory> list = session.createCriteria(RequestHistory.class)
+                                           .add(Restrictions.eq("id", key))
+                                           .list();
+        return list;
+    }
 
     @Override
     public String createId(Session session) throws SQLException {
@@ -58,6 +65,8 @@ public class RequestDao extends RuleDao<Request> {
     protected void setChild(Session session, Request vo) throws SQLException {
         vo.setSendSystem(sysDao.get(session, vo.getSendSystemId()));
         vo.setRcvSystem(sysDao.get(session, vo.getRcvSystemId()));
+        vo.setSendJobCode(bizDao.get(session, vo.getSendJobCodeId()));
+        vo.setRcvJobCode(bizDao.get(session, vo.getRcvJobCodeId()));
     }
 
 }

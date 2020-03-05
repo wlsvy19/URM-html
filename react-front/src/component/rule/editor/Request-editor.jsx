@@ -1,24 +1,20 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Button, Modal, DatePicker } from 'antd'
 import { Form, Input, Select, Radio, Switch, Checkbox } from 'antd'
 import moment from 'moment'
 
-import RuleModal from '../RuleModal'
 import RuleEditor from './RuleEditor'
+import SubModal from '../SubModal'
+
+import DataMapEditor from './DataMap-editor'
+import DataMapList from '../list//DataMap-list'
 import SystemList from '../list/System-list'
-import DataMap from './sub/DataMap'
 import BizList from '../../manage/list/BusinessCode-list'
+import UserList from '../../manage/list/User-list'
 
-import {default as urmUtils} from '../../../urm-utils'
-
-const KINDS = urmUtils.codeKey
+import * as urmsc from '../../../urm-utils'
 
 class RequestEditor extends RuleEditor {
-  constructor(props) {
-    super(props)
-    this.state.path = 'request'
-  }
-  
   customMethod = {
     validator: (data) => {
       if (!data.sendSystemId || data.sendSystemId.trim().length === 0) {
@@ -33,7 +29,8 @@ class RequestEditor extends RuleEditor {
 
   render() {
     return (
-      <Modal visible={this.state.visible} width="1080px" footer={null} onCancel={this.method.handleCancel}>
+      <Modal visible={this.state.visible} width="1080px"
+        footer={null} onCancel={this.method.handleCancel} className="urm-modal">
         <WrappedRequestEditor codeList={this.props.codeList} item={this.state.item} {...this.childMethod} />
       </Modal>
     );
@@ -44,7 +41,6 @@ const RequestEditorForm = (props) => {
   const { form, item } = props
   const { getFieldDecorator } = form
   const { RangePicker } = DatePicker
-  const [ callback, setCallback ] = useState({})
 
   // Only re-run the effect if props.item changes
   useEffect(() => {
@@ -55,11 +51,13 @@ const RequestEditorForm = (props) => {
 
   let sysList = null;
   let bizList = null;
+  let usrList = null;
+  let mapList = null;
   let dataMap = null;
 
   let method = {
     renderOpts: (key) => {
-      return urmUtils.getSubListByKey(props.codeList, 'kind', KINDS[key])
+      return urmsc.getSubListByKey(props.codeList, 'kind', urmsc.CODEKEY[key])
               .map((it) => <Select.Option key={it.code} value={it.code}>{it.name}</Select.Option>)
     },
 
@@ -90,73 +88,112 @@ const RequestEditorForm = (props) => {
     },
 
     setDataMap: (type) => {
-      let ref = dataMap
-      urmUtils.ajax({
+      let ref = mapList
+      urmsc.ajax({
         type: 'GET',
         url: '/URM/datamap',
         success: function(res) {
-          setCallback({
-            func: (map) => {
-              if (type === 'req') {
-                item.reqDataMap = map
-                form.setFieldsValue({reqDataMappingId: map.id})
-              } else if (type === 'res') {
-                item.resDataMap = map
-                form.setFieldsValue({resDataMappingId: map.id})
-              }
-              ref.setState({visible: false})
+          // TODO reuse mapping??
+          /* let callback = (map) => {
+            if (type === 'req') {
+              item.reqDataMap = map
+              form.setFieldsValue({reqDataMappingId: map.id})
+            } else if (type === 'res') {
+              item.resDataMap = map
+              form.setFieldsValue({resDataMappingId: map.id})
             }
-          })
+            ref.setState({visible: false})
+          } */
+          
           ref.setState({visible: true})
+          //ref.method.changeChildState({items: res})
         }
       })
     },
 
+    editDataMap: (type, e) => {
+      let ref = dataMap
+      let id = e.target.value
+      if (id && id.trim().length) {
+        urmsc.ajax({
+          type: 'GET',
+          url: '/URM/datamap/' + id,
+          success: function(res) {
+            ref.setState({visible: true, item: res})
+          }
+        })
+      } else {
+        ref.setState({visible: true, item: {}})
+      }
+    },
+
     setSystem: (type) => {
       let ref = sysList
-      urmUtils.ajax({
+      urmsc.ajax({
         type: 'GET',
         url: '/URM/system',
         success: function(res) {
-          setCallback({
-            func: (system) => {
-              if (type === 'rcv') {
-                item.rcvSystem = system
-                form.setFieldsValue({rcvSystemName: system.name})
-              } else if (type === 'send') {
-                item.sendSystem = system
-                form.setFieldsValue({sendSystemName: system.name})
-              }
-              ref.setState({visible: false})
+          let callback = (system) => {
+            if (type === 'rcv') {
+              item.rcvSystem = system
+              form.setFieldsValue({rcvSystemName: system.name})
+            } else if (type === 'send') {
+              item.sendSystem = system
+              form.setFieldsValue({sendSystemName: system.name})
             }
-          })
+            ref.setState({visible: false})
+          }
+          
           ref.setState({visible: true})
-          ref.method.changeChildState({items: res})
+          //ref.method.changeChildState({items: res, onDbClick: callback})
         }
       })
     },
 
     setBizCode: (type) => {
       let ref = bizList
-      urmUtils.ajax({
+      urmsc.ajax({
         type: 'GET',
         url: '/URM/code/business',
         success: function(res) {
-          setCallback({
-            func: (biz) => {
-              let name = biz.part2Name + '(' + biz.part2Id + ')'
-              if (type === 'rcv') {
-                item.rcvJobCode = biz
-                form.setFieldsValue({rcvJobCodeName: name})
-              } else if (type === 'send') {
-                item.sendJobCode = biz
-                form.setFieldsValue({sendJobCodeName: name})
-              }
-              ref.setState({visible: false})
+          let callback = (biz) => {
+            let name = biz.part2Name + '(' + biz.part2Id + ')'
+            if (type === 'rcv') {
+              item.rcvJobCode = biz
+              form.setFieldsValue({rcvJobCodeName: name})
+            } else if (type === 'send') {
+              item.sendJobCode = biz
+              form.setFieldsValue({sendJobCodeName: name})
             }
-          })
+            ref.setState({visible: false})
+          }
+          
           ref.setState({visible: true})
-          ref.method.changeChildState({items: res})
+          ref.method.changeChildState({items: res, onDbClick: callback})
+        }
+      })
+    },
+
+    setUser: (type) => {
+      let ref = usrList
+      urmsc.ajax({
+        type: 'GET',
+        url: '/URM/user',
+        success: function(res) {
+          let callback = (user) => {
+            let name = user.mame + '(' + user.positionNm + ')'
+            if (type === 'rcv') {
+              item.rcvUser = user
+              form.setFieldsValue({rcvUserName: name})
+            } else if (type === 'send') {
+              item.sendUser = user
+              form.setFieldsValue({sendUserName: name})
+            }
+            ref.setState({visible: false})
+          }
+          
+          ref.setState({visible: true})
+          ref.method.changeChildState({items: res, onDbClick: callback})
         }
       })
     },
@@ -201,14 +238,12 @@ const RequestEditorForm = (props) => {
         return (
           <div>
             <Form.Item label="Request">
-              {getFieldDecorator("reqDataMappingId", reqProps)(<Input.Search size="small" readOnly onSearch={vars => {
-                method.setDataMap('req')
-              }} className="size-id" />)}
+              {getFieldDecorator("reqDataMappingId", reqProps)(<Input.Search size="small" readOnly
+                onSearch={vars => { method.setDataMap('req') }} onClick={e => { method.editDataMap('req', e) }} className="size-id" />)}
             </Form.Item>
-            <Form.Item label="Reaponse">
-              {getFieldDecorator("resDataMappingId", resProps)(<Input.Search size="small" readOnly onSearch={vars => {
-                method.setDataMap('res')
-              }} className="size-id" />)}
+            <Form.Item label="Response">
+              {getFieldDecorator("resDataMappingId", resProps)(<Input.Search size="small" readOnly
+                onSearch={vars => { method.setDataMap('res') }} onClick={e => { method.editDataMap('res', e) }} className="size-id" />)}
             </Form.Item>
           </div>
         );
@@ -270,8 +305,9 @@ const RequestEditorForm = (props) => {
           <Form.Item label="UseDataMap">{getFieldDecorator("dataMapYN", {valuePropName: "checked", initialValue: false})(<Checkbox />)}</Form.Item>
           {method.renderDataMap()}
         </div>
+        <hr/>
         <div className="row">
-          <div className="half-row">
+          <div className="col-1">
             <Form.Item label="sendMethod">
               {getFieldDecorator("sendSystemType", {initialValue: "3"})(<Select size={"small"} className="size-id">
                 {method.renderOpts("sysType")}
@@ -285,9 +321,11 @@ const RequestEditorForm = (props) => {
             <Form.Item label="SourceBizCode">
               {getFieldDecorator("sendJobCodeName")(<Input.Search size="small" readOnly className="size-id" onSearch={vars => { method.setBizCode('send') }} />)}
             </Form.Item>
-            <Form.Item label="sendAdmin">{getFieldDecorator("sendAdminId")(<Input.Search size="small" readOnly className="size-id" />)}</Form.Item>
+            <Form.Item label="sendAdmin">
+              {getFieldDecorator("sendAdminId")(<Input.Search size="small" readOnly className="size-id" onSearch={vars => { method.setUser('send') }} />)}
+            </Form.Item>
           </div>
-          <div className="half-row">
+          <div className="col-1">
             <Form.Item label="rcvMethod">
               {getFieldDecorator("rcvSystemType", {initialValue: "3"})(<Select size={"small"} className="size-id">
                 {method.renderOpts("sysType")}
@@ -301,22 +339,31 @@ const RequestEditorForm = (props) => {
             <Form.Item label="TargetBizCode">{getFieldDecorator("rcvJobCodeName")
               (<Input.Search size="small" readOnly className="size-id" onSearch={vars => { method.setBizCode('rcv') }} />)}
             </Form.Item>
-            <Form.Item label="ReceiveAdmin">{getFieldDecorator("rcvAdminId")(<Input.Search size="small" readOnly className="size-id" />)}</Form.Item>
+            <Form.Item label="ReceiveAdmin">
+              {getFieldDecorator("rcvAdminId")(<Input.Search size="small" readOnly className="size-id" onSearch={vars => { method.setUser('rcv') }} />)}
+            </Form.Item>
           </div>
         </div>
+        <hr/>
         <div className="row">
           <Form.Item label="EtcRemark" className="half-row">{getFieldDecorator("etcRemark")(<Input.TextArea className="urm-remark" />)}</Form.Item>
           <Form.Item label="EaiRemark" className="half-row">{getFieldDecorator("eaiRemark")(<Input.TextArea className="urm-remark" />)}</Form.Item>
         </div>
       </Form>
       
-      <RuleModal ref={(list) => { sysList = list }} width="980px"
-        render={() => (<SystemList ref="child" codeList={props.codeList} onDbClick={callback.func} />)} />
+      <SubModal ref={(list) => { sysList = list }} width="1120px"
+        render={() => (<SystemList ref="child" path="system" codeList={props.codeList} onlySearch={true} />)} />
       
-      <RuleModal ref={(list) => { bizList = list }} width="980px"
-        render={() => (<BizList ref="child" onDbClick={callback.func} />)} />
+      <SubModal ref={(list) => { bizList = list }} width="980px"
+        render={() => (<BizList ref="child" />)} />
       
-      <DataMap ref={(map) => { dataMap = map }} />
+      <SubModal ref={(list) => { usrList = list }} width="980px"
+        render={() => (<UserList ref="child" path="user" />)} />
+      
+      <SubModal ref={(list) => { mapList = list }} width="1030px"
+        render={() => (<DataMapList ref="child" path="datamap" />)} />
+      
+      <DataMapEditor ref={(map) => { dataMap = map }} path="datamap" codeList={props.codeList} onlySearch={true} />
     </div>
   );
 }

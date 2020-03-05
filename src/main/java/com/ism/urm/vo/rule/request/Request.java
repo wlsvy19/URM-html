@@ -1,6 +1,7 @@
 package com.ism.urm.vo.rule.request;
 
 import com.ism.urm.vo.manage.BusinessCode;
+import com.ism.urm.vo.manage.User;
 import com.ism.urm.vo.rule.RuleVo;
 import com.ism.urm.vo.rule.system.AppSystem;
 
@@ -60,10 +61,8 @@ public class Request extends RuleVo {
     AppSystem rcvSystem;
     BusinessCode sendJobCode;
     BusinessCode rcvJobCode;
-
-//    User regAdm;
-//    User sndAdm;
-//    User rcvAdm;
+    User sendAdmin;
+    User rcvAdmin;
 
     public String getJobType() {
         return jobType;
@@ -334,6 +333,18 @@ public class Request extends RuleVo {
     }
     public void setRcvJobCode(BusinessCode rcvJobCode) {
         this.rcvJobCode = rcvJobCode;
+    }
+    public User getSendAdmin() {
+        return sendAdmin;
+    }
+    public void setSendAdmin(User sendAdmin) {
+        this.sendAdmin = sendAdmin;
+    }
+    public User getRcvAdmin() {
+        return rcvAdmin;
+    }
+    public void setRcvAdmin(User rcvAdmin) {
+        this.rcvAdmin = rcvAdmin;
     }
 
 }

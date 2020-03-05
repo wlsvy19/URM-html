@@ -13,7 +13,7 @@ import com.ism.urm.vo.manage.CommonCode;
 public class CommonCodeDao extends BasicDao<CommonCode> {
 
     public CommonCodeDao() {
-       // TODO Auto-generated constructor stub
+       entityName = "COMMONCODE";
     }
 
     public List<String> getKnd(Session session) throws SQLException {

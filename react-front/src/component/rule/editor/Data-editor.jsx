@@ -6,11 +6,6 @@ import RuleEditor from './RuleEditor'
 import {default as urmUtils} from '../../../urm-utils'
 
 class DataEditor extends RuleEditor {
-  constructor(props) {
-    super(props)
-    this.state.path = 'data'
-  }
-  
   customMethod = {
     validator: (data) => {
       if (!data.name || data.name.trim().length === 0) {
@@ -22,7 +17,8 @@ class DataEditor extends RuleEditor {
 
   render() {
     return (
-      <Modal visible={this.state.visible} onCancel={this.method.handleCancel} width="1080px" footer={null} >
+      <Modal visible={this.state.visible} width="1080px"
+        footer={null} onCancel={this.method.handleCancel} className="urm-modal">
         <WrappedDataEditor item={this.state.item} {...this.childMethod} />
       </Modal>
     );
@@ -111,3 +107,4 @@ const DataEditorForm = (props) => {
 
 const WrappedDataEditor = Form.create({name:'data_editor'})(DataEditorForm)
 export default DataEditor
+export {WrappedDataEditor}

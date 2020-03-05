@@ -1,5 +1,8 @@
 package com.ism.urm.controller.rule;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -10,44 +13,67 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ism.urm.service.rule.DataService;
-import com.ism.urm.vo.rule.data.Data;
+import com.ism.urm.service.rule.DataMapService;
+import com.ism.urm.vo.RelationOp;
+import com.ism.urm.vo.RelationOp.OpType;
+import com.ism.urm.vo.RelationOp.ValueType;
+import com.ism.urm.vo.rule.mapping.DataMap;
 
 @RestController
 public class DataMapController {
 
-    DataService service = new DataService();
+    DataMapService service = new DataMapService();
 
     @GetMapping("/datamap")
-    public List<Data> search(@RequestParam Map<String, String> params) {
-        List<Data> rtn = null;
+    public List<DataMap> search(@RequestParam Map<String, String> params) throws Exception {
+        List<DataMap> rtn = null;
+        List<RelationOp> filter = new ArrayList<>();
+        
+        Iterator<String> iterator = params.keySet().iterator();
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            String val = params.get(key);
+
+            if (val == null || val.length() == 0) {
+                continue;
+            }
+            
+            RelationOp op = null;
+            if ("id".equals(key) || "name".equals(key)) {
+                op = RelationOp.get(key, OpType.LIKE, val, ValueType.STRING);
+            } else {
+                op = RelationOp.get(key, OpType.EQ, val, ValueType.STRING);
+            }
+            filter.add(op);
+        }
+        
         try {
-            rtn = service.search(params);
+            rtn = service.search(filter);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }
         return rtn;
     }
 
     @GetMapping("/datamap/{id}")
-    public Data get(@PathVariable String id) {
-        Data rtn = null;
+    public DataMap get(@PathVariable String id) throws Exception {
+        DataMap rtn = null;
         try {
             rtn = service.get(id);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }
         return rtn;
     }
     
 
     @PostMapping("/datamap")
-    public Data save(@RequestBody Data data) {
-        Data rtn = null;
+    public DataMap save(@RequestBody DataMap data) throws Exception {
+        DataMap rtn = null;
         try {
-            rtn = service.save(data);
+            rtn = service.save(data, true);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }
         return rtn;
     }

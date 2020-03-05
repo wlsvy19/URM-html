@@ -1,30 +1,40 @@
 import React from 'react'
+import { connect } from 'react-redux'
+
 import RuleMain from './RuleMain'
-import DataList, {WrappedDataSearch} from './list/Data-list'
+import DataList from './list/Data-list'
 import DataEditor from './editor/Data-editor'
 
-import './rule.css'
-
-const CODE = []
+import { initCode } from '../../store/modules/rule'
 
 class Data extends RuleMain {
   constructor (props) {
     super(props)
     this.state = {
-      path : 'data',
+      path: 'data',
     }
-    this.method.setCode(CODE)
+    this.method.setCode()
   }
 
   render() {
     return (
       <div className="urm-panel">
-        <WrappedDataSearch ref="searchBar" codeList={CODE} search={this.method.search} add={this.method.handleAdd} />
-        <DataList ref="list" codeList={CODE} edit={this.method.handleEdit} operation={true} />
-        <DataEditor ref="editor" />
+        <DataList ref="list" path={this.state.path} codeList={this.getCode()} edit={this.method.handleEdit} />
+        <DataEditor ref="editor" path={this.state.path} />
       </div>
     );
   }
 }
 
-export default Data
+const mapStateToProps = ({ rule }) => ({
+  commonCode: rule.commonCode,
+})
+
+const mapDispatchToProps = dispatch => ({
+  initCode: (code) => dispatch(initCode(code)),
+})
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Data)

@@ -3,16 +3,16 @@ import { Table, Button } from 'antd'
 import { Form, Input, Select } from 'antd'
 
 import RuleList, { RuleSearch } from './RuleList'
-import {default as urmUtils} from '../../../urm-utils'
+import * as urmsc from '../../../urm-utils'
 
-const KINDS = urmUtils.codeKey
+const KINDS = urmsc.CODEKEY
 
 class SystemSearch extends RuleSearch {
   method = {
     ...this.method,
 
     renderOpts: (key) => {
-      return urmUtils.getSubListByKey(this.props.codeList, 'kind', KINDS[key])
+      return urmsc.getSubListByKey(this.props.codeList, 'kind', KINDS[key])
               .map((it) => <Select.Option key={it.code} value={it.code}>{it.name}</Select.Option>)
     },
   }
@@ -39,9 +39,13 @@ class SystemSearch extends RuleSearch {
                 {this.method.renderOpts("devType")}
               </Select>)}
             </Form.Item>
-            <Form.Item style={{marginLeft: "15px"}}>
+            <Form.Item className="search-buttons">
               <Button onClick={this.method.clickSearch} icon="search" />
-              <Button onClick={this.method.clickAdd} icon="plus" />
+              {this.method.renderButton(
+                <div className="inline">
+                  <Button onClick={this.method.clickAdd} icon="plus" />
+                </div>
+              )}
             </Form.Item>
           </div>
         </Form>
@@ -54,12 +58,13 @@ class SystemList extends RuleList {
   render() {
     return (
       <div className="urm-list">
+        <WrappedSystemSearch {...this.props} search={this.method.search} />
         <Table className="table-striped"
           dataSource={this.state.items} pagination={false} bordered
           size={"small"} scroll={{ y: 500 }} rowKey="id"
           onRow={(record, index) => {
             return {
-              onDoubleClick: e => { if (this.props.onDbClick) this.props.onDbClick(record) }
+              onDoubleClick: e => { if (this.state.onDbClick) this.state.onDbClick(record) }
             }
           }
         }>
@@ -72,9 +77,9 @@ class SystemList extends RuleList {
           <Table.Column title="port" dataIndex="port"/>
           <Table.Column title="DBType" dataIndex="dbType" render={(val) =>  ( this.method.getTypeStr(KINDS.dbType, val) )}/>
           <Table.Column title="DBName" dataIndex="dbName"/>
-          {this.method.renderButton(() => 
-            (<Table.Column title="Operations" className="operations" width="100px" render={(val) => 
-              (<Button onClick={e => { this.method.clickEdit(val.id) }} icon="edit" />)} />)
+          {this.method.renderButton(
+            <Table.Column title="Operations" className="operations" width="90px" render={(val) => 
+              (<Button onClick={e => { this.method.clickEdit(val.id) }} icon="edit" />)} />
           )}
         </Table>
       </div>
@@ -84,4 +89,3 @@ class SystemList extends RuleList {
 
 const WrappedSystemSearch = Form.create({name:'system_search'})(SystemSearch)
 export default SystemList
-export {WrappedSystemSearch}

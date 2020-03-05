@@ -10,7 +10,7 @@ import com.ism.urm.vo.manage.BusinessCode;
 public class BusinessCodeDao extends BasicDao<BusinessCode>{
 
     public BusinessCodeDao() {
-        // TODO Auto-generated constructor stub
+        entityName= "BUSINESSCODE";
     }
 
     public BusinessCode get(Session session, String id) throws SQLException {

@@ -1,4 +1,5 @@
 import React from 'react'
+import * as urmsc from '../../../urm-utils'
 
 class RuleSearch extends React.Component {
   componentDidMount() {
@@ -11,15 +12,22 @@ class RuleSearch extends React.Component {
     },
     
     clickAdd: e => {
-      this.props.add()
+      this.props.edit()
+    },
+    
+    renderButton: (render) => {
+      if (!this.props.onlySearch) {
+        return render
+      }
+      return undefined
     },
   }
-
 }
 
 class RuleList extends React.Component {
   state = {
     items: [],
+    onDbClick: undefined,
   }
 
   method = {
@@ -39,26 +47,34 @@ class RuleList extends React.Component {
     clickEdit: (id) => {
       this.props.edit(id)
     },
-    
-    handleResize: (e, { size }) => {
-      this.setState(({ columns }) => {
-        const nextColumns = [...columns]
-        return { columns: nextColumns }
+
+    clickDelete: (ids) => {
+      console.log('delete')
+    },
+
+    search: (param) => {
+      let $this = this
+      urmsc.ajax({
+        type: 'GET',
+        url: '/URM/' + this.props.path,
+        data: param,
+        success: function(list) {
+          $this.setState({items: list})
+        },
       })
     },
-    
+
     renderButton: (render) => {
-      if (this.props.operation) {
+      if (!this.props.onlySearch) {
         return render
       }
       return undefined
-    }
+    },
   }
-
 }
 
 RuleList.defaultProps = {
-  operation: false
+  onlySearch: false
 }
 
 export default RuleList

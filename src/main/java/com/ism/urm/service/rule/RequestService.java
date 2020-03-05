@@ -6,17 +6,19 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
+import com.ism.urm.dao.rule.AppSystemDao;
 import com.ism.urm.dao.rule.RequestDao;
+import com.ism.urm.vo.PagingResult;
+import com.ism.urm.vo.RelationOp;
 import com.ism.urm.vo.rule.request.Request;
+import com.ism.urm.vo.rule.request.RequestHistory;
 
- 
+
 public class RequestService extends RuleService<Request> {
-
-    private RequestDao requestDao;
 
     private static int _seq = 0;
     
@@ -25,45 +27,51 @@ public class RequestService extends RuleService<Request> {
     public RequestService() {
         super();
         dao = new RequestDao();
-        requestDao = (RequestDao) dao;
     }
 
-    public void deleteRequest(String reqId) throws Exception {
-        
-        logger.info("RequestService.deleteRequest() call.");
-
+    public PagingResult<Request> search(int page, int size, List<RelationOp> filter, boolean includeChild) throws Exception {
+        PagingResult<Request> rtn = null;
         Session session = null;
-        Transaction tx = null;
-
-//        if(reqId == null ) throw new NotFoundRequestException("Exception:Argment reqId is null");
         try {
-            session = sessionFactory.getCurrentSession();
-            tx = session.beginTransaction();
-            
-            requestDao.delete(session, reqId);
-            tx.commit();
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            rtn = dao.searchPage(session, page, size, filter);
+           
+            if (includeChild) {
+                AppSystemDao sysDao = new AppSystemDao();
+                session = sessionFactory.openSession();
+                session.beginTransaction();
+                if (rtn.getList() != null) {
+                    for (Request r : rtn.getList()) {
+                        r.setSendSystem(sysDao.get(session, r.getSendSystemId()));
+                        r.setRcvSystem(sysDao.get(session, r.getRcvSystemId()));
+                    }
+                }
+                
+            }
         } catch (Exception e) {
-            logger.error("", e);
-            if (tx != null)    tx.rollback();
+            logger.error("Failed to search Request. ", e);
+            throw e;
+        } finally {
+            if (session != null) session.close();
+        }
+        return rtn;
+    }
+
+    public List<RequestHistory> getHistroy(String reqId) throws Exception {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            RequestDao dao = (RequestDao) this.dao;
+            return dao.getHistory(session, reqId);
+        } catch (Exception e) {
+            logger.error("Failed to get history. " + reqId, e);
             throw e;
         } finally {
             if (session != null) session.close();
         }
     }
-
-//    public List<Request> getRequestHistroy(String reqId) throws Exception {
-//        
-//        debug.info("RequestService.getRequest() call. - " + reqId);
-//        
-//        if(reqId == null ) throw new NotFoundRequestException("Exception:Argment reqId is null");
-//        
-//        try {
-//            return requestDao.getHistory(reqId);
-//        } catch (Exception e) {
-//            debug.error("", e);
-//            throw e;
-//        }
-//    }
 
 //    public List<RequestExcel> getRequestList_Excel(Map params) throws Exception {
 //        

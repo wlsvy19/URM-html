@@ -2,8 +2,6 @@ import React from 'react'
 import RuleMain from './RuleMain'
 import SystemList, {WrappedSystemSearch} from './list/System-list'
 
-import './rule.css'
-
 const CODE = []
 
 class System extends RuleMain {

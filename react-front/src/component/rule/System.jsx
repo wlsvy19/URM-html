@@ -1,30 +1,40 @@
 import React from 'react'
+import { connect } from 'react-redux'
+
 import RuleMain from './RuleMain'
-import SystemList, {WrappedSystemSearch} from './list/System-list'
+import SystemList from './list/System-list'
 import SystemEditor from './editor/System-editor'
 
-import './rule.css'
-
-const CODE = []
+import { initCode } from '../../store/modules/rule'
 
 class System extends RuleMain {
   constructor (props) {
     super(props)
     this.state = {
-      path : 'system',
+      path: 'system',
     }
-    this.method.setCode(CODE)
+    this.method.setCode()
   }
 
   render() {
     return (
-      <div className="urm-panel">
-        <WrappedSystemSearch ref="searchBar" codeList={CODE} search={this.method.search} add={this.method.handleAdd} />
-        <SystemList ref="list" codeList={CODE} edit={this.method.handleEdit} operation={true} />
-        <SystemEditor ref="editor" codeList={CODE} />
+      <div className="urm-panel" style={{minWidth: "1100px"}}>
+        <SystemList ref="list" path={this.state.path} codeList={this.getCode()} edit={this.method.handleEdit} />
+        <SystemEditor ref="editor" path={this.state.path} codeList={this.getCode()} />
       </div>
     );
   }
 }
 
-export default System
+const mapStateToProps = ({ rule }) => ({
+  commonCode: rule.commonCode,
+})
+
+const mapDispatchToProps = dispatch => ({
+  initCode: (code) => dispatch(initCode(code)),
+})
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(System)
