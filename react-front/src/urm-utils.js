@@ -89,27 +89,3 @@ export function convertYN (obj) {
 export function getSubListByKey (list, key, val) {
   return list.filter(item => item[key] === val);
 }
-
-export default {
-  codeKey: CODEKEY,
-
-  ajax: ajax,
-
-  getSubListByKey: getSubListByKey,
-  
-  convertYN: convertYN,
-
-  RULE: {
-    getSubListByKey: (list, key, val) => {
-      return list.filter(item => item[key] === val);
-    },
-
-    getCodeByKey: (list, key) => {
-      return this.getSubListByKey(list, 'kind', CODEKEY[key])
-    },
-
-    renderOptsForCode: (codeList, key, renderFunc) => {
-      return this.getCodeByKey(codeList, key).map(renderFunc)
-    },
-  }
-}

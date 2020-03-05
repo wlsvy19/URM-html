@@ -8,9 +8,9 @@ import { Provider } from 'react-keep-alive'
 import { createStore } from 'redux'
 import { Provider as ReduxProvider } from 'react-redux'
 
+import 'antd/dist/antd.css'
 import './index.css'
 import './component/urm.css'
-import 'antd/dist/antd.css'
 
 import App from './App'
 import * as serviceWorker from './serviceWorker'

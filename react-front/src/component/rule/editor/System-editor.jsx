@@ -3,9 +3,9 @@ import { Button, Modal } from 'antd'
 import { Form, Input, Select } from 'antd'
 
 import RuleEditor from './RuleEditor'
-import {default as urmUtils} from '../../../urm-utils'
+import * as urmsc from '../../../urm-utils'
 
-const KINDS = urmUtils.codeKey
+const KINDS = urmsc.CODEKEY
 
 class SystemEditor extends RuleEditor {
   customMethod = {
@@ -41,7 +41,7 @@ const SystemEditorForm = (props) => {
 
   let method = {
     renderOpts: (key) => {
-      return urmUtils.getSubListByKey(props.codeList, 'kind', KINDS[key])
+      return urmsc.getSubListByKey(props.codeList, 'kind', KINDS[key])
               .map((it) => <Select.Option key={it.code} value={it.code}>{it.name}</Select.Option>)
     },
     

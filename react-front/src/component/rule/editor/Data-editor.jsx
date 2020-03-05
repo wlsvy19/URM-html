@@ -3,7 +3,7 @@ import { Button, Modal, Table } from 'antd'
 import { Form, Input, Select } from 'antd'
 
 import RuleEditor from './RuleEditor'
-import {default as urmUtils} from '../../../urm-utils'
+import * as urmsc from '../../../urm-utils'
 
 class DataEditor extends RuleEditor {
   customMethod = {
@@ -59,7 +59,7 @@ const DataEditorForm = (props) => {
     
     renderYesOrNo: (val) => {
       return (
-        <Select value={urmUtils.convertYN(val)}>
+        <Select value={urmsc.convertYN(val)}>
           <Select.Option key="y" value="Y">Yes</Select.Option>
           <Select.Option key="n" value="N">No</Select.Option>
         </Select>
