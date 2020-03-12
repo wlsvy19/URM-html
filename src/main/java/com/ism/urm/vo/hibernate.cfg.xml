@@ -21,6 +21,8 @@
         <mapping resource="com/ism/urm/vo/manage/CommonCode.hbm.xml" />
         <mapping resource="com/ism/urm/vo/manage/BusinessCode.hbm.xml" />
         <mapping resource="com/ism/urm/vo/manage/User.hbm.xml" />
+        <mapping resource="com/ism/urm/vo/manage/Auth.hbm.xml" />
+        
         
 
     </session-factory>

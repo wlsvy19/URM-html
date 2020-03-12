@@ -20,7 +20,7 @@ public class User extends RuleVo {
 	String frsEnrTs;
 	String lstAmnTs;
 	String ssoYn;
-	String authId; //18媛�
+	String authId; 
 
 	@Override
 	public String getId() {

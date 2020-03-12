@@ -3,8 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-	<class name="com.ism.urm.vo.manage.User" table="TB_SSO_USER"
-		entity-name="USER">
+	<class name="com.ism.urm.vo.manage.User" table="TB_SSO_USER" entity-name="USER">
 		<id name="id" type="string">
 			<column name="USER_ID" />
 			<generator class="assigned" />

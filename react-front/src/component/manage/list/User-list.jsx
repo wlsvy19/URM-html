@@ -1,71 +1,12 @@
 import React from 'react'
-import {
-	Table, Button, Input, Select,Form,Modal} from 'antd'
-
-import { default as urmUtils } from '../../../urm-utils'
-
-const KINDS = urmUtils.codeKey
-
-const { Option } = Select
+import {Table, Button, Input, Form} from 'antd'
+import UserListButton from './UserListButton'
+import * as urmsc from '../../../urm-utils'
 
 class UserSearch extends React.Component {
 	state = {
-		confirmDirty: false, 
-		autoCompleteResult: [], 
-		vlsible: false, 
-		confirmLoading: false, 
-	}
-
-	showModal = (e) => {
-		this.setState({
-			visible: true,
-		})
-	}
-
-	handleCancel = e => {
-		this.setState({
-			visible: false,
-		})
-	}
-
-	handleSubmit = (e) => { 
-		e.preventDefault();
-		this.props.form.validateFieldsAndScroll((err, values) => { 
-			if (!err) { 
-				this.setState({
-					confirmLoading: true,
-				});
-
-				setTimeout(() => {
-					this.setState({
-						visible: false,
-						confirmLoading: false,
-					});
-				}, 1000);
-			}
-		})
-	}
-
-	handleConfirmBlur = e => {
-		const { value } = e.target;
-		this.setState({ confirmDirty: this.state.confirmDirty || !!value })
-	}
-
-	compareToFirstPassword = (rule, value, callback) => {
-		const { form } = this.props;
-		if (value && value !== form.getFieldValue('password')) { 
-			callback('')
-		} else {
-			callback()
-		}
-	}
-
-	validateToNextPassword = (rule, value, callback) => {
-		const { form } = this.props;
-		if (value && this.state.confirmDirty) {
-			form.validateFields(['confirm'], { force: true })
-		}
-		callback()
+		autoCompleteResult: [],
+		vlsible: false,
 	}
 
 	componentDidMount() {
@@ -78,153 +19,38 @@ class UserSearch extends React.Component {
 		},
 
 		clickAdd: e => {
-			this.props.add()
+			this.props.edit()
 		},
 
-		renderOpts: (key) => {
-			return urmUtils.getSubListByKey(this.props.codeList, "kind", KINDS[key]).map((it) => <Select.Option key={it.code} value={it.code}>{it.name}</Select.Option>)
+		renderButton: (render) => {
+			if (!this.props.onlySearch) {
+				return render
+			}
+			return undefined
 		},
 	}
 
 	render() {
 		const { getFieldDecorator } = this.props.form
-		const { visible, confirmLoading } = this.state
-		const authCode = getFieldDecorator('prefix', {
-			initialValue: 'URM ADMIN',
-		})(
-			<Select style={{ width: 200 }}>
-				<Option value="">USER ADMIN</Option>
-				<Option value="">USER VIEWER</Option>
-				<Option value="">SYSTEM ADMIN</Option>
-				<Option value="">SYSTEM VIEWER</Option>
-				<Option value="">INTERFACE ADMIN</Option>
-				<Option value="">INTERFACE VIEWER</Option>
-				<Option value="">USER</Option>
-			</Select>
-		)
-
 		return (
 			<div className="search-bar">
-				<div className="row">
-					<Form.Item label="Name" colon={false}>{getFieldDecorator("name")(<Input size="small" className="search-id" />)}</Form.Item>
-					<Form.Item label="ID" colon={false}>{getFieldDecorator("id")(<Input size="small" className="search-name" />)}</Form.Item>
-					<Form.Item label="Dept" colon={false}>{getFieldDecorator("dept")(<Input size="small" className="search-id" />)}</Form.Item>
+				<Form colon={false}>
+					<div className="row">
+						<Form.Item label="ID">{getFieldDecorator("id")(<Input size="small" className="search-id" />)}</Form.Item>
+						<Form.Item label="Name" >{getFieldDecorator("name")(<Input size="small" className="search-name" />)}</Form.Item>
+						<Form.Item label="Dept">{getFieldDecorator("dept")(<Input size="small" className="search-id" />)}</Form.Item>
 
-					<Form.Item style={{ marginLeft: "15px" }}>
-						<Button onClick={this.method.clickSearch} icon="search" />
-						<Button onClick={this.showModal} icon="plus" />
-					</Form.Item>
-
-					<Modal
-					style={{ top: 20 }}
-					title=""
-					visible={this.state.visible}
-					confirmLoading={confirmLoading}
-					onOk={this.handleSubmit}
-					onCancel={this.handleCancel}
-					okText="Save"
-					cancelText="Cancel"
-					destroyOnClose={true} 
-				>
-
-					<Form labelCol={{ span: 7 }} wrapperCol={{ span: 10 }} onSubmit={this.handleSubmit}>
-
-						<Form.Item label="ID">
-							{getFieldDecorator('modal-id', {
-								rules: [{
-									required: true,
-									message: 'Check ID'
-								},
-								],
-							})(<Input />)}
+						<Form.Item className="search-buttons row">
+							<Button onClick={this.method.clickSearch} icon="search" />
+							{this.method.renderButton(
+								<div className="inline">
+									<Button onClick={this.method.clickAdd} icon="plus" />
+									<Button icon="delete" />
+								</div>
+							)}
 						</Form.Item>
-
-						<Form.Item label="Name">
-							{getFieldDecorator('modal-name', {
-								rules: [{ required: true, message: 'Check Name' }],
-							})(<Input />)}
-						</Form.Item>
-
-						<Form.Item label="Password" hasFeedback>
-							{getFieldDecorator('modal-password', {
-								rules: [
-									{
-										required: true,
-										message: 'Check Password',
-									},
-									{
-										validator: this.validateToNextPassword,
-									},
-								],
-							})(<Input.Password style={{ width: 200 }} />)}
-						</Form.Item>
-
-						<Form.Item label="Confrim Password" hasFeedback>
-							{getFieldDecorator('modal-confirm', {
-								rules: [
-									{
-										required: true,
-										message: 'Different Password',
-									},
-									{
-										validator: this.compareToFirstPassword,
-									},
-
-								],
-							})(<Input.Password onBlur={this.handleConfirmBlur} style={{ width: 200 }} />)}
-						</Form.Item>
-
-						<Form.Item label="Dept">
-							<Input />
-						</Form.Item>
-
-						<Form.Item label="Grade">
-							<Input />
-						</Form.Item>
-
-						<Form.Item label="Position">
-							<Input />
-						</Form.Item>
-
-						<Form.Item label="General Tel">
-
-							<Input />
-						</Form.Item>
-
-						<Form.Item label="Office Tel">
-
-							<Input />
-						</Form.Item>
-
-						<Form.Item label="Mobile">
-
-							<Input />
-						</Form.Item>
-
-						<Form.Item label="Auth Code" addonBefore={authCode}>
-							{getFieldDecorator('modal-authId', {
-								rules: [
-									{
-										required: true,
-										message: 'Check Auth Code'
-									}
-								],
-							})
-								(	<Select style={{ width: 200 }}>
-				<Option value="">USER ADMIN</Option>
-				<Option value="">USER VIEWER</Option>
-				<Option value="">SYSTEM ADMIN</Option>
-				<Option value="">SYSTEM VIEWER</Option>
-				<Option value="">INTERFACE ADMIN</Option>
-				<Option value="">INTERFACE VIEWER</Option>
-				<Option value="">USER</Option>
-			</Select>)}
-						</Form.Item>
-
-					</Form>
-				</Modal>
-
-				</div>
+					</div>
+				</Form>
 			</div>
 		)
 	}
@@ -233,6 +59,7 @@ class UserSearch extends React.Component {
 class UserList extends React.Component {
 	state = {
 		items: [],
+		onDbClick: undefined,
 	}
 
 	method = {
@@ -248,19 +75,42 @@ class UserList extends React.Component {
 			}
 			return obj.name
 		},
-		handleResize: (e, { size }) => {
-			this.setState(({ columns }) => {
-				const nextColumns = [...columns]
-				return { columns: nextColumns }
-			})
-		}
-	}
 
+		clickEdit: (id) => {
+			console.log('User id: ' + id)
+			this.props.edit(id)
+		},
+
+		clickDelete: (ids) => {
+			console.log('delete')
+		},
+
+		search: (param) => {
+			let $this = this
+			urmsc.ajax({
+				type: 'GET',
+				url: '/URM/' + this.props.path,
+				data: param,
+				success: function (list) {
+					$this.setState({ items: list })
+				},
+
+			})
+		},
+
+		renderButton: (render) => {
+			if (!this.props.onlySearch) {
+				return render
+			}
+			return undefined
+		},
+	}
 	render() {
 		return (
 
 			<div className="urm-list">
-				<Table dataSource={this.state.items} pagination={false} bordered size={"small"} scroll={{ y: 500 }} rowKey="id" className="table-striped">
+				<WrappedUserSearch {...this.props} search={this.method.search} />
+				<Table lassName="table-striped" dataSource={this.state.items} pagination={false} bordered size={"small"} scroll={{ y: 500 }} rowKey="id" className="table-striped">
 					<Table.Column title="ID" dataIndex="id" width="130px" />
 					<Table.Column title="Name" dataIndex="name" width="130px" />
 					<Table.Column title="Dept" dataIndex="dept" width="130px" />
@@ -270,6 +120,10 @@ class UserList extends React.Component {
 					<Table.Column title="Office Tel" dataIndex="officeTelNo" width="130px" />
 					<Table.Column title="Mobile" dataIndex="celNo" width="130px" />
 					<Table.Column title="Auth" dataIndex="authId" width="130px" />
+					{this.method.renderButton(
+						<Table.Column title="Operations" className="operations" width="100px" render={(val) =>
+							(<UserListButton edit={e => { this.method.clickEdit(val.id) }} delete={e => { this.method.clickDelete([val.id]) }} />)} />
+					)}
 				</Table>
 			</div>
 
@@ -278,7 +132,5 @@ class UserList extends React.Component {
 }
 
 const WrappedUserSearch = Form.create({ name: 'user_search' })(UserSearch)
-// const WrappedUserAdd = Form.create({ name: 'user_add' })(UserAdd)
 export default UserList
-export { WrappedUserSearch }
-// export { WrappedUserAdd }
+
