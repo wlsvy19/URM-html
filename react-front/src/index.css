@@ -17,6 +17,11 @@ code {
   display: none;
 }
 
+.center {
+  text-align: center;
+}
+
+
 /* flex */
 div.row {
   display: flex;
@@ -38,6 +43,10 @@ div.col-3 {
   flex: 3;
 }
 
+div.flex-right {
+  margin-left: auto;
+}
+
 /* custom antd */
 div.ant-table-body {
   margin: 0;
@@ -47,7 +56,7 @@ div.table-striped tr:nth-child(2n) > td {
   background-color: #fafafa;
 }
 
-.urm-panel .ant-table-small > .ant-table-content > .ant-table-scroll >
+div.urm-list .ant-table-small > .ant-table-content > .ant-table-scroll >
 .ant-table-body > table > .ant-table-tbody > tr > td {
   padding: 5px 8px;
 }
@@ -55,4 +64,8 @@ div.table-striped tr:nth-child(2n) > td {
 div.row div.ant-form-item {
   display: inline-flex;
   margin-bottom: 0;
+}
+
+span.ant-modal-close-x {
+  height: 38px;
 }

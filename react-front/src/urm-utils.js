@@ -39,8 +39,8 @@ export function ajax (props) {
       let paramStr = ''
       for (let key in param) {
         let value = param[key]
-        if (value !== undefined && value != null) {
-          paramStr += '&' + key + '=' + value
+        if (value !== undefined && value !== null) {
+          paramStr += '&' + key + '=' + encodeURIComponent(value)
         }
       }
       props.url = props.url + '?' + paramStr.substring(1)
