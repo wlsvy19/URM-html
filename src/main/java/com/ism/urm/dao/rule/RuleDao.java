@@ -19,9 +19,17 @@ public abstract class RuleDao<T extends RuleVo> extends BasicDao<T> {
     }
 
     public T get(Session session, String id) throws SQLException {
-        T rtn = getById(session, id);
-        setChild(session, rtn);
-        System.out.println("rtn: " + rtn);
+        T rtn = null;
+        try {
+           
+            setChild(session, rtn);
+         
+            rtn = getById(session, id);
+          
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return rtn;
     }
 

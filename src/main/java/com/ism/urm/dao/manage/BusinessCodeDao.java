@@ -28,4 +28,10 @@ public class BusinessCodeDao extends BasicDao<BusinessCode>{
       return (String) session.createSQLQuery("SELECT 'BIZ' || LPAD(BIZ_ID_SEQ.NEXTVAL,9,'0') AS bizId FROM DUAL")
                       .uniqueResult();
     }
+
+    @Override
+    public void delete(Session session, String id) throws Exception {
+        // TODO Auto-generated method stub
+        
+    }
 }
