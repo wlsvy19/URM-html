@@ -57,7 +57,7 @@ const RequestEditorForm = (props) => {
 
   let method = {
     renderOpts: (key) => {
-      return urmsc.getSubListByKey(props.codeList, 'kind', urmsc.CODEKEY[key])
+      return urmsc.getSubListByKey(props.codeList, 'kind', urmsc.CODEKEY[key]) //list, key, value
               .map((it) => <Select.Option key={it.code} value={it.code}>{it.name}</Select.Option>)
     },
 

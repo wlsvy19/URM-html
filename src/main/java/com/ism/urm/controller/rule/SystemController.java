@@ -25,6 +25,7 @@ public class SystemController {
 
     @GetMapping("/system")
     public List<AppSystem> search(@RequestParam Map<String, String> params) throws Exception {
+    	System.out.println("******************SystemController search()*************************");
         List<AppSystem> rtn = null;
         List<RelationOp> filter = new ArrayList<>();
         

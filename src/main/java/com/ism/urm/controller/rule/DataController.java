@@ -25,6 +25,8 @@ public class DataController {
 
     @GetMapping("/data")
     public List<Data> search(@RequestParam Map<String, String> params) throws Exception {
+    	System.out.println("************************DataController : search()************************");
+		
         List<Data> rtn = null;
         List<RelationOp> filter = new ArrayList<>();
         
@@ -56,6 +58,7 @@ public class DataController {
 
     @GetMapping("/data/{id}")
     public Data get(@PathVariable String id) throws Exception {
+    	System.out.println("DataController get()");
         Data rtn = null;
         try {
             rtn = service.get(id);
@@ -65,7 +68,6 @@ public class DataController {
         return rtn;
     }
     
-
     @PostMapping("/data")
     public Data save(@RequestBody Data data) throws Exception {
         Data rtn = null;

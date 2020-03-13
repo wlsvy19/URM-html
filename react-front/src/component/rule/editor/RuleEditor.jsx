@@ -53,6 +53,7 @@ class RequestEditor extends React.Component {
     },
     
     setItem: (form, item, customSetter) => {
+      console.log('this')
       if (item.id) {
         let fields = form.getFieldsValue()
         let formItem = {}

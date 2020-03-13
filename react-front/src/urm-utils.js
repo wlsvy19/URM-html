@@ -14,18 +14,18 @@ export const CODEKEY = {
   fileCrudType: '13',
 }
 
-export function ajax (props) {
+export function ajax(props) {
   let defaultProps = {
     method: 'GET',
     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
     async: true,
     dataType: 'json',
   }
-    
+
   if (props === undefined) {
     props = defaultProps
   } else {
-    if (props.method === undefined)  props.method = props.type ? props.type : defaultProps.method
+    if (props.method === undefined) props.method = props.type ? props.type : defaultProps.method
     if (props.contentType === undefined) props.contentType = defaultProps.contentType
     if (props.async === undefined) props.async = defaultProps.async
     if (props.dataType === undefined) props.dataType = defaultProps.dataType
@@ -34,7 +34,8 @@ export function ajax (props) {
   console.log(props.url, props.data)
   if (props.method === 'GET') {
     let param = props.data
-    if (typeof param === 'string') param = JSON.parse(props.data)
+    
+    if (typeof param === 'string') param = JSON.parse(props.data) 
     if (typeof param === 'object') {
       let paramStr = ''
       for (let key in param) {
@@ -49,15 +50,17 @@ export function ajax (props) {
       props.data = null
     }
   }
-  
+
   let xhr = new XMLHttpRequest()
   xhr.open(props.method, props.url, props.async)
-  xhr.onreadystatechange  = function () {
+  xhr.onreadystatechange = function () {
     if (this.readyState === 4) {
       let res = this.response
       if (this.status === 200) {
-        if (props.dataType === 'json') res = JSON.parse(this.response)
-        if (props.success) props.success(res)
+        if (props.dataType === 'json')
+          res = JSON.parse(this.response)
+        if (props.success)
+          props.success(res)
       } else {
         if (props.error) {
           props.error(res)
@@ -71,14 +74,14 @@ export function ajax (props) {
   }
 
   xhr.setRequestHeader('Content-Type', props.contentType);
-  xhr.send(props.data)
+  xhr.send(props.data) //
 }
 
-export function ajaxHandleError (statusText, error) {
+export function ajaxHandleError(statusText, error) {
   console.log('statusText [' + statusText + '] error [' + error + ']')
 }
 
-export function convertYN (obj) {
+export function convertYN(obj) {
   if (typeof obj === 'boolean') {
     return obj ? 'Y' : 'N'
   } else if (typeof obj === 'string') {
@@ -86,6 +89,7 @@ export function convertYN (obj) {
   }
 }
 
-export function getSubListByKey (list, key, val) {
+export function getSubListByKey(list, key, val) {
   return list.filter(item => item[key] === val);
+
 }

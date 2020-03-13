@@ -71,14 +71,18 @@ class RequestSearch extends RuleSearch {
       <div className="advanced-search-bar">
         <Form colon={false}>
           <div className="row">
+            
             <Form.Item label="Interface ID">{getFieldDecorator("interfaceId")(<Input size="small" className="search-id" />)}</Form.Item>
+           
             <Form.Item label="Type">
               {getFieldDecorator("interfaceType", {initialValue: ""})(<Select size={"small"} className="search-id">
                 <Select.Option value="">ALL</Select.Option>
                 {this.method.renderOpts("infType")}
               </Select>)}
             </Form.Item>
+
             <Form.Item label="Request ID">{getFieldDecorator("id")(<Input size="small"  className="search-id" />)}</Form.Item>
+           
             <Form.Item label="Request Name">{getFieldDecorator("name")(<Input size="small" className="search-name" />)}</Form.Item>
           </div>
           <div className="row">
@@ -111,6 +115,7 @@ class RequestSearch extends RuleSearch {
             <Form.Item label="ChangeDate">{getFieldDecorator("chgDate", {
               initialValue: [moment().subtract(1, 'y'), moment()]
             })(<RangePicker size="small" style={{width: "220px"}} />)}</Form.Item>
+
             <Form.Item className="search-buttons row">
               <Button onClick={this.method.clickSearch} icon="search" />
               {this.method.renderButton(
@@ -120,6 +125,7 @@ class RequestSearch extends RuleSearch {
                 </div>
               )}
             </Form.Item>
+
           </div>
         </Form>
 
@@ -218,6 +224,7 @@ class RequestList extends RuleList {
           <Table.Column title="Operations" className="operations" width="100px" render={(val) =>
             (<RuleListButton edit={e => { this.method.clickEdit(val.id) }} delete={e => { this.method.clickDelete([val.id]) }} />)} />
         </Table>
+        
         <Pagination defaultCurrent={paging.current} total={paging.total} className="urm-paging"
           showSizeChanger onShowSizeChange={(page, size) => { this.method.handlePageChange(page, size, form) }}
           pageSizeOptions={['30', '50', '100']} defaultPageSize={paging.size} onChange={(page, size) => { this.method.handlePageChange(page, size, form) }}/>

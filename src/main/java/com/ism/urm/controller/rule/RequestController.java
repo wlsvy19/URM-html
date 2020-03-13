@@ -30,6 +30,7 @@ public class RequestController {
     public PagingResult<Request> search(@RequestParam(value="page") int page,
             @RequestParam(value="size") int size,
             @RequestParam Map<String, String> params) throws Exception {
+    	System.out.println("******************RequestController search()*************************");
         PagingResult<Request> rtn = null;
         List<RelationOp> filter = new ArrayList<>();
         

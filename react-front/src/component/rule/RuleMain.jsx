@@ -24,6 +24,7 @@ class RuleMain extends React.Component {
     },
 
     handleEdit: (id) => {
+      console.log('path: '+this.state.path)
       if (id) {
         let $this = this
         urmsc.ajax({
@@ -31,14 +32,15 @@ class RuleMain extends React.Component {
           url: '/URM/' + this.state.path + '/' + id,
           success: function(obj) {
             let $editor = $this.refs.editor
-            console.log(obj)
+            console.log(obj) //
             $editor.setState({visible: true, item: obj})
           }
         })
       } else {
         this.refs.editor.setState({visible: true, item: {}})
       }
-    },
+    }, 
+
   }
 
   getCode = () => {
