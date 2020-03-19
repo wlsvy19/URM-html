@@ -15,68 +15,101 @@ import com.ism.urm.vo.RelationOp;
 import com.ism.urm.vo.manage.User;
 
 public class UserService {
-	private Logger logger = LoggerFactory.getLogger("debug");
-	private UserDao dao;
-	protected SessionFactory sessionFactory;
+    private Logger logger = LoggerFactory.getLogger("debug");
+    private UserDao userDao;
+    protected SessionFactory sessionFactory;
 
-	static List<User> userList = new ArrayList<User>();
+    static List<User> userList = new ArrayList<User>();
 
-	public UserService() {
-		dao = new UserDao();
-		sessionFactory = HiberUtill.getSessionFactory();
-	}
+    public UserService() {
+        userDao = new UserDao();
+        sessionFactory = HiberUtill.getSessionFactory();
+    }
+    
+    public boolean idCheck(String userId) throws Exception {
+        Session session = null;
+        boolean rtn = false;
+        int count = 0;
+        if (userId == null || userId.length() == 0)
+            logger.error("userId is null");
 
-	public List<User> search(List<RelationOp> filter) throws Exception {
-		Session session = null;
-		try {
-			session = sessionFactory.openSession();
-			session.beginTransaction();
-			List<User> rtn = dao.search(session, filter);
-			return rtn;
-		} catch (Exception e) {
-			 logger.error("Failed to User search()", e);
-			throw e;
-		} finally {
-			if (session != null)
-				session.close();
-		}
-	}
+        try {
+            session = sessionFactory.openSession();
+            session.beginTransaction();
 
-	public User get(String id) throws Exception {
-		Session session = null;
-		try {
-			session = sessionFactory.openSession();
-			session.beginTransaction();
-			User rtn = dao.get(session, id);
-			return rtn;
-		} catch (Exception e) {
-			logger.error("Failed to User get()", e);
-		} finally {
-			if (session != null)
-				session.close();
-		}
-		return null;
-	}
-	
-	public User save(User vo) throws Exception{
-		Session session = null;
-		Transaction tx =null;
-		
-		try {
-			session = sessionFactory.openSession();
-			tx = session.beginTransaction();
-			
-			dao.save(session, vo);
-			tx.commit();
-			
-			User rtn = dao.get(session, vo.getId());
-			return rtn;	
-		}catch(Exception e) {
-			logger.error("Failed to User save()", e);
-		}finally {
-			if(session != null) session.close();
-		}
-		return null;
-	}
+            count = userDao.idCheck(session, userId);
 
+            if (count != 0) {
+                rtn = true;
+            } else
+                rtn = false;
+
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (session != null)
+                session.close();
+        }
+        System.out.println("rtn: " + rtn);
+        return rtn;
+
+    }
+
+    public List<User> search(List<RelationOp> filter) throws Exception {
+        List<User> rtn = null;
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            rtn = userDao.search(session, filter);
+
+        } catch (Exception e) {
+            logger.error("Failed to User search()", e);
+            throw e;
+        } finally {
+            if (session != null)
+                session.close();
+        }
+        return rtn;
+    }
+
+    public User get(String userId) throws Exception {
+        User rtn = null;
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            rtn = userDao.getUserById(session, userId);
+
+        } catch (Exception e) {
+            logger.error("Failed to User get()", e);
+            throw e;
+        } finally {
+            if (session != null)
+                session.close();
+        }
+        return rtn;
+    }
+
+    public User save(User vo) throws Exception {
+        User rtn = null;
+        Session session = null;
+        Transaction tx = null;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+            userDao.save(session, vo);
+            tx.commit();
+            rtn = userDao.get(session, vo.getId());
+        } catch (Exception e) {
+            logger.error("Failed to User save()", e);
+            throw e;
+        } finally {
+            if (session != null)
+                session.close();
+        }
+        return rtn;
+    }
+
+   
 }

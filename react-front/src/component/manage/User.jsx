@@ -24,7 +24,7 @@ class User extends React.Component {
       if (AUTH.length === 0) {
         urmsc.ajax({
           type: 'GET',
-          url:  '/URM/code/user',
+          url:  '/URM/code/auth',
           success: function(res) {
             res.forEach((it) => {
               AUTH.push(it)
@@ -35,7 +35,8 @@ class User extends React.Component {
     },
 
     handleEdit: (id) => {
-      console.log('path: '+this.state.path)
+      //edit
+      console.log('path: ' + this.state.path)
       if (id) {
         let $this = this
         urmsc.ajax({

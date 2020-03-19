@@ -1,5 +1,5 @@
 import React from 'react'
-import {Table, Button, Input, Form} from 'antd'
+import { Table, Button, Input, Form } from 'antd'
 import UserListButton from './UserListButton'
 import * as urmsc from '../../../urm-utils'
 
@@ -86,6 +86,7 @@ class UserList extends React.Component {
     },
 
     search: (param) => {
+      console.log('param:', param)
       let $this = this
       urmsc.ajax({
         type: 'GET',
@@ -120,11 +121,16 @@ class UserList extends React.Component {
           <Table.Column title="Office Tel" dataIndex="officeTelNo" width="130px" />
           <Table.Column title="Mobile" dataIndex="celNo" width="130px" />
           <Table.Column title="Auth" dataIndex="authId" width="130px" />
+
           {this.method.renderButton(
             <Table.Column title="Operations" className="operations" width="100px" render={(val) =>
-              (<UserListButton edit={e => { this.method.clickEdit(val.id) }} delete={e => { this.method.clickDelete([val.id]) }} />)} />
+              (<div>
+                <Button onClick={e => this.method.clickEdit(val.id)} icon="edit" />
+                <Button onClick={e => this.method.clickDelete(val.id)} icon="delete" />
+              </div>)} />
           )}
         </Table>
+
       </div>
 
     );

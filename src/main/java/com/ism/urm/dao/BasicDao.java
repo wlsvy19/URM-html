@@ -29,11 +29,6 @@ public abstract class BasicDao<T> {
         return rtn;
     }
 
-    public User getUserById(Session session, String id) throws Exception {
-        User rtn = (User) session.get("USER", id);
-        return rtn;
-    }
-
     public List<T> list(Session session) throws Exception {
         return search(session, null);
     }
