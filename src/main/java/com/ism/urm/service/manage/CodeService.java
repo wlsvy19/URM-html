@@ -1,8 +1,5 @@
 package com.ism.urm.service.manage;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -157,7 +154,7 @@ public class CodeService {
 //        }
 //    }
 
-    public List<BusinessCode> modifyBusinessCode(List<BusinessCode> codes) throws Exception {
+    public List<BusinessCode> modifyBusinessCode(BusinessCode code) throws Exception {
         Session session = null;
         Transaction tx = null;
         try {
@@ -165,25 +162,21 @@ public class CodeService {
             tx = session.beginTransaction();
             
             Date now = new Date();
-            for (BusinessCode code : codes) {
-                code.setChgDate(now);
-                code.setChgId(SessionUtil.getUserID());
-                
-                if(code.getId() == null || code.getId().length() == 0) {
-                    logger.info("create BusinessCode ID");
-                    String newId = businessCodeDao.createId(session);
-                    if (newId == null) {
-                        throw new Exception("failed to create ID");
-                    }
-                    code.setId(newId);
-                    code.setRegDate(now);
-                    code.setRegId(SessionUtil.getUserID());
+            code.setChgDate(now);
+            code.setChgId(SessionUtil.getUserID());
+            
+            if(code.getId() == null || code.getId().length() == 0) {
+                logger.info("create BusinessCode ID");
+                String newId = businessCodeDao.createId(session);
+                if (newId == null) {
+                    throw new Exception("failed to create ID");
                 }
-                
-                businessCodeDao.save(session, code);
-                session.flush();
-                session.clear();
+                code.setId(newId);
+                code.setRegDate(now);
+                code.setRegId(SessionUtil.getUserID());
             }
+            
+            businessCodeDao.save(session, code);
             
             businessCodeList = businessCodeDao.list(session);
             tx.commit();
@@ -586,4 +579,5 @@ public class CodeService {
     public String getNoti() {
         return noti;
     }
+
 }

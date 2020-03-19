@@ -30,7 +30,6 @@ public class RequestController {
     public PagingResult<Request> search(@RequestParam(value="page") int page,
             @RequestParam(value="size") int size,
             @RequestParam Map<String, String> params) throws Exception {
-    	System.out.println("******************RequestController search()*************************");
         PagingResult<Request> rtn = null;
         List<RelationOp> filter = new ArrayList<>();
         
@@ -59,9 +58,33 @@ public class RequestController {
         }
         
         try {
-            rtn = service.search(page, size, filter, true);
+            rtn = service.search(page, size, filter);
         } catch (Exception e) {
             throw new Exception("Failed to Search", e);
+        }
+        return rtn;
+    }
+
+    @GetMapping("/request/list")
+    public List<Request> search(@RequestParam(value="loginUser") String userId) throws Exception {
+        List<Request> rtn = null;
+        List<RelationOp> filter = new ArrayList<>();
+        
+        if (userId != null && userId.trim().length() > 0) {
+            RelationOp op1 = RelationOp.get("regId", OpType.EQ, userId, ValueType.STRING);
+            filter.add(op1);
+            RelationOp op2 = RelationOp.get("sendAdminId", OpType.EQ, userId, ValueType.STRING);
+            filter.add(op2);
+            RelationOp op3 = RelationOp.get("rcvAdminId", OpType.EQ, userId, ValueType.STRING);
+            filter.add(op3);
+        } else {
+            throw new Exception("invalid login user!!!");
+        }
+        
+        try {
+            rtn = service.search(filter);
+        } catch (Exception e) {
+            throw new Exception("Failed to get request list.", e);
         }
         return rtn;
     }
@@ -77,8 +100,30 @@ public class RequestController {
         return rtn;
     }
 
-    @GetMapping("/request/{id}/history")
-    public List<RequestHistory> getHistory(@PathVariable String id) throws Exception {
+    @PostMapping("/request")
+    public Request save(@RequestBody Request request) throws Exception {
+        Request rtn = null;
+        try {
+            rtn = service.save(request);
+        } catch (Exception e) {
+            throw e;
+        }
+        return rtn;
+    }
+
+    @PostMapping("/request/delete")
+    public int delete(@RequestBody List<String> ids) throws Exception {
+        int rtn = 0;
+        try {
+            rtn = service.delete(ids);
+        } catch (Exception e) {
+            throw e;
+        }
+        return rtn;
+    }
+
+    @GetMapping("/request/history")
+    public List<RequestHistory> getHistory(@RequestParam String id) throws Exception {
         List<RequestHistory> rtn = null;
         try {
             rtn = service.getHistroy(id);
@@ -88,11 +133,11 @@ public class RequestController {
         return rtn;
     }
 
-    @PostMapping("/request")
-    public Request save(@RequestBody Request request) throws Exception {
-        Request rtn = null;
+    @PostMapping("/request/transfer")
+    public int changeAdmin(@RequestBody List<Request> requests) throws Exception {
+        int rtn = 0;
         try {
-            rtn = service.save(request);
+            rtn = service.changeAdmin(requests);
         } catch (Exception e) {
             throw e;
         }

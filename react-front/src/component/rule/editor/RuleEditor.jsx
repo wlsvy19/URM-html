@@ -1,9 +1,7 @@
 import React from 'react'
-import * as urmsc from '../../../urm-utils'
 
-class RequestEditor extends React.Component {
+export default class RequestEditor extends React.Component {
   state = {
-    isNew: false,
     visible: false,
     item: {},
   }
@@ -22,9 +20,10 @@ class RequestEditor extends React.Component {
     
     validator: (data) => {
       if (!data.name || data.name.trim().length === 0) {
+        console.log('please input name.')
         return false
       }
-      if (this.customMethod && this.customMethod.validator(data)) {
+      if (this.customMethod && !this.customMethod.validator(data)) {
         return false
       }
       return true
@@ -32,28 +31,19 @@ class RequestEditor extends React.Component {
   }
   
   childMethod = {
-    save: (form, children, customSetter) => {
-      let data = form.getFieldsValue()
-      let saveItem = {}
-
-      if (customSetter) customSetter(saveItem, data, children)
-      if (!this.method.validator(data)) {
+    save: (saveItem) => {
+      console.log(saveItem)
+      if (!this.method.validator(saveItem)) {
         return false
       }
       
-      urmsc.ajax({
-        type: 'POST',
-        url: '/URM/' + this.props.path,
-        data: JSON.stringify(data),
-        contentType: 'application/json',
-        success: function(res) {
-          console.log(this.response)
-        }
-      })
+      //console.log('save')
+      //return false
+      
+      this.props.save(saveItem)
     },
     
     setItem: (form, item, customSetter) => {
-      console.log('this')
       if (item.id) {
         let fields = form.getFieldsValue()
         let formItem = {}
@@ -66,7 +56,25 @@ class RequestEditor extends React.Component {
         form.resetFields()
       }
     },
+    
+    makeRuleObj: (form, item) => {
+      let obj = {}
+      let data = form.getFieldsValue()
+      
+      let keys = Object.keys(item)
+      let dataKeys = Object.keys(data)
+      if (dataKeys > keys) {
+        dataKeys.forEach((it) => {
+          if (keys.indexOf(it) === -1) keys.push(it)
+        })
+      }
+      
+      keys.forEach((key) => {
+        if (item[key] === null || typeof item[key] !== 'object') {
+          obj[key] = (key in data) ? data[key] : item[key]
+        }
+      })
+      return obj
+    }
   }
 }
-
-export default RequestEditor

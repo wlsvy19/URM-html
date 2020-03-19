@@ -26,18 +26,12 @@ public class CommonCodeDao extends BasicDao<CommonCode> {
 
     @Override
     public CommonCode get(Session session, String id) throws SQLException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public void delete(Session session, String id) throws Exception {
-        // TODO Auto-generated method stub
-        
+    public void delete(Session session, String id) throws SQLException {
+        // do nothing
     }
-    
-//    public List<AuthCode> listAuthCode(Session session) throws SQLException {
-//        return getSqlMapClientTemplate().queryForList("AuthCode.list");
-//    }
 
 }

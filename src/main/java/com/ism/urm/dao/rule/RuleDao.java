@@ -1,11 +1,11 @@
 package com.ism.urm.dao.rule;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 
 import com.ism.urm.dao.BasicDao;
@@ -16,20 +16,12 @@ import com.ism.urm.vo.rule.RuleVo;
 public abstract class RuleDao<T extends RuleVo> extends BasicDao<T> {
 
     public RuleDao() {
+       // TODO Auto-generated constructor stub
     }
 
-    public T get(Session session, String id) throws SQLException {
-        T rtn = null;
-        try {
-           
-            setChild(session, rtn);
-         
-            rtn = getById(session, id);
-          
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    public T get(Session session, String id) throws Exception {
+        T rtn = getById(session, id);
+        setChild(session, rtn);
         return rtn;
     }
 
@@ -70,6 +62,8 @@ public abstract class RuleDao<T extends RuleVo> extends BasicDao<T> {
             crit.setFirstResult((page - 1) * size);
             crit.setMaxResults(size);
             
+            crit.addOrder(Order.desc("chgDate"));
+            
             List<T> list = crit.list();
             if (list == null) {
                 list = new ArrayList<>();
@@ -81,7 +75,15 @@ public abstract class RuleDao<T extends RuleVo> extends BasicDao<T> {
         return ret;
     }
 
-    public abstract String createId(Session session) throws SQLException;
-    
-    protected abstract void setChild(Session session, T vo) throws SQLException;
+    @Override
+    public void save(Session session, T vo) throws Exception {
+        beforeSave(session, vo);
+        session.saveOrUpdate(entityName, vo);
+        saveChild(session, vo);
+    }
+
+    public abstract String createId(Session session) throws Exception;
+    protected abstract void setChild(Session session, T vo) throws Exception;
+    protected abstract void beforeSave(Session session, T vo) throws Exception;
+    protected abstract void saveChild(Session session, T vo) throws Exception;
 }

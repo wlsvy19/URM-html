@@ -30,8 +30,8 @@ public class BusinessCodeDao extends BasicDao<BusinessCode>{
     }
 
     @Override
-    public void delete(Session session, String id) throws Exception {
-        // TODO Auto-generated method stub
-        
+    public void delete(Session session, String id) throws SQLException {
+        session.createQuery("delete from " + entityName + " a where a.id = :id")
+               .setString("id", id).executeUpdate();
     }
 }
