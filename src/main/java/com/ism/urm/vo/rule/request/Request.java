@@ -22,7 +22,6 @@ public class Request extends RuleVo {
     String sendSystemId;
     String sendSystemType;
     String sendPeriod;
-//    String sndPeriodNm;
     String sendServerName;
     String sendDbInfo;
     String sendAdminId;
@@ -41,11 +40,11 @@ public class Request extends RuleVo {
 
     boolean dataMapYN;
     String reqDataMappingId;
-    String reqSendDataId;
-    String reqRcvDataId;
     String resDataMappingId;
-    String resSendDataId;
-    String resRcvDataId;
+//    String reqSendDataId;
+//    String reqRcvDataId;
+//    String resSendDataId;
+//    String resRcvDataId;
 
     String sql;
     String sqlPlain;
@@ -55,7 +54,7 @@ public class Request extends RuleVo {
 
     String dcnt;
     String openYMD;
-    String delYN;
+    boolean delYN;
 
     AppSystem sendSystem;
     AppSystem rcvSystem;
@@ -232,6 +231,13 @@ public class Request extends RuleVo {
     public void setReqDataMappingId(String reqDataMappingId) {
         this.reqDataMappingId = reqDataMappingId;
     }
+    public String getResDataMappingId() {
+        return resDataMappingId;
+    }
+    public void setResDataMappingId(String resDataMappingId) {
+        this.resDataMappingId = resDataMappingId;
+    }
+    /* not use
     public String getReqSendDataId() {
         return reqSendDataId;
     }
@@ -244,12 +250,6 @@ public class Request extends RuleVo {
     public void setReqRcvDataId(String reqRcvDataId) {
         this.reqRcvDataId = reqRcvDataId;
     }
-    public String getResDataMappingId() {
-        return resDataMappingId;
-    }
-    public void setResDataMappingId(String resDataMappingId) {
-        this.resDataMappingId = resDataMappingId;
-    }
     public String getResSendDataId() {
         return resSendDataId;
     }
@@ -261,7 +261,7 @@ public class Request extends RuleVo {
     }
     public void setResRcvDataId(String resRcvDataId) {
         this.resRcvDataId = resRcvDataId;
-    }
+    } */
     public String getSql() {
         return sql;
     }
@@ -304,10 +304,10 @@ public class Request extends RuleVo {
     public void setOpenYMD(String openYMD) {
         this.openYMD = openYMD;
     }
-    public String getDelYN() {
+    public boolean getDelYN() {
         return delYN;
     }
-    public void setDelYN(String delYN) {
+    public void setDelYN(boolean delYN) {
         this.delYN = delYN;
     }
     public AppSystem getSendSystem() {

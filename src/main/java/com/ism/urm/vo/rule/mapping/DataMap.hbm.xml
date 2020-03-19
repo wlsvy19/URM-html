@@ -15,22 +15,5 @@
         <property name="regDate" type="timestamp" column="REG_DATE" />
         <property name="chgId" type="string" column="CHG_ID" />
         <property name="chgDate" type="timestamp" column="CHG_DATE" />
-        
-        <list name="mapLines" table="TB_DAT_MAP_LINE" lazy="false">
-            <key column="MAP_ID" />
-            <list-index column="LINE_SEQ"/>
-            <composite-element class="com.ism.urm.vo.rule.mapping.DataMapLine">
-                <property name="sourceFieldId" type="string" column="SRC_FIELD_ID" />
-                <property name="targetFieldId"   type="string" column="TGT_FIELD_ID" />
-            </composite-element>
-        </list>
-        <list name="mapValues" table="TB_DAT_MAP_VAL" lazy="false">
-            <key column="MAP_ID" />
-            <list-index column="VAL_SEQ"/>
-            <composite-element class="com.ism.urm.vo.rule.mapping.DataMapValue">
-                <property name="fieldId" type="string" column="FIELD_ID" />
-                <property name="defaultValue"   type="string" column="DEFAULT_VAL" />
-            </composite-element>
-        </list>
     </class>
 </hibernate-mapping>

@@ -7,7 +7,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 
 import com.ism.urm.vo.RelationOp;
-import com.ism.urm.vo.manage.User;
 
 public abstract class BasicDao<T> {
 
@@ -34,7 +33,7 @@ public abstract class BasicDao<T> {
     }
 
     public List<T> search(Session session, List<RelationOp> filter) throws Exception {
-        Criteria crit = session.createCriteria(entityClass);
+        Criteria crit = session.createCriteria(entityName);
 
         if (filter != null) {
             for (RelationOp op : filter) {

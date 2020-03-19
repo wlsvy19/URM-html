@@ -5,14 +5,12 @@ import { Form, Input, Select } from 'antd'
 import RuleList, { RuleSearch } from './RuleList'
 import * as urmsc from '../../../urm-utils'
 
-const KINDS = urmsc.CODEKEY
-
 class SystemSearch extends RuleSearch {
   method = {
     ...this.method,
 
     renderOpts: (key) => {
-      return urmsc.getSubListByKey(this.props.codeList, 'kind', KINDS[key])
+      return urmsc.getSubListByKey(this.props.codeList, 'kind', urmsc.CODEKEY[key])
               .map((it) => <Select.Option key={it.code} value={it.code}>{it.name}</Select.Option>)
     },
   }
@@ -40,10 +38,10 @@ class SystemSearch extends RuleSearch {
               </Select>)}
             </Form.Item>
             <Form.Item className="search-buttons">
-              <Button onClick={this.method.clickSearch} icon="search" />
+              <Button icon="search" onClick={this.method.clickSearch} />
               {this.method.renderButton(
                 <div className="inline">
-                  <Button onClick={this.method.clickAdd} icon="plus" />
+                  <Button icon="plus" onClick={this.method.clickAdd} />
                 </div>
               )}
             </Form.Item>
@@ -62,24 +60,19 @@ class SystemList extends RuleList {
         <Table className="table-striped"
           dataSource={this.state.items} pagination={false} bordered
           size={"small"} scroll={{ y: 500 }} rowKey="id"
-          onRow={(record, index) => {
-            return {
-              onDoubleClick: e => { if (this.state.onDbClick) this.state.onDbClick(record) }
-            }
-          }
-        }>
+          onRow={this.onRow}>
           <Table.Column title="ID" dataIndex="id" width="130px"/>
           <Table.Column title="Name" dataIndex="name" width="180px"/>
-          <Table.Column title="Type" dataIndex="type" render={(val) => ( this.method.getTypeStr(KINDS.sysType, val) )}/>
-          <Table.Column title="DevType" dataIndex="devType" render={(val) =>  ( this.method.getTypeStr(KINDS.devType, val) )}/>
+          <Table.Column title="Type" dataIndex="type" render={(val) => ( this.method.getTypeStr('sysType', val) )}/>
+          <Table.Column title="DevType" dataIndex="devType" render={(val) =>  ( this.method.getTypeStr('devType', val) )}/>
           <Table.Column title="Host" dataIndex="hostId" width="120px"/>
           <Table.Column title="IP" dataIndex="ip"/>
           <Table.Column title="port" dataIndex="port"/>
-          <Table.Column title="DBType" dataIndex="dbType" render={(val) =>  ( this.method.getTypeStr(KINDS.dbType, val) )}/>
+          <Table.Column title="DBType" dataIndex="dbType" render={(val) =>  ( this.method.getTypeStr('dbType', val) )}/>
           <Table.Column title="DBName" dataIndex="dbName"/>
           {this.method.renderButton(
             <Table.Column title="Operations" className="operations" width="90px" render={(val) => 
-              (<Button onClick={e => { this.method.clickEdit(val.id) }} icon="edit" />)} />
+              (<Button icon="edit" onClick={e => { this.method.clickEdit(val.id) }} />)} />
           )}
         </Table>
       </div>

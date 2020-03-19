@@ -13,8 +13,8 @@ public class AppSystemDao extends RuleDao<AppSystem> {
         entityName = "APPSYSTEM";
     }
 
-    public void delete(Session session, String key) throws SQLException {
-        //session.delete(key, new Request());
+    public void delete(Session session, String id) throws SQLException {
+        // TODO Auto-generated method stub
     }
 
     @Override
@@ -31,6 +31,16 @@ public class AppSystemDao extends RuleDao<AppSystem> {
 
     @Override
     protected void setChild(Session session, AppSystem vo) throws SQLException {
+        // do nothing
+    }
+
+    @Override
+    protected void beforeSave(Session session, AppSystem vo) throws SQLException {
+        // do nothing
+    }
+
+    @Override
+    protected void saveChild(Session session, AppSystem vo) throws SQLException {
         // do nothing
     }
 

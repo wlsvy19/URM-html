@@ -6,14 +6,19 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
+import com.ism.urm.dao.manage.BusinessCodeDao;
 import com.ism.urm.dao.rule.AppSystemDao;
 import com.ism.urm.dao.rule.RequestDao;
 import com.ism.urm.vo.PagingResult;
 import com.ism.urm.vo.RelationOp;
+import com.ism.urm.vo.RelationOp.OpType;
+import com.ism.urm.vo.RelationOp.ValueType;
 import com.ism.urm.vo.rule.request.Request;
 import com.ism.urm.vo.rule.request.RequestHistory;
 
@@ -21,56 +26,130 @@ import com.ism.urm.vo.rule.request.RequestHistory;
 public class RequestService extends RuleService<Request> {
 
     private static int _seq = 0;
-    
     private static Object _lock = new Object();
-    
+
+    private AppSystemDao sysDao;
+
     public RequestService() {
         super();
         dao = new RequestDao();
+        sysDao = new AppSystemDao();
     }
 
-    public PagingResult<Request> search(int page, int size, List<RelationOp> filter, boolean includeChild) throws Exception {
+    public PagingResult<Request> search(int page, int size, List<RelationOp> filter) throws Exception {
         PagingResult<Request> rtn = null;
         Session session = null;
         try {
             session = sessionFactory.openSession();
             session.beginTransaction();
-            rtn = dao.searchPage(session, page, size, filter);
-           
-            if (includeChild) {
-                AppSystemDao sysDao = new AppSystemDao();
-                session = sessionFactory.openSession();
-                session.beginTransaction();
-                if (rtn.getList() != null) {
-                    for (Request r : rtn.getList()) {
-                        r.setSendSystem(sysDao.get(session, r.getSendSystemId()));
-                        r.setRcvSystem(sysDao.get(session, r.getRcvSystemId()));
-                    }
-                }
-                
+            // 삭제 안된 목록만 조회
+            if(filter != null) {
+                filter.add(RelationOp.get("delYN", OpType.EQ, false, ValueType.BOOLEAN));
             }
+            rtn = dao.searchPage(session, page, size, filter);
+            
+            // set child
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            if (rtn.getList() != null) {
+                for (Request r : rtn.getList()) {
+                    r.setSendSystem(sysDao.get(session, r.getSendSystemId()));
+                    r.setRcvSystem(sysDao.get(session, r.getRcvSystemId()));
+                }
+            }
+            
         } catch (Exception e) {
             logger.error("Failed to search Request. ", e);
             throw e;
         } finally {
-            if (session != null) session.close();
+            if (session != null) try { session.close(); } catch (Exception ignore) { }
+        }
+        return rtn;
+    }
+
+    public List<Request> listByManager(String userId) throws Exception {
+        List<Request> rtn = null;
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            
+            rtn = ((RequestDao) dao).listByManager(session, userId);
+            
+            // set child
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            if (rtn != null) {
+                for (Request r : rtn) {
+                    r.setSendSystem(sysDao.get(session, r.getSendSystemId()));
+                    r.setRcvSystem(sysDao.get(session, r.getRcvSystemId()));
+                }
+            }
+            
+        } catch (Exception e) {
+            logger.error("Failed to search Request. ", e);
+            throw e;
+        } finally {
+            if (session != null) try { session.close(); } catch (Exception ignore) { }
         }
         return rtn;
     }
 
     public List<RequestHistory> getHistroy(String reqId) throws Exception {
+        List<RequestHistory> rtn = null;
         Session session = null;
         try {
             session = sessionFactory.openSession();
             session.beginTransaction();
-            RequestDao dao = (RequestDao) this.dao;
-            return dao.getHistory(session, reqId);
+            
+            rtn = ((RequestDao) dao).getHistory(session, reqId);
+            
+            BusinessCodeDao bizDao = new BusinessCodeDao();
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            if (rtn != null) {
+                for (Request r : rtn) {
+                    r.setSendSystem(sysDao.get(session, r.getSendSystemId()));
+                    r.setRcvSystem(sysDao.get(session, r.getRcvSystemId()));
+                    
+                    r.setSendJobCode(bizDao.get(session, r.getSendJobCodeId()));
+                    r.setRcvJobCode(bizDao.get(session, r.getRcvJobCodeId()));
+                }
+            }
+            
         } catch (Exception e) {
             logger.error("Failed to get history. " + reqId, e);
             throw e;
         } finally {
-            if (session != null) session.close();
+            if (session != null) try { session.close(); } catch (Exception ignore) { }
         }
+        return rtn;
+    }
+
+    public int changeAdmin(List<Request> requests) throws Exception {
+        int count = 0;
+        Session session = null;
+        Transaction tx = null;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+
+            Date now = new Date();
+            for (Request r : requests) {
+                r.setChgDate(now);
+                dao.save(session, r);
+                count++;
+            }
+            
+            tx.commit();
+        } catch (Exception e) {
+            logger.error("Failed to change Admin", e);
+            if (tx != null) try { tx.rollback(); } catch (Exception ignore) { }
+            throw e;
+        } finally {
+            if (session != null) try { session.close(); } catch (Exception ignore) { }
+        }
+        return count;
     }
 
 //    public List<RequestExcel> getRequestList_Excel(Map params) throws Exception {
@@ -136,277 +215,7 @@ public class RequestService extends RuleService<Request> {
         
         return upFileName;
     }
-    
 
-    
-//    public byte[] makeRequestExcel(Map params) throws Exception {
-//        debug.info("RequestService.getRequestList() call.");
-//        
-//        if(params == null ) throw new NotFoundRequestException("Exception:Argment params is null");
-//        
-//        try {
-//            List<RequestExcel> list = requestDao.listExcel(params);
-//            
-//            String fileName  = "request_list_"+ Accessory.getFormatDate("yyyyMMdd_HHmmss") + params.get("loginUserId") + ".xls";
-//            File excelFile = new File(System.getProperty("urm.file.repository"), fileName);
-//            WritableWorkbook    workbook    = Workbook.createWorkbook(excelFile);
-//            WritableSheet        sheet        = workbook.createSheet("Interface List", 0);
-//            
-//            WritableCellFormat headerFormat    = new WritableCellFormat();
-//            WritableCellFormat dataFormat    = new WritableCellFormat();
-//
-//
-//            headerFormat.setAlignment(Alignment.CENTRE); 
-//            headerFormat.setVerticalAlignment(VerticalAlignment.CENTRE);
-//            headerFormat.setBorder(Border.ALL, BorderLineStyle.THIN);
-//            headerFormat.setBackground(Colour.GREY_25_PERCENT);
-//            
-//            dataFormat.setAlignment(Alignment.LEFT); 
-//            dataFormat.setVerticalAlignment(VerticalAlignment.CENTRE);
-//            dataFormat.setBorder(Border.ALL, BorderLineStyle.THIN);
-//            
-//            int x=0;
-//            sheet.setColumnView(x, 18);
-//            sheet.addCell(new Label(x, 0, "�Ϸù�ȣ", headerFormat));
-//            sheet.mergeCells(x, 0, x, 1);
-//            x++;
-//
-//            sheet.setColumnView(x, 22);
-//            sheet.addCell(new Label(x, 0, "��Ǹ�",   headerFormat));
-//            sheet.mergeCells(x, 0, x, 1);
-//            x++;
-//            
-//            sheet.setColumnView(x, 16);
-//            sheet.addCell(new Label(x, 0, "��������", headerFormat));
-//            sheet.mergeCells(x, 0, x, 1);
-//            x++;
-//            
-//            sheet.setColumnView(x, 16);
-//            sheet.addCell(new Label(x, 0, "�۽ž����ڵ�", headerFormat));
-//            sheet.mergeCells(x, 0, x, 1);
-//            x++;
-//            
-//            sheet.setColumnView(x, 16);
-//            sheet.addCell(new Label(x, 0, "�۽ž�����", headerFormat));
-//            sheet.mergeCells(x, 0, x, 1);
-//            x++;
-//            
-//            sheet.setColumnView(x, 16);
-//            sheet.addCell(new Label(x, 0, "���ž����ڵ�", headerFormat));
-//            sheet.mergeCells(x, 0, x, 1);
-//            x++;
-//
-//            sheet.setColumnView(x, 16);
-//            sheet.addCell(new Label(x, 0, "���ž�����", headerFormat));
-//            sheet.mergeCells(x, 0, x, 1);
-//            x++;
-//
-//            
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 0, "�������",       headerFormat));
-//            sheet.mergeCells(x, 0, x, 1);
-//            x++;
-//            
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 0, "�����û����",    headerFormat));
-//            sheet.mergeCells(x, 0, x, 1);
-//            x++;
-//            
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 0, "��������",    headerFormat));
-//            sheet.mergeCells(x, 0, x, 1);
-//            x++;
-//            
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 0, "��������",    headerFormat));
-//            sheet.mergeCells(x, 0, x, 1);
-//            x++;
-//            
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 0, "������",    headerFormat));
-//            sheet.mergeCells(x, 0, x, 1);
-//            x++;
-//            
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 0, "2PC����",    headerFormat));
-//            sheet.mergeCells(x, 0, x, 1);
-//            x++;
-//                        
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 0, "INTERFACE ID",    headerFormat));
-//            sheet.mergeCells(x, 0, x, 1);
-//            x++;
-//
-//            sheet.addCell(new Label(x, 0, "�۽� ��������",   headerFormat));
-//            sheet.mergeCells(x, 0, x+2, 0);
-//            
-//            sheet.setColumnView(x, 10);
-//            sheet.addCell(new Label(x, 1, "�۽� ���",        headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 10);
-//            sheet.addCell(new Label( x, 1, "�۽� �ý���",        headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 10);
-//            sheet.addCell(new Label(x, 1, "�۽ż���",    headerFormat));
-//            x++;
-//
-//
-//            sheet.addCell(new Label(x, 0, "���� ��������",   headerFormat));
-//            sheet.mergeCells(x, 0, x+2, 0);
-//            sheet.setColumnView(x, 10);
-//            sheet.addCell(new Label(x, 1, "���� ���",        headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 10);
-//            sheet.addCell(new Label(x, 1, "���� �ý���",        headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 14);
-//            sheet.addCell(new Label(x, 1, "���ż���",    headerFormat));            
-//            x++;
-//            
-//            
-//            sheet.addCell(new Label(x, 0, "��� ����� ����",        headerFormat));
-//            sheet.mergeCells(x, 0, x+6, 0);
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "������ȣ/ID",    headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "����",            headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "�̸�",            headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "�μ�",            headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "�繫��",    headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "������ȭ��ȣ",    headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "�ڵ��� ��ȣ",        headerFormat));
-//            x++;
-//            
-//            sheet.addCell(new Label(x, 0, "�۽� ����� ����",        headerFormat));
-//            sheet.mergeCells(x, 0, x+6, 0);
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "������ȣ/ID",    headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "����",            headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "�̸�",            headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "�μ�",            headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "�繫��",    headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "������ȭ��ȣ",    headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "�ڵ��� ��ȣ",        headerFormat));
-//            x++;
-//            
-//            sheet.addCell(new Label(x, 0, "���� ����� ����",        headerFormat));
-//            sheet.mergeCells(x, 0, x+6, 0);
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "������ȣ/ID",    headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "����",            headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "�̸�",            headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "�μ�",            headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "�繫��",    headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "������ȭ��ȣ",    headerFormat));
-//            x++;
-//            sheet.setColumnView(x, 12);
-//            sheet.addCell(new Label(x, 1, "�ڵ��� ��ȣ",        headerFormat));
-//            x++;
-//            
-//
-//
-//            
-//            int i = 2;
-//            for(RequestExcel data : list) {
-//                x=0;
-//                sheet.addCell(new Label(x++, i, data.getReqId(),        dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getReqNm(),        dataFormat));
-//                
-//                sheet.addCell(new Label(x++, i, data.getJobType(),        dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getSndJobCode(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getSndJobCodeNm(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getRcvJobCode(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getRcvJobCodeNm(),    dataFormat));
-//                
-//                sheet.addCell(new Label(x++, i, data.getPrcStatNm(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getChgStatNm(),    dataFormat));
-//                
-//                sheet.addCell(new Label(x++, i, data.getIfTypeNm(),        dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getTrTypeNm(),        dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getSyncTypeNm(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getTpcYn(),        dataFormat));
-//                
-//                sheet.addCell(new Label(x++, i, data.getIfId(),            dataFormat));
-//                
-//                sheet.addCell(new Label(x++, i, data.getSndMethodNm(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getSndHostNm(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getSndSvrNm(),        dataFormat));
-//                
-//                sheet.addCell(new Label(x++, i, data.getRcvMethodNm(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getRcvHostNm(),    dataFormat));                
-//                sheet.addCell(new Label(x++, i, data.getRcvSvrNm(),        dataFormat));
-//                
-//                sheet.addCell(new Label(x++, i, data.getRegId(),            dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getRegAdmPosition(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getRegAdmNm(),        dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getRegAdmDept(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getRegAdmOffice(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getRegAdmTel(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getRegAdmCel(),    dataFormat));
-//                
-//                sheet.addCell(new Label(x++, i, data.getSndAdmId(),            dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getSndAdmPosition(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getSndAdmNm(),        dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getSndAdmDept(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getSndAdmOffice(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getSndAdmTel(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getSndAdmCel(),    dataFormat));
-//                
-//                sheet.addCell(new Label(x++, i, data.getRcvAdmId(),            dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getRcvAdmPosition(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getRcvAdmNm(),        dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getRcvAdmDept(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getRcvAdmOffice(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getRcvAdmTel(),    dataFormat));
-//                sheet.addCell(new Label(x++, i, data.getRcvAdmCel(),    dataFormat));
-//                                
-//                i++;
-//                
-//            }            
-//            workbook.write();
-//            workbook.close();
-//            
-//            return getBytesFromFile(excelFile);
-//
-//        } catch (Exception e) {
-//            debug.error("", e);
-//            throw e;
-//        }
-//    }
-    
     private byte[] getBytesFromFile(File file) throws IOException {
         InputStream is = new FileInputStream(file);
 

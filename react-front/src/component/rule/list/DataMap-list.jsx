@@ -14,14 +14,8 @@ class DataMapSearch extends RuleSearch {
           <div className="row">
             <Form.Item label="ID">{getFieldDecorator("id")(<Input size="small" className="search-id" />)}</Form.Item>
             <Form.Item label="Name">{getFieldDecorator("name")(<Input size="small" className="search-name" />)}</Form.Item>
-            <Form.Item label="SourceDataId">
-              {getFieldDecorator("sourceDataId")(<Input size="small" className="search-id" readOnly allowClear />)}
-            </Form.Item>
-            <Form.Item label="TargetDataId">
-              {getFieldDecorator("targetDataId")(<Input size="small" className="search-id" readOnly allowClear />)}
-            </Form.Item>
             <Form.Item className="search-buttons">
-              <Button onClick={this.method.clickSearch} icon="search" />
+              <Button icon="search" onClick={this.method.clickSearch} />
               <Button icon="delete" />
             </Form.Item>
           </div>
@@ -39,13 +33,7 @@ class DataMapList extends RuleList {
         <div className="urm-list">
           <Table className="table-striped"
             dataSource={this.state.items} pagination={false} bordered
-            size={"small"} scroll={{ y: 500 }} rowKey="id"
-            onRow={(record, index) => {
-              return {
-                onDoubleClick: e => { if (this.state.onDbClick) this.state.onDbClick(record) }
-              }
-            }
-          }>
+            size={"small"} scroll={{ y: 500 }} rowKey="id" rowSelection={this.rowSelection}>
             <Table.Column title="ID" dataIndex="id" width="150px"/>
             <Table.Column title="Name" dataIndex="name" width="200px"/>
             <Table.Column title="SourceDataId" dataIndex="sourceDataId"/>
@@ -59,5 +47,5 @@ class DataMapList extends RuleList {
   }
 }
 
-const WrappedDataMapSearch = Form.create({name:'data_map_search'})(DataMapSearch)
+const WrappedDataMapSearch = Form.create({name:'datamap_search'})(DataMapSearch)
 export default DataMapList

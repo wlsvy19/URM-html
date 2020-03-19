@@ -4,9 +4,8 @@ import 'react-app-polyfill/stable';
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
-import { Provider } from 'react-keep-alive'
 import { createStore } from 'redux'
-import { Provider as ReduxProvider } from 'react-redux'
+import { Provider } from 'react-redux'
 
 import 'antd/dist/antd.css'
 import './index.css'
@@ -19,13 +18,11 @@ import rootReducer from './store'
 const store = createStore(rootReducer)
 
 const Root = () => (
-  <ReduxProvider store={store}>
-    <BrowserRouter>
-      <Provider>
-        <App/>
-      </Provider>
+  <Provider store={store}>
+    <BrowserRouter basename="URM">
+      <App/>
     </BrowserRouter>
-  </ReduxProvider>
+  </Provider>
 );
 
 ReactDOM.render(<Root />, document.getElementById('root'))

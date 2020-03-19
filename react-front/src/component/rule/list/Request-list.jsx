@@ -130,7 +130,7 @@ class RequestSearch extends RuleSearch {
         </SubModal>
 
         <SubModal ref="trnEdit" width="1215px">
-          <RequestTransfer />
+          <RequestTransfer codeList={this.props.codeList} authList={this.props.authList} />
         </SubModal>
       </div>
     );
@@ -214,9 +214,8 @@ class RequestList extends RuleList {
         <WrappedRequestSearch {...this.props} search={this.method.searchPage} delete={this.method.clickDelete}
           wrappedComponentRef={ref => { if (ref) form = ref.props.form }} />
         <Table className="table-striped"
-          dataSource={this.state.items} pagination={false} bordered
-          size={"small"} scroll={{ y: 500 }} rowKey="id"
-          rowSelection={this.rowSelection}>
+            dataSource={this.state.items} pagination={false} bordered
+            size={"small"} scroll={{ y: 500 }} rowKey="id" rowSelection={this.rowSelection}>
           <Table.Column title="ID" dataIndex="id" width="130px" />
           <Table.Column title="Name" dataIndex="name" width="180px" />
           <Table.Column title="Type" dataIndex="interfaceType" render={(val) => ( this.method.getTypeStr('infType', val) )} />

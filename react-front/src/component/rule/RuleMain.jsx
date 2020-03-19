@@ -17,19 +17,6 @@ export default class RuleMain extends React.Component {
   }
 
   method = {
-    setCode: () => {
-      if (this.props.commonCode === undefined) {
-        let $this = this
-        urmsc.ajax({
-          type: 'GET',
-          url:  '/URM/code/common',
-          success: function(res) {
-            $this.props.initCode(res)
-          },
-        })
-      }
-    },
-
     handleEdit: (id) => {
       if (id) {
         let $this = this

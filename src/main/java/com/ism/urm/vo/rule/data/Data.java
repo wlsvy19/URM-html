@@ -6,11 +6,11 @@ import com.ism.urm.vo.rule.RuleVo;
 
 public class Data extends RuleVo {
     String subId;
-    String systemCode;
+    String systemCode = "EAI";
     String channelCode;
-    String type;
+    String type = "1";
 
-    String inOutGbn;
+    String inOutGbn = "1";
     boolean stdUseYN;
 
     String excelFileName;

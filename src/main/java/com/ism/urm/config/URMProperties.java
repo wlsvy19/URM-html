@@ -12,7 +12,7 @@ public class URMProperties {
         // TODO Auto-generated constructor stub
     }
     
-    public static void init() {
+    public synchronized static void init() {
 //        String ismHomeDir = System.getenv("ISM_HOME");
 //        if (ismHomeDir == null || ismHomeDir.trim().length() == 0) {
 //            ismHomeDir = ".";

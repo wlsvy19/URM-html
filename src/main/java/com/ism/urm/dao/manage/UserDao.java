@@ -1,14 +1,9 @@
 package com.ism.urm.dao.manage;
 
-import java.util.List;
-
-import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 
-import com.fasterxml.classmate.AnnotationConfiguration;
 import com.ism.urm.dao.BasicDao;
 import com.ism.urm.vo.manage.User;
 
@@ -18,6 +13,7 @@ public class UserDao extends BasicDao<User> {
     protected SessionFactory sessionFactory;
 
     public UserDao() {
+        entityName = "USER";
     }
 
     public int idCheck(Session session, String userId) {

@@ -16,7 +16,7 @@
         <property name="ip" type="string" column="IP" />
         <property name="port" type="string" column="PORT" />
         <property name="userId" type="string" column="USERID" />
-        <property name="password" type="string" column="PASSWORD" />
+        <property name="userPasswd" type="string" column="PASSWORD" />
         <property name="dbType" type="string" column="DB_KND" />
         <property name="jdbcType" type="string" column="JDBC_TYPE" />
         <property name="dbName" type="string" column="DB_NM" />

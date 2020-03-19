@@ -8,19 +8,10 @@ import * as urmsc from '../../../urm-utils'
 const KINDS = urmsc.CODEKEY
 
 class SystemEditor extends RuleEditor {
-  customMethod = {
-    validator: (data) => {
-      if (!data.name || data.name.trim().length === 0) {
-        return false
-      }
-      return true
-    }
-  }
-
   render() {
     return (
       <Modal visible={this.state.visible} width="1080px"
-        footer={null} onCancel={this.method.handleCancel} className="urm-modal">
+          footer={null} onCancel={this.method.handleCancel} className="urm-modal">
         <WrappedSystemEditor codeList={this.props.codeList} item={this.state.item} {...this.childMethod} />
       </Modal>
     );
@@ -30,7 +21,6 @@ class SystemEditor extends RuleEditor {
 const SystemEditorForm = (props) => {
   const { form, item } = props
   const { getFieldDecorator } = form
-  //TODO dbinfo remain...
 
   // Only re-run the effect if props.item changes
   useEffect(() => {
@@ -46,8 +36,8 @@ const SystemEditorForm = (props) => {
     },
     
     clickSave: e => {
-      console.log(form.getFieldsValue())
-      props.save(form)
+      let saveItem = props.makeRuleObj(form, item)
+      props.save(saveItem)
     },
     
     renderDBSystem: () => {
@@ -93,17 +83,20 @@ const SystemEditorForm = (props) => {
             </div>
             <div className="row">
               <Form.Item label="Parameter">{getFieldDecorator("dbParams", dbParamsProps)(<Input.TextArea className="urm-remark" />)}</Form.Item>
+              <Form.Item label="Remark">{getFieldDecorator("remark")(<Input.TextArea className="urm-remark" />)}</Form.Item>
             </div>
           </div>
         );
       }
-      return undefined
+      return (<div className="row">
+        <Form.Item label="Remark">{getFieldDecorator("remark")(<Input.TextArea className="urm-remark" />)}</Form.Item>
+      </div>);
     },
   }
 
   return (
     <div className="urm-editor">
-      <div style={{textAlign: "right", marginRight: "20px"}}>
+      <div className="editor-buttons">
         <Button onClick={method.clickSave}>Save</Button>
       </div>
       <Form colon={false}>
@@ -131,12 +124,9 @@ const SystemEditorForm = (props) => {
         </div>
         <div className="row">
           <Form.Item label="User ID">{getFieldDecorator("userId")(<Input size="small" className="size-id" />)}</Form.Item>
-          <Form.Item label="Password">{getFieldDecorator("password")(<Input.Password size="small" className="size-id" visibilityToggle={false} />)}</Form.Item>
+          <Form.Item label="Password">{getFieldDecorator("userPasswd")(<Input.Password size="small" className="size-id" visibilityToggle={false} />)}</Form.Item>
         </div>
         {method.renderDBSystem()}
-        <div className="row">
-          <Form.Item label="Remark">{getFieldDecorator("remark")(<Input.TextArea className="urm-remark" />)}</Form.Item>
-        </div>
       </Form>
     </div>
   );

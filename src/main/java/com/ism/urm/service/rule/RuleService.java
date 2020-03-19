@@ -1,5 +1,6 @@
 package com.ism.urm.service.rule;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -10,13 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ism.urm.dao.rule.RuleDao;
+import com.ism.urm.util.SessionUtil;
 import com.ism.urm.vo.HiberUtill;
 import com.ism.urm.vo.RelationOp;
 import com.ism.urm.vo.rule.RuleVo;
 
 public abstract class RuleService<T extends RuleVo> {
 
-    protected Logger logger = LoggerFactory.getLogger("debug");
+    protected Logger logger = LoggerFactory.getLogger(getClass());
     
     protected SessionFactory sessionFactory;
     protected RuleDao<T> dao;
@@ -36,7 +38,7 @@ public abstract class RuleService<T extends RuleVo> {
             logger.error("Failed to search", e);
             throw e;
         } finally {
-            if (session != null) session.close();
+            if (session != null) try { session.close(); } catch (Exception ignore) { }
         }
     }
     
@@ -51,11 +53,12 @@ public abstract class RuleService<T extends RuleVo> {
             logger.error("Failed to get " + dao.getEntityName(), e);
             throw e;
         } finally {
-            if (session != null) session.close();
+            if (session != null) try{ session.close(); } catch (Exception ignore) { }
         }
     }
     
     public T save(T vo) throws Exception {
+        T rtn = null;
         Session session = null;
         Transaction tx = null;
 
@@ -65,48 +68,61 @@ public abstract class RuleService<T extends RuleVo> {
 
             Date now = new Date();
             vo.setChgDate(now);
-            // TODO get user id from session
-            vo.setChgId("eai");
+            vo.setChgId(SessionUtil.getUserID());
             
             if (vo.getId() == null || vo.getId().trim().length() == 0) {
                 logger.info("create rule ID");
-                String newId = createId();
+                String newId = dao.createId(session);
                 if (newId == null) {
                     throw new Exception("failed to create ID");
                 }
                 vo.setId(newId);
                 vo.setRegDate(now);
-                // TODO get user id from session
-                vo.setRegId("eai");
+                vo.setRegId(SessionUtil.getUserID());
             }
 
             dao.save(session, vo);
+            
+            rtn = dao.get(session, vo.getId());
             tx.commit();
-            
-            T rtn = dao.get(session, vo.getId());
-            
-            return rtn;
         } catch (Exception e) {
             logger.error("Failed to save " + dao.getEntityName(), e);
-            if (tx != null)    tx.rollback();
+            if (tx != null) try { tx.rollback(); } catch (Exception ignore) { }
             throw e;
         } finally {
-            if (session != null) session.close();
+            if (session != null) try { session.close(); } catch (Exception ignore) { }
         }
+        return rtn;
     }
     
-    protected String createId() throws Exception {
-        String id = null;
+    public int delete(String id) throws Exception {
+        List<String> ids = new ArrayList<>();
+        ids.add(id);
+        return delete(ids);
+    }
+
+    public int delete(List<String> ids) throws Exception {
+        int count = 0;
         Session session = null;
+        Transaction tx = null;
         try {
             session = sessionFactory.openSession();
-            session.beginTransaction();
-            id = dao.createId(session);
+            tx = session.beginTransaction();
+            
+            for (String id : ids) {
+                dao.delete(session, id);
+                count++;
+            }
+            
+            tx.commit();
         } catch (Exception e) {
+            logger.error("Faile to delete " + dao.getEntityName(), e);
+            if (tx != null) try { tx.rollback(); } catch (Exception ignore) { }
             throw e;
         } finally {
-            if (session != null) session.close();
+            if (session != null) try { session.close(); } catch (Exception ignore) { }
         }
-        return id;
+        return count;
     }
+
 }

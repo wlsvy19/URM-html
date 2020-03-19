@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2009. 8. 24 ???? 12:54:53 by Hibernate Tools 3.2.4.GA -->
+<hibernate-mapping>
+    <class name="com.ism.urm.vo.rule.mapping.DataMapValue" table="TB_DAT_MAP_VAL" entity-name="DATAMAPVALUE">
+        <composite-id>
+            <key-property name="mapId" type="string" column="MAP_ID"/>
+            <key-property name="valueSeq" type="integer" column="VAL_SEQ"/>
+        </composite-id>
+        <property name="fieldId" type="string" column="FIELD_ID" />
+        <property name="defaultValue"   type="string" column="DEFAULT_VAL" />
+    </class>
+</hibernate-mapping>

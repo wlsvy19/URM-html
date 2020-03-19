@@ -1,0 +1,185 @@
+import React from 'react'
+import { Table, Button, message } from 'antd'
+import { Form, Input } from 'antd'
+
+import SubModal from '../../SubModal'
+import UserList from '../../../manage/list/User-list'
+
+import * as urmsc from '../../../../urm-utils'
+
+class TransferForm extends React.Component {
+  method = {
+    confirm: e => {
+      let userId = this.props.form.getFieldValue('userId')
+      let trnUserId = this.props.form.getFieldValue('trnUserId')
+      if (!userId || userId.trim().length === 0) {
+        message.warning('Please enter Manager.')
+        return false
+      }
+      if (!trnUserId || trnUserId.trim().length === 0) {
+        message.warning('Please enter transfer user.')
+        return false
+      }
+      
+      this.props.confirm(trnUserId)
+    },
+
+    setUser: (type) => {
+      let ref = this.refs.usrList
+      let form = this.props.form
+      
+      let callback = (user) => {
+        if (type === 'now') {
+          this.props.search({loginUser: user.id})
+          form.setFieldsValue({userId: user.id})
+        } else if (type === 'trn') {
+          form.setFieldsValue({trnUserId: user.id})
+        }
+        ref.setState({visible: false})
+      }
+
+      let childState = {
+        list: {onDbClick: callback}
+      }
+      ref.setState({visible: true, childState: childState})
+    },
+  }
+
+  render() {
+    const { getFieldDecorator } = this.props.form
+
+    return (
+      <div className="search-bar">
+        <Form colon={false}>
+          <div className="row">
+            <Form.Item label="담당자">
+              {getFieldDecorator("userId")(<Input size="small" readOnly allowClear className="search-id" onClick={e => { this.method.setUser('now') }} />)}
+            </Form.Item>
+            <Form.Item label="이관자">
+              {getFieldDecorator("trnUserId")(<Input size="small" readOnly allowClear className="search-id" onClick={e => { this.method.setUser('trn') }} />)}
+            </Form.Item>
+            <Form.Item className="search-buttons row">
+              <Button icon="save" onClick={this.method.confirm} />
+            </Form.Item>
+          </div>
+        </Form>
+
+        <SubModal ref="usrList" width="1110px">
+          <UserList key="list" path="user" authList={this.props.authList} onlySearch={true} />
+        </SubModal>
+      </div>
+    );
+  }
+}
+
+class RequestTransfer extends React.Component {
+  state = {
+    items: [],
+    selectors: [],
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.state.items !== nextState.items) {
+      return true
+    }
+    if (this.props.codeList && this.props.codeList.length !== nextProps.codeList.length) {
+      return true
+    }
+    return false
+  }
+
+  method = {
+    getTypeStr: (key, val) => {
+      let kind = urmsc.CODEKEY[key]
+      let list = this.props.codeList
+      let obj = {}
+      
+      for(let i=0; i < list.length; i++) {
+        let it = list[i]
+        if (it.kind === kind && it.code === val) {
+          obj = it
+          break
+        }
+      }
+      return obj.name
+    },
+
+    search: (param) => {
+      let $this = this
+      urmsc.ajax({
+        type: 'GET',
+        url: '/URM/request/list',
+        data: param,
+        success: function(res) {
+          $this.setState({ items: res })
+        },
+      })
+    },
+
+    transfer: (trnUserId) => {
+      let tmp = [...this.state.selectors]
+      if (tmp.length === 0) {
+        message.warning('please select row.')
+        return false
+      }
+      tmp.forEach((it) => {
+        it.regId = trnUserId
+        it.sendAdminId = trnUserId
+        it.rcvAdminId = trnUserId
+      })
+      console.log(tmp)
+      /*urmsc.ajax({
+        type: 'POST',
+        url: '/URM/request/transfer',
+        data: JSON.stringify(tmp),
+        contentType: 'applicaion/json; charset=UTF-8',
+        success: function(res) {
+          console.log(res)
+        }
+      })*/
+    },
+  }
+  
+  rowSelection = {
+    columnWidth: 40,
+    onSelect: (record, selected, selectedRows, nativeEvent) => {
+      let tmp = []
+      selectedRows.forEach((it) => {
+        tmp.push(it)
+      })
+      this.setState({selectors: tmp})
+    },
+    onSelectAll: (selected, selectedRows, changeRows) => {
+      let tmp = []
+      selectedRows.forEach((it) => {
+        tmp.push(it)
+      })
+      this.setState({selectors: tmp})
+    },
+  }
+
+  render() {
+    return (
+      <div className="urm-list">
+        <WrappedTransferForm {...this.props} search={this.method.search} confirm={this.method.transfer} />
+        <Table className="table-striped"
+          dataSource={this.state.items} pagination={false} bordered
+          size={"small"} scroll={{ y: 500 }} rowKey="id"
+          rowSelection={this.rowSelection}>
+          <Table.Column title="ID" dataIndex="id" width="130px" />
+          <Table.Column title="Name" dataIndex="name" width="180px" />
+          <Table.Column title="Type" dataIndex="interfaceType" render={(val) => ( this.method.getTypeStr('infType', val) )} />
+          <Table.Column title="InterfaceID" dataIndex="interfaceId" width="120px"/>
+          <Table.Column title="SendSystem" dataIndex="sendSystem.name" width="110px"/>
+          <Table.Column title="RcvSystem" dataIndex="rcvSystem.name" width="110px"/>
+          <Table.Column title="Register" dataIndex="regId" width="110px"/>
+          <Table.Column title="SendAdmin" dataIndex="sendAdminId" width="110px"/>
+          <Table.Column title="RcvAdmin" dataIndex="rcvAdminId" width="110px"/>
+        </Table>
+      </div>
+    );
+  }
+}
+
+const WrappedTransferForm = Form.create({name:'transfer_form'})(TransferForm)
+export default RequestTransfer

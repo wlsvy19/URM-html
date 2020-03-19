@@ -18,7 +18,6 @@ public class AuthDao extends BasicDao<Auth>{
     
     @Override
     public Auth get(Session session, String id) throws SQLException {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -32,7 +31,7 @@ public class AuthDao extends BasicDao<Auth>{
 
     @Override
     public void delete(Session session, String id) throws Exception {
-        // TODO Auto-generated method stub
+        // do nothing
     }
 
 }

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Button, Modal, Popover, DatePicker } from 'antd'
+import { Button, Modal, Popover, DatePicker, message } from 'antd'
 import { Form, Input, Select, Radio, Switch, Checkbox } from 'antd'
 import moment from 'moment'
 
@@ -18,27 +18,27 @@ class RequestEditor extends RuleEditor {
   customMethod = {
     validator: (data) => {
       if (!data.sendSystemId || data.sendSystemId.trim().length === 0) {
-        console.log('please input sendSystemId')
+        message.warning('please input sendSystemId')
         return false
       }
       if (!data.rcvSystemId || data.rcvSystemId.trim().length === 0) {
-        console.log('please input rcvSystemId')
+        message.warning('please input rcvSystemId')
         return false
       }
       if (!data.sendJobCodeId || data.sendJobCodeId.trim().length === 0) {
-        console.log('please input sendJobCodeId')
+        message.warning('please input sendJobCodeId')
         return false
       }
       if (!data.rcvJobCodeId || data.rcvJobCodeId.trim().length === 0) {
-        console.log('please input rcvJobCodeId')
+        message.warning('please input rcvJobCodeId')
         return false
       }
       if (!data.sendAdminId || data.sendAdminId.trim().length === 0) {
-        console.log('please input sendAdminId')
+        message.warning('please input sendAdminId')
         return false
       }
       if (!data.rcvAdminId  || data.rcvAdminId.trim().length === 0) {
-        console.log('please input rcvAdminId')
+        message.warning('please input rcvAdminId')
         return false
       }
       
@@ -95,6 +95,8 @@ const RequestEditorForm = (props) => {
       formItem.rcvSystemName = propsItem.rcvSystem.name
       formItem.sendJobCodeName = propsItem.sendJobCode.part2Name + '(' + propsItem.sendJobCode.part2Id + ')'
       formItem.rcvJobCodeName = propsItem.rcvJobCode.part2Name + '(' + propsItem.rcvJobCode.part2Id + ')'
+      formItem.sendAdminName = propsItem.sendAdmin.name + '(' + propsItem.sendAdmin.positionName + ')'
+      formItem.rcvAdminName = propsItem.rcvAdmin.name + '(' + propsItem.rcvAdmin.positionName + ')'
     },
 
     makeRequestObj: () => {
@@ -109,6 +111,8 @@ const RequestEditorForm = (props) => {
       if (children.rcvSystem) saveItem.rcvSystemId = children.rcvSystem.id
       if (children.sendJobCode) saveItem.sendJobCodeId = children.sendJobCode.id
       if (children.rcvJobCode) saveItem.rcvJobCodeId = children.rcvJobCode.id
+      if (children.sendAdmin) saveItem.sendAdminId = children.sendAdmin.id
+      if (children.rcvAdmin) saveItem.rcvAdminId = children.rcvAdmin.id
       
       return saveItem
     },
@@ -197,28 +201,22 @@ const RequestEditorForm = (props) => {
     setUser: (type) => {
       let ref = usrList
       let children = item.children
-      urmsc.ajax({
-        type: 'GET',
-        url: '/URM/user',
-        success: function(res) {
-          let callback = (user) => {
-            let name = user.mame + '(' + user.positionNm + ')'
-            if (type === 'rcv') {
-              children.rcvAdmin = user
-              form.setFieldsValue({rcvAdminName: name})
-            } else if (type === 'send') {
-              children.sendAdmin = user
-              form.setFieldsValue({sendAdminName: name})
-            }
-            ref.setState({visible: false})
-          }
-          
-          let childState = {
-            list: { onDbClick: callback }
-          }
-          ref.setState({visible: true, childState: childState})
+      let callback = (user) => {
+        let name = user.name + '(' + user.positionName + ')'
+        if (type === 'rcv') {
+          children.rcvAdmin = user
+          form.setFieldsValue({rcvAdminName: name})
+        } else if (type === 'send') {
+          children.sendAdmin = user
+          form.setFieldsValue({sendAdminName: name})
         }
-      })
+        ref.setState({visible: false})
+      }
+      
+      let childState = {
+        list: { onDbClick: callback }
+      }
+      ref.setState({visible: true, childState: childState})
     },
 
     setQuery: visible => {
@@ -397,7 +395,7 @@ const RequestEditorForm = (props) => {
                 {getFieldDecorator("sendJobCodeName")(<Input.Search size="small" readOnly className="size-id" onSearch={vars => { method.setBizCode('send') }} />)}
               </Form.Item>
               <Form.Item label="sendAdmin">
-                {getFieldDecorator("sendAdminId")(<Input.Search size="small" readOnly className="size-id" onSearch={vars => { method.setUser('send') }} />)}
+                {getFieldDecorator("sendAdminName")(<Input.Search size="small" readOnly className="size-id" onSearch={vars => { method.setUser('send') }} />)}
               </Form.Item>
             </div>
           </div>
@@ -424,7 +422,7 @@ const RequestEditorForm = (props) => {
                 {getFieldDecorator("rcvJobCodeName")(<Input.Search size="small" readOnly className="size-id" onSearch={vars => { method.setBizCode('rcv') }} />)}
               </Form.Item>
               <Form.Item label="ReceiveAdmin">
-                {getFieldDecorator("rcvAdminId")(<Input.Search size="small" readOnly className="size-id" onSearch={vars => { method.setUser('rcv') }} />)}
+                {getFieldDecorator("rcvAdminName")(<Input.Search size="small" readOnly className="size-id" onSearch={vars => { method.setUser('rcv') }} />)}
               </Form.Item>
             </div>
           </div>
@@ -445,7 +443,7 @@ const RequestEditorForm = (props) => {
       </SubModal>
       
       <SubModal ref={(list) => { usrList = list }} width="980px">
-        <UserList key="list" path="user" />
+        <UserList key="list" path="user" onlySearch={true} />
       </SubModal>
       
       <SubModal ref={(list) => { mapList = list }} width="1030px">

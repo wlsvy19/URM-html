@@ -1,14 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Modal, Form, Input, Select, message } from 'antd'
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react'
+import { Button, Modal, message } from 'antd'
+import { Form, Input, Select } from 'antd'
+
 import * as urmsc from '../../../urm-utils'
 
 class Usereditor extends React.Component {
-
-  constructor(props) {
-    super(props);
-  }
-
   state = {
     visible: false,
     item: {},
@@ -19,24 +15,21 @@ class Usereditor extends React.Component {
       this.setState({ visible: false })
     },
 
-
     validator: (data) => {
-      console.log('validator()')
-
       if (!data.id || data.id.trim().length === 0) {
-        console.log('1')
+        message.warning('Please enter your ID')
         return false
+      } else { //TODO 정규식 체크
       }
       if (!data.name || data.name.trim().length === 0) {
-        console.log('2')
+        message.warning('Please enter your Name')
         return false
       }
       if (!data.password || data.password.trim().length === 0) {
-        console.log('3')
+        message.warning('Please enter your Password')
         return false
-      }
-      if (!data.confirm || data.confirm.trim().length === 0) {
-        console.log('4')
+      } else if (data.password !== data.confirm) {
+        message.error('Password do not match!')
         return false
       }
 
@@ -52,29 +45,25 @@ class Usereditor extends React.Component {
         for (let key in fields) {
           formItem[key] = item[key]
         }
-        if (customSetter) customSetter(formItem, item)
         form.setFieldsValue(formItem)
       } else {
         form.resetFields()
       }
     },
 
-    save: (form, children, customSetter) => {
-      let data = form.getFieldsValue()
-      let saveItem = {}
-
-      if (customSetter) customSetter(saveItem, data, children)
-      if (!this.method.validator(data)) {
+    save: (saveItem) => {
+      console.log(saveItem)
+      if (!this.method.validator(saveItem)) {
         return false
       }
 
       urmsc.ajax({
         type: 'POST',
         url: '/URM/' + this.props.path,
-        data: JSON.stringify(data),
-        contentType: 'application/json',
+        data: JSON.stringify(saveItem),
+        contentType: 'application/json; charset=UTF-8',
         success: function (res) {
-          console.log(this.response)
+          console.log(res)
         }
       })
     },
@@ -83,7 +72,8 @@ class Usereditor extends React.Component {
 
   render() {
     return (
-      <Modal visible={this.state.visible} width="1200px" footer={null} onCancel={this.method.handleCancel} className="urm-modal">
+      <Modal visible={this.state.visible} width="900px"
+          footer={null} onCancel={this.method.handleCancel} className="urm-modal">
         <WrappedUserEditor authList={this.props.authList} item={this.state.item} {...this.userMethod} />
       </Modal>
     );
@@ -93,48 +83,21 @@ class Usereditor extends React.Component {
 const UserEditorForm = (props) => {
   const { form, item } = props
   const { getFieldDecorator } = form
-
-  const { password, setPassword } = useState('')
-  const { passwordCheck, setPasswordCheck } = useState('')
-  const { setPasswordError } = useState(false)
   const { confirm } = Modal
 
   // Only re-run the effect if props.item changes
   useEffect(() => {
-    props.setItem(form, item, method.initialSetter)
+    props.setItem(form, item)
     // eslint-disable-next-line
   }, [item]);
 
   let method = {
-    // renderOpts: (key) => {
-    //   return urmsc.getSubListByKey(props.authList, 'kind', urmsc.CODEKEY[key]) //list, key, value
-    //     .map((it) => <Select.Option key={it.code} value={it.code}>{it.name}</Select.Option>)
-    // },
     renderOpts: () => {
-      return props.authList.map((it) => <Select.Option key={it.id}>{it.name}</Select.Option>)
+      return props.authList.map((it) => <Select.Option key={it.id} value={it.id}>{it.name}</Select.Option>)
     },
 
     clickSave: e => {
       console.log(form.getFieldsValue(), item)
-
-      const inputId = form.getFieldsValue().id
-      const inputName = form.getFieldsValue().name
-      const inputPassword = form.getFieldsValue().password
-
-      console.log(inputId)
-      console.log(inputName)
-      console.log(inputPassword)
-
-      if (!inputId) {
-        message.warning('Please enter your ID')
-      } else if (!inputName) {
-        message.warning('Please enter your Name')
-      } else if (!inputPassword) {
-        message.warning('Please enter your Password')
-      } else if (password !== passwordCheck) {
-        message.error('Password do not match!')
-      }
-
       props.save(form)
     },
 
@@ -142,7 +105,7 @@ const UserEditorForm = (props) => {
       console.log('param: ', param)
       urmsc.ajax({
         type: 'POST',
-        url: '/URM/check',
+        url: '/URM/user/check',
         data: param,
         success: function (id) {
           console.log('data', id)
@@ -180,16 +143,6 @@ const UserEditorForm = (props) => {
     },
 
   }
-  const onChangePassword = (e) => {
-    setPassword(e.target.value);
-  }
-
-  const onChangePasswordChk = (e) => {
-    setPasswordError(e.target.value !== password)
-    setPasswordCheck(e.target.value);
-  }
-
-   
 
   return (
     <div className="urm-editor">
@@ -199,35 +152,35 @@ const UserEditorForm = (props) => {
 
       <Form colon={false}>
         <div className="row">
-          <Form.Item label="ID" >{getFieldDecorator("id")(<Input size="small" style={{ width: "230px" }} />)}</Form.Item>
+          <Form.Item label="ID" >{getFieldDecorator("id")(<Input size="small" className="user-input" />)}</Form.Item>
           <Button onClick={method.idCheck} size="small" style={{ marginLeft: "8px", marginTop: "9px" }}>Check</Button>
-          <Form.Item label="Name">{getFieldDecorator("name")(<Input size="small" style={{ width: "230px" }} />)}</Form.Item>
+          <Form.Item label="Name">{getFieldDecorator("name")(<Input size="small" className="user-input" />)}</Form.Item>
         </div>
 
         <div className="row">
-          <Form.Item label="Password">{getFieldDecorator("password")(<Input.Password onChange={onChangePassword} size="small" style={{ width: "230px" }} />)}</Form.Item>
-          <Form.Item label="Check Password" style={{ marginLeft: "60px" }}>{getFieldDecorator("confirm")(<Input.Password onChange={onChangePasswordChk} size="small" style={{ width: "230px" }} />)}</Form.Item>
+          <Form.Item label="Password">{getFieldDecorator("password")(<Input.Password size="small" className="user-input" />)}</Form.Item>
+          <Form.Item label="Check Password" style={{ marginLeft: "60px" }}>{getFieldDecorator("confirm")(<Input.Password size="small" style={{ width: "230px" }} />)}</Form.Item>
         </div>
 
         <div className="row">
-          <Form.Item label="Dept">{getFieldDecorator("dept")(<Input size="small" style={{ width: "230px" }} />)}</Form.Item>
-          <Form.Item label="Position" style={{ marginLeft: "60px" }}>{getFieldDecorator("position")(<Input size="small" style={{ width: "230px" }} />)}</Form.Item>
+          <Form.Item label="Dept">{getFieldDecorator("dept")(<Input size="small" className="user-input" />)}</Form.Item>
+          <Form.Item label="Position" style={{ marginLeft: "60px" }}>{getFieldDecorator("position")(<Input size="small" className="user-input" />)}</Form.Item>
         </div>
 
         <div className="row">
-          <Form.Item label="Grade">{getFieldDecorator("grade")(<Input size="small" style={{ width: "230px" }} />)}</Form.Item>
-          <Form.Item label="General Tel" style={{ marginLeft: "60px" }}>{getFieldDecorator("dept")(<Input size="small" style={{ width: "230px" }} />)}</Form.Item>
+          <Form.Item label="Grade">{getFieldDecorator("grade")(<Input size="small" className="user-input" />)}</Form.Item>
+          <Form.Item label="General Tel" style={{ marginLeft: "60px" }}>{getFieldDecorator("dept")(<Input size="small" className="user-input" />)}</Form.Item>
         </div>
 
         <div className="row">
-          <Form.Item label="Office Tel">{getFieldDecorator("position")(<Input size="small" style={{ width: "230px" }} />)}</Form.Item>
-          <Form.Item label="Mobile" style={{ marginLeft: "60px" }}>{getFieldDecorator("grade")(<Input size="small" style={{ width: "230px" }} />)}</Form.Item>
+          <Form.Item label="Office Tel">{getFieldDecorator("position")(<Input size="small" className="user-input" />)}</Form.Item>
+          <Form.Item label="Mobile" style={{ marginLeft: "60px" }}>{getFieldDecorator("grade")(<Input size="small" className="user-input" />)}</Form.Item>
         </div>
 
         <div className="row">
           <Form.Item label="Auth Code">
-            {getFieldDecorator("auth", { initialValue: "URM ADMIN" })(<Select size={"small"} style={{ width: "230px" }}>
-              {method.renderOpts("")}
+            {getFieldDecorator("authId", { initialValue: "0" })(<Select size={"small"} className="user-input">
+              {method.renderOpts()}
             </Select>)}
           </Form.Item>
         </div>

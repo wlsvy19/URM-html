@@ -90,6 +90,12 @@
   text-align: center;
 }
 
+.history-popover {
+  width: 200px;
+  height: 50px;
+  overflow: auto;
+}
+
 /* editable table */
 .editable-row .ant-form-item {
   margin: 0;
@@ -208,8 +214,6 @@
   width: 100px;
 }
 
-
-/* user쪽 css 주석 달기 */
 .urm-editor .src-id .ant-form-item-label {
   width: 60px;
   margin-left: 5px;
@@ -219,4 +223,10 @@
   order: 1;
   width: 60px;
   margin-right: 5px;
+}
+
+
+/* user쪽 css 주석 달기 */
+.user-input {
+  width: 230px;
 }

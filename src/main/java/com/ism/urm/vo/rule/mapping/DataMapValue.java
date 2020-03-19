@@ -1,19 +1,28 @@
 package com.ism.urm.vo.rule.mapping;
 
-public class DataMapValue {
+import java.io.Serializable;
+
+public class DataMapValue implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     String mapId;
-    int valSeq;
+    int valueSeq;
     String fieldId;
     String defaultValue;
 
+    public String getMapId() {
+        return mapId;
+    }
     public void setMapId(String mapId) {
         this.mapId = mapId;
     }
-
-    public void setValSeq(int valSeq) {
-        this.valSeq = valSeq;
+    public int getValueSeq() {
+        return valueSeq;
     }
-
+    public void setValueSeq(int valueSeq) {
+        this.valueSeq = valueSeq;
+    }
     public String getFieldId() {
         return fieldId;
     }

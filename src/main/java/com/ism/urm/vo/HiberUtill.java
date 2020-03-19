@@ -14,7 +14,11 @@ public class HiberUtill {
 
     public static SessionFactory getSessionFactory() {
         if (sf == null) {
-            new HiberUtill().init();
+            synchronized(HiberUtill.class) {
+                if (sf == null) {
+                    new HiberUtill().init();
+                }
+            }
         }
         return sf;
     }

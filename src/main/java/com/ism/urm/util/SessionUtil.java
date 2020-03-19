@@ -6,7 +6,17 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 public class SessionUtil {
-    private static final String USER_ID = "userid";
+    public static final String USER_ID = "userid";
+
+    private final static String ARIA_KEY = "12345678901234567890123456789012";
+
+    public static String getEncString(String dec) {
+        return ARIAEngine.getEncString(dec, ARIA_KEY);
+    }
+
+    public static String getDecString(String enc) {
+        return ARIAEngine.getDecString(enc, ARIA_KEY);
+    }
 
     public static void setUserID(String userID) {
         ServletRequestAttributes attr = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
@@ -20,9 +30,15 @@ public class SessionUtil {
         String userID = (String) req.getSession().getAttribute(USER_ID);
         
         if (userID == null) {
-            return "eai";//"unknown-user";
+            return "eai"; //"unknown-user";
         }
         return userID;
+    }
+    
+    public static void invalidate() {
+        ServletRequestAttributes attr = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
+        HttpServletRequest req = (attr != null ? attr.getRequest() : null);
+        req.getSession().invalidate();
     }
 
 }

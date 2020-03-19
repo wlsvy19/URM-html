@@ -11,7 +11,7 @@ public class AppSystem extends RuleVo {
     String ip;
     String port;
     String userId;
-    String password;
+    String userPasswd;
     String dbType;
     String jdbcType;
     String dbName;
@@ -59,11 +59,11 @@ public class AppSystem extends RuleVo {
     public void setUserId(String userId) {
         this.userId = userId;
     }
-    public String getPassword() {
-        return password;
+    public String getUserPasswd() {
+        return userPasswd;
     }
-    public void setPassword(String password) {
-        this.password = password;
+    public void setUserPasswd(String userPasswd) {
+        this.userPasswd = userPasswd;
     }
     public String getDbType() {
         return dbType;

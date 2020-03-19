@@ -43,10 +43,10 @@
         <property name="dataMapYN" type="yes_no" column="DATA_MAP_YN" />
         <property name="reqDataMappingId" type="string" column="REQ_DATA_MAP_ID" />
         <property name="resDataMappingId" type="string" column="RES_DATA_MAP_ID" />
-        <property name="reqSendDataId" type="string" column="REQ_SND_DATA_ID" />
+        <!-- <property name="reqSendDataId" type="string" column="REQ_SND_DATA_ID" />
         <property name="reqRcvDataId" type="string" column="REQ_RCV_DATA_ID" />
         <property name="resSendDataId" type="string" column="RES_SND_DATA_ID" />
-        <property name="resRcvDataId" type="string" column="RES_RCV_DATA_ID" />
+        <property name="resRcvDataId" type="string" column="RES_RCV_DATA_ID" /> -->
 
         <property name="sql" type="string" column="SQL" />
         <property name="sqlPlain" type="string" column="SQL_PLAIN" />
@@ -56,7 +56,7 @@
 
         <property name="dcnt" type="string" column="DCNT" />
         <property name="openYMD" type="string" column="OPEN_YMD" />
-        <property name="delYN" type="string" column="DEL_YN" />
+        <property name="delYN" type="yes_no" column="DEL_YN" />
         
         <property name="regId" type="string" column="REG_ID" />
         <property name="regDate" type="timestamp" column="REG_DATE" />

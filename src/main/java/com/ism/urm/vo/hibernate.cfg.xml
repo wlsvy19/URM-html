@@ -7,14 +7,18 @@
         <property name="connection.shutdown">true</property>
         <!-- SQL dialect -->
         <!-- Echo all executed SQL to stdout -->
-        <property name="show_sql">true</property>
+        <property name="show_sql">false</property>
         <property name="hibernate.query.substitutions">true 'Y', false 'N'</property>
 
         <!-- Drop and re-create the database schema on startup -->
         <mapping resource="com/ism/urm/vo/rule/request/Request.hbm.xml" />
         <mapping resource="com/ism/urm/vo/rule/request/RequestHistory.hbm.xml" />
         <mapping resource="com/ism/urm/vo/rule/system/AppSystem.hbm.xml" />
+        
         <mapping resource="com/ism/urm/vo/rule/mapping/DataMap.hbm.xml" />
+        <mapping resource="com/ism/urm/vo/rule/mapping/DataMapLine.hbm.xml" />
+        <mapping resource="com/ism/urm/vo/rule/mapping/DataMapValue.hbm.xml" />
+        
         <mapping resource="com/ism/urm/vo/rule/data/Data.hbm.xml" />
         <mapping resource="com/ism/urm/vo/rule/data/Field.hbm.xml" />
   

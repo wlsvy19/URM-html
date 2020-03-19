@@ -26,29 +26,29 @@ public class CodeController {
     CodeService service = new CodeService();
     
     @GetMapping("/code/common")
-    public List<CommonCode> getCommonCode() {
+    public List<CommonCode> getCommonCode() throws Exception {
         List<CommonCode> rtn = null;
         try {
             rtn = service.getCommonCodeList();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }
         return rtn;
     }
 
-    @GetMapping("/code/user")
-    public List<Auth> getAuth() {
+    @GetMapping("/code/auth")
+    public List<Auth> getAuth() throws Exception {
         List<Auth> rtn = null;
         try {
             rtn = service.getAuthList();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }
         return rtn;
     }
 
     @GetMapping("/code/business")
-    public List<BusinessCode> getBusinessCode(@RequestParam Map<String, String> params) {
+    public List<BusinessCode> getBusinessCode(@RequestParam Map<String, String> params) throws Exception {
         List<BusinessCode> rtn = null;
         List<RelationOp> filter = new ArrayList<>();
         
@@ -68,16 +68,16 @@ public class CodeController {
         try {
             rtn = service.getBusinessCodeList(filter);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }
         return rtn;
     }
 
     @PostMapping("/code/business")
-    public List<BusinessCode> save(@RequestBody List<BusinessCode> codes) throws Exception {
+    public List<BusinessCode> save(@RequestBody BusinessCode code) throws Exception {
         List<BusinessCode> rtn = null;
         try {
-            rtn = service.modifyBusinessCode(codes);
+            rtn = service.modifyBusinessCode(code);
         } catch (Exception e) {
             throw e;
         }

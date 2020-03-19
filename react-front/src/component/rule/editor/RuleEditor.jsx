@@ -1,4 +1,5 @@
 import React from 'react'
+import { message } from 'antd'
 
 export default class RequestEditor extends React.Component {
   state = {
@@ -20,7 +21,7 @@ export default class RequestEditor extends React.Component {
     
     validator: (data) => {
       if (!data.name || data.name.trim().length === 0) {
-        console.log('please input name.')
+        message.warning('please input name.')
         return false
       }
       if (this.customMethod && !this.customMethod.validator(data)) {

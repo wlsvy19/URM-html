@@ -4,11 +4,10 @@
 <!-- Generated 2009. 8. 24 ???? 12:54:53 by Hibernate Tools 3.2.4.GA -->
 <hibernate-mapping>
     <class name="com.ism.urm.vo.rule.data.Field" table="TB_DAT_FLD" entity-name="FIELD">
-        <id name="fieldId" type="string">
-            <column name="FIELD_ID" />
-            <generator class="assigned" />
-        </id>
-        <property name="dataId" type="string" column="DATA_ID" />
+        <composite-id>
+            <key-property name="dataId" type="string" column="DATA_ID"/>
+            <key-property name="fieldId" type="string" column="FIELD_ID"/>
+        </composite-id>
         <property name="name" type="string" column="NM" />
         <property name="engName" type="string" column="ID" />
         <property name="type" type="string" column="ATTR" />

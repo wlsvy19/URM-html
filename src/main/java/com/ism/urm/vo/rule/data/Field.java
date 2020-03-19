@@ -1,6 +1,10 @@
 package com.ism.urm.vo.rule.data;
 
-public class Field {
+import java.io.Serializable;
+
+public class Field implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     String dataId;
     String fieldId;
@@ -19,8 +23,6 @@ public class Field {
     boolean repeatYN;
     int repeatCnt;
     String refInfo;
-
-    boolean verification = false;
 
     public String getDataId() {
         return dataId;

@@ -1,7 +1,6 @@
 package com.ism.urm.controller.rule;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -65,13 +64,23 @@ public class DataMapController {
         }
         return rtn;
     }
-    
 
     @PostMapping("/datamap")
     public DataMap save(@RequestBody DataMap data) throws Exception {
         DataMap rtn = null;
         try {
-            rtn = service.save(data, true);
+            rtn = service.save(data);
+        } catch (Exception e) {
+            throw e;
+        }
+        return rtn;
+    }
+
+    @PostMapping("/datamap/delete")
+    public int delete(@RequestBody List<String> ids) throws Exception {
+        int rtn = 0;
+        try {
+            rtn = service.delete(ids);
         } catch (Exception e) {
             throw e;
         }

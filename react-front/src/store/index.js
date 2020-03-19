@@ -1,6 +1,8 @@
-import { combineReducers } from 'redux';
-import rule from './modules/rule';
+import { combineReducers } from 'redux'
+import code from './modules/code'
+import auth from './modules/auth'
 
 export default combineReducers({
-  rule,
+  code,
+  auth,
 });

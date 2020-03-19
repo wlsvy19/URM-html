@@ -2,6 +2,7 @@
   "name": "react-front",
   "version": "0.1.0",
   "private": true,
+  "hompage": "./",
   "proxy": "http://localhost:9080",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",

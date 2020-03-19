@@ -68,21 +68,12 @@ public class RequestController {
     @GetMapping("/request/list")
     public List<Request> search(@RequestParam(value="loginUser") String userId) throws Exception {
         List<Request> rtn = null;
-        List<RelationOp> filter = new ArrayList<>();
-        
-        if (userId != null && userId.trim().length() > 0) {
-            RelationOp op1 = RelationOp.get("regId", OpType.EQ, userId, ValueType.STRING);
-            filter.add(op1);
-            RelationOp op2 = RelationOp.get("sendAdminId", OpType.EQ, userId, ValueType.STRING);
-            filter.add(op2);
-            RelationOp op3 = RelationOp.get("rcvAdminId", OpType.EQ, userId, ValueType.STRING);
-            filter.add(op3);
-        } else {
+        if (userId == null || userId.trim().length() == 0) {
             throw new Exception("invalid login user!!!");
         }
         
         try {
-            rtn = service.search(filter);
+            rtn = service.listByManager(userId);
         } catch (Exception e) {
             throw new Exception("Failed to get request list.", e);
         }

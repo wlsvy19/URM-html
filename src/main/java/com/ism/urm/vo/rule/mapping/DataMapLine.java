@@ -1,19 +1,28 @@
 package com.ism.urm.vo.rule.mapping;
 
-public class DataMapLine {
+import java.io.Serializable;
+
+public class DataMapLine implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     String mapId;
     int lineSeq;
     String sourceFieldId;
     String targetFieldId;
 
+    public String getMapId() {
+        return mapId;
+    }
     public void setMapId(String mapId) {
         this.mapId = mapId;
     }
-
+    public int getLineSeq() {
+        return lineSeq;
+    }
     public void setLineSeq(int lineSeq) {
         this.lineSeq = lineSeq;
     }
-
     public String getSourceFieldId() {
         return sourceFieldId;
     }

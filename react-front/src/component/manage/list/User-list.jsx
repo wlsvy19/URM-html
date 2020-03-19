@@ -1,11 +1,10 @@
 import React from 'react'
 import { Table, Button, Input, Form } from 'antd'
-import UserListButton from './UserListButton'
+
 import * as urmsc from '../../../urm-utils'
 
 class UserSearch extends React.Component {
   state = {
-    autoCompleteResult: [],
     vlsible: false,
   }
 
@@ -23,10 +22,7 @@ class UserSearch extends React.Component {
     },
 
     renderButton: (render) => {
-      if (!this.props.onlySearch) {
-        return render
-      }
-      return undefined
+      return !this.props.onlySearch && render
     },
   }
 
@@ -63,12 +59,12 @@ class UserList extends React.Component {
   }
 
   method = {
-    getTypeStr: (kind, key) => {
+    getAuthStr: (key) => {
       let obj = {}
       let list = this.props.authList
       for (let i = 0; i < list.length; i++) {
         let it = list[i]
-        if (it.kind === kind && it.code === key) {
+        if (it.id === key) {
           obj = it
           break
         }
@@ -81,12 +77,7 @@ class UserList extends React.Component {
       this.props.edit(id)
     },
 
-    clickDelete: (ids) => {
-      console.log('delete')
-    },
-
     search: (param) => {
-      console.log('param:', param)
       let $this = this
       urmsc.ajax({
         type: 'GET',
@@ -100,18 +91,23 @@ class UserList extends React.Component {
     },
 
     renderButton: (render) => {
-      if (!this.props.onlySearch) {
-        return render
-      }
-      return undefined
+      return !this.props.onlySearch && render
     },
   }
+
+  onRow = (record, index) => {
+    return {
+      onDoubleClick: e => { if (this.props.onDbClick) this.props.onDbClick(record) }
+     }
+  }
+
   render() {
     return (
 
       <div className="urm-list">
         <WrappedUserSearch {...this.props} search={this.method.search} />
-        <Table lassName="table-striped" dataSource={this.state.items} pagination={false} bordered size={"small"} scroll={{ y: 500 }} rowKey="id" className="table-striped">
+        <Table className="table-striped" dataSource={this.state.items} pagination={false}
+            bordered size={"small"} scroll={{ x: 1200, y: 500 }} rowKey="id" onRow={this.onRow}>
           <Table.Column title="ID" dataIndex="id" width="130px" />
           <Table.Column title="Name" dataIndex="name" width="130px" />
           <Table.Column title="Dept" dataIndex="dept" width="130px" />
@@ -120,17 +116,13 @@ class UserList extends React.Component {
           <Table.Column title="General Tel" dataIndex="generalTelNo" width="130px" />
           <Table.Column title="Office Tel" dataIndex="officeTelNo" width="130px" />
           <Table.Column title="Mobile" dataIndex="celNo" width="130px" />
-          <Table.Column title="Auth" dataIndex="authId" width="130px" />
+          <Table.Column title="Auth" dataIndex="authId" width="130px" render={(val) => (this.method.getAuthStr(val))} />
 
           {this.method.renderButton(
             <Table.Column title="Operations" className="operations" width="100px" render={(val) =>
-              (<div>
-                <Button onClick={e => this.method.clickEdit(val.id)} icon="edit" />
-                <Button onClick={e => this.method.clickDelete(val.id)} icon="delete" />
-              </div>)} />
+              (<Button onClick={e => this.method.clickEdit(val.id)} icon="edit" />)} />
           )}
         </Table>
-
       </div>
 
     );
@@ -139,4 +131,3 @@ class UserList extends React.Component {
 
 const WrappedUserSearch = Form.create({ name: 'user_search' })(UserSearch)
 export default UserList
-

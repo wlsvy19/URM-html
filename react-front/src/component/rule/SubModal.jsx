@@ -1,9 +1,10 @@
 import React from 'react'
 import { Modal } from 'antd'
 
-class SubModal extends React.Component {
+export default class SubModal extends React.Component {
   state = {
-    visible: false
+    visible: false,
+    childState: {}
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -12,28 +13,28 @@ class SubModal extends React.Component {
     }
     return false
   }
-  
+
   method = {
     handleCancel: e => {
       this.setState({visible: false})
     },
-    
-    changeChildState: (chg) => {
-      if (this.refs.child) {
-        this.refs.child.setState(chg)
-      }
-    }
   }
-  
-//        {this.props.render ? this.props.render() : (<this.prop.component />)}
-  render() {//console.log(this.props.children, this)
+
+  render() {
+    const { childState } = this.state
+    
     return (
       <Modal visible={this.state.visible} width={this.props.width}
         footer={null} onCancel={this.method.handleCancel} className="urm-modal">
-        {this.props.children}
+        {React.Children.map(this.props.children, (child) => {
+          if (child.key && (child.key.endsWith('list') || child.key.endsWith('List'))) {
+            let childFunc = childState[child.key] ? childState[child.key].onDbClick : undefined
+            let scparam = childState[child.key] ? childState[child.key].scparam : undefined
+            return React.cloneElement(child, { onDbClick: childFunc, scparam: scparam })
+          }
+          return child
+        })}
       </Modal>
     );
   }
 }
-
-export default SubModal
