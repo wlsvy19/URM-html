@@ -8,6 +8,7 @@ class Usereditor extends React.Component {
   state = {
     visible: false,
     item: {},
+    isIdValid : false,
   }
 
   method = {
@@ -16,24 +17,31 @@ class Usereditor extends React.Component {
     },
 
     validator: (data) => {
-      if (!data.id || data.id.trim().length === 0) {
+      const idRegExp = /^[0-9a-zA-Z]*$/; //Regex: alphabet or number
+      //const idRegex = /^[A-z0-9]*$/; //Regex: alphabet or number
+
+      if (!data.getFieldsValue().id || data.getFieldsValue().id.trim().length === 0) {
         message.warning('Please enter your ID')
         return false
-      } else { //TODO 정규식 체크
+
+      } else if (!data.getFieldsValue().id.match(idRegExp)){
+        message.error('ID only use alphabet or number')
+        return false
       }
-      if (!data.name || data.name.trim().length === 0) {
+      else if (!data.getFieldsValue().name || data.getFieldsValue().name.trim().length === 0) {
         message.warning('Please enter your Name')
         return false
-      }
-      if (!data.password || data.password.trim().length === 0) {
+
+      } else if (!data.getFieldsValue().password || data.getFieldsValue().password.trim().length === 0) {
         message.warning('Please enter your Password')
         return false
-      } else if (data.password !== data.confirm) {
+
+      } else if (data.getFieldsValue().password !== data.getFieldsValue().confirm) {
         message.error('Password do not match!')
         return false
-      }
-
-      return true
+      } 
+      else
+        return true
     },
   }
 
@@ -52,7 +60,7 @@ class Usereditor extends React.Component {
     },
 
     save: (saveItem) => {
-      console.log(saveItem)
+      console.log('saveItem : ',saveItem)
       if (!this.method.validator(saveItem)) {
         return false
       }
@@ -73,7 +81,7 @@ class Usereditor extends React.Component {
   render() {
     return (
       <Modal visible={this.state.visible} width="900px"
-          footer={null} onCancel={this.method.handleCancel} className="urm-modal">
+        footer={null} onCancel={this.method.handleCancel} className="urm-modal">
         <WrappedUserEditor authList={this.props.authList} item={this.state.item} {...this.userMethod} />
       </Modal>
     );
@@ -101,19 +109,24 @@ const UserEditorForm = (props) => {
       props.save(form)
     },
 
-    idCheck: (param) => { //param
-      console.log('param: ', param)
+    idCheck: (param) => { 
+      console.log('넘어가는 data: ', form.getFieldValue('id'))
+      //id를 jsonstringfy
       urmsc.ajax({
         type: 'POST',
         url: '/URM/user/check',
-        data: param,
-        success: function (id) {
-          console.log('data', id)
+        data: JSON.stringify(form.getFieldValue('id')),
+        contentType: 'application/json; charset=UTF-8',
+        success: function (data) {
+          console.log('data', data)
         },
+        error: function(error) {
+          console.log('ajax error')
+        }
       })
-  
+
       var data = 1;
-      if (data === 1) {
+      if (data === 2) {
         confirm({
           title: 'Not Duplicate ID',
           content: 'Use ID?',
@@ -127,6 +140,7 @@ const UserEditorForm = (props) => {
       } else
         confirm({
           title: 'Duplicate ID',
+          content: 'Please use a other ID',
           okText: 'Yes',
           okType: 'danger',
           okButtonProps: {
@@ -141,8 +155,7 @@ const UserEditorForm = (props) => {
           },
         });
     },
-
-  }
+  } //end let method
 
   return (
     <div className="urm-editor">
@@ -174,7 +187,7 @@ const UserEditorForm = (props) => {
 
         <div className="row">
           <Form.Item label="Office Tel">{getFieldDecorator("position")(<Input size="small" className="user-input" />)}</Form.Item>
-          <Form.Item label="Mobile" style={{ marginLeft: "60px" }}>{getFieldDecorator("grade")(<Input size="small" className="user-input" />)}</Form.Item>
+          <Form.Item label="Mobile" style={{ marginLeft: "60px" }}>{getFieldDecorator("celNo")(<Input size="small" className="user-input" />)}</Form.Item>
         </div>
 
         <div className="row">

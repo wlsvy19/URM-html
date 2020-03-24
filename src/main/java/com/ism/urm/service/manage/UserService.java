@@ -26,9 +26,10 @@ public class UserService {
         sessionFactory = HiberUtill.getSessionFactory();
     }
     
-    public boolean idCheck(String userId) throws Exception {
+    public Object idCheck(String userId) throws Exception {
         Session session = null;
-        boolean rtn = false;
+        Object rtn = null;
+       
         int count = 0;
         if (userId == null || userId.length() == 0)
             logger.error("userId is null");
@@ -36,23 +37,14 @@ public class UserService {
         try {
             session = sessionFactory.openSession();
             session.beginTransaction();
-
-            count = userDao.idCheck(session, userId);
-
-            if (count != 0) {
-                rtn = true;
-            } else
-                rtn = false;
-
+            rtn = userDao.idCheck(session, userId);
         } catch (Exception e) {
             throw e;
         } finally {
             if (session != null)
                 session.close();
         }
-        System.out.println("rtn: " + rtn);
         return rtn;
-
     }
 
     public List<User> search(List<RelationOp> filter) throws Exception {
