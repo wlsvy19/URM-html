@@ -13,6 +13,26 @@ class User extends React.Component {
   }
 
   method = {
+    handleAdd: (id) => {
+      //edit
+      console.log('path: ' + this.state.path)
+      if (id) {
+        let $this = this
+        urmsc.ajax({
+          type: 'GET',
+          url: '/URM/' + this.state.path + '/' + id,
+          
+          success: function(obj) {
+            let $editor = $this.refs.editor
+            console.log(obj)
+            $editor.setState({visible: true, item: obj, readOnly:false, data:0})
+          }
+        })
+      } else {
+        this.refs.editor.setState({visible: true, item: {}})
+      }
+    },
+
     handleEdit: (id) => {
       //edit
       console.log('path: ' + this.state.path)
@@ -21,16 +41,19 @@ class User extends React.Component {
         urmsc.ajax({
           type: 'GET',
           url: '/URM/' + this.state.path + '/' + id,
+          
           success: function(obj) {
             let $editor = $this.refs.editor
             console.log(obj)
-            $editor.setState({visible: true, item: obj})
+            $editor.setState({visible: true, item: obj, readOnly:false, data:1})
+  
           }
         })
       } else {
         this.refs.editor.setState({visible: true, item: {}})
       }
     },
+
   }
   
   getAuth = () => {
@@ -41,7 +64,7 @@ class User extends React.Component {
   render() {
     return (
       <div className="urm-panel" >
-        <UserList ref="list" path={this.state.path} authList={this.getAuth()} edit={this.method.handleEdit} />
+        <UserList ref="list" path={this.state.path} authList={this.getAuth()} add={this.method.handleAdd} edit={this.method.handleEdit}/>
         <UserEditor ref="editor" path={this.state.path} authList={this.getAuth()} />
       </div>
     );

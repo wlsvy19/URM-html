@@ -1,11 +1,13 @@
 import React from 'react'
 import { Table, Button, Input, Form } from 'antd'
-
 import * as urmsc from '../../../urm-utils'
+// import UserSearch from './User-search'
 
 class UserSearch extends React.Component {
   state = {
     vlsible: false,
+    readOnly: false,
+    //data : 0,
   }
 
   componentDidMount() {
@@ -18,7 +20,8 @@ class UserSearch extends React.Component {
     },
 
     clickAdd: e => {
-      this.props.edit()
+      this.props.add()
+
     },
 
     renderButton: (render) => {
@@ -56,6 +59,7 @@ class UserList extends React.Component {
   state = {
     items: [],
     onDbClick: undefined,
+    // data: 0,
   }
 
   method = {
@@ -73,7 +77,6 @@ class UserList extends React.Component {
     },
 
     clickEdit: (id) => {
-      console.log('User id: ' + id)
       this.props.edit(id)
     },
 

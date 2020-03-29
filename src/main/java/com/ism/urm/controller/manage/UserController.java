@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ism.urm.service.manage.UserService;
@@ -25,52 +22,17 @@ import com.ism.urm.vo.manage.User;
 public class UserController {
 
     UserService service = new UserService();
-    
-//    @PostMapping("/user/check")
-//    public boolean idCheck(@RequestParam(required=false) String id) throws Exception {
-//        System.out.println("controller-id:" + id);
-//        boolean rtn;
-//
-//        try {
-//            rtn = service.idCheck(id);
-//
-//        } catch (Exception e) {
-//            throw e;
-//        }
-//        System.out.println("rtn: " + rtn);
-//        return rtn;
-//    }
-    
-//   @RequestMapping(value = "/user/check", method = RequestMethod.POST)
-//   @ResponseBody
-//    public boolean idCheck(@RequestParam(required=false) String id) throws Exception {
-//        System.out.println("controller-id:" + id);
-//        boolean rtn;
-//
-//        try {
-//            rtn = service.idCheck(id);
-//
-//        } catch (Exception e) {
-//            throw e;
-//        }
-//        System.out.println("rtn: " + rtn);
-//        return rtn;
-//    }
-    
-    @PostMapping("/user/check")  
-     public int idCheck(@RequestBody(required=false) String id) throws Exception {
-         System.out.println("Request ID:" + id);
-         Object rtn = null;
-         int count = 0;
-         try {
-             rtn = service.idCheck(id);
-             System.out.println("Controller rtn: " + rtn);
-         } catch (Exception e) {
-             throw e;
-         }
-         System.out.println("rtn: " + rtn);
-         return count;
-     }
+
+    @GetMapping("/user/check")  
+    public int idCheck(@RequestParam("id") String userID) throws Exception {
+        int rtn = 0;
+        try{
+            rtn = service.idCheck(userID);
+        }catch(Exception e) {
+            
+        }
+        return rtn;
+    }
 
     @GetMapping("/user")
     public List<User> search(@RequestParam Map<String, String> params) throws Exception {

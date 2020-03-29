@@ -26,18 +26,17 @@ public class UserService {
         sessionFactory = HiberUtill.getSessionFactory();
     }
     
-    public Object idCheck(String userId) throws Exception {
+    public int idCheck(String userID) throws Exception {
         Session session = null;
-        Object rtn = null;
-       
-        int count = 0;
-        if (userId == null || userId.length() == 0)
+        int rtn = 0;
+
+        if (userID == null || userID.length() == 0)
             logger.error("userId is null");
 
         try {
             session = sessionFactory.openSession();
             session.beginTransaction();
-            rtn = userDao.idCheck(session, userId);
+            rtn = userDao.idCheck(session, userID);
         } catch (Exception e) {
             throw e;
         } finally {
