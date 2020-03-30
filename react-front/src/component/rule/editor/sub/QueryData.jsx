@@ -2,10 +2,12 @@ import React, { useState } from 'react'
 import { Button, Modal, Table } from 'antd'
 import { Form, Input, Select } from 'antd'
 
-import SubModal from '../../SubModal'
-import SystemList from '../../list/System-list'
+import SubModal from '@/component/SubModal'
+import SystemList from '@/component/rule/list/System-list'
 
-import * as urmsc from '../../../../urm-utils'
+import * as urmsc from '@/urm-utils'
+
+const locale = urmsc.locale
 
 class QueryEditor extends React.Component {
   state = {
@@ -75,7 +77,7 @@ const QueryEditorForm = (props) => {
       }
       urmsc.ajax({
         type: 'GET',
-        url: '/URM/data/field/query',
+        url: 'api/data/field/query',
         data: param,
         success: function(res) {
           setFields(res)
@@ -98,11 +100,11 @@ const QueryEditorForm = (props) => {
   return (
     <div className="urm-editor">
       <div className="editor-buttons">
-        <Button onClick={method.clickConfirm}>Confirm</Button>
+        <Button onClick={method.clickConfirm}>{locale['label.confirm']}</Button>
       </div>
       <Form colon={false}>
         <div className="row">
-          <Form.Item label="System ID">
+          <Form.Item label="시스템">
             {getFieldDecorator("systemId")(<Input.Search size="small" className="size-id" readOnly onSearch={method.setSystem} />)}
           </Form.Item>
           <Form.Item label="Type">{getFieldDecorator("type", {initialValue: 0})(
@@ -111,7 +113,7 @@ const QueryEditorForm = (props) => {
               <Select.Option key="1" value={1}>Query</Select.Option>
             </Select>)}
           </Form.Item>
-          <Form.Item className="flex-right"><Button onClick={method.getStructure}>Get Structure</Button></Form.Item>
+          <Form.Item className="flex-right"><Button onClick={method.getStructure}>구조 가져오기</Button></Form.Item>
         </div>
         <div className="row">
           <Form.Item className="data-query" extra={<p>테이블 명을 넣어주세요. [TABLENAME] 또는 [OWNER].[TABLENAME] 또는 [DATABASE].[OWNER].[TABLENAME]<br/>TB_ABC_TABLE 또는 EAIOWN.TB_ABC_TABLE 또는 UD_MCI01.EAIOWN.TB_ABC_TABLE</p>}>
@@ -124,12 +126,12 @@ const QueryEditorForm = (props) => {
         <Table className="table-striped" rowClassName="editable-row"
           dataSource={fields} pagination={false} bordered
           size={"small"} scroll={{ y: 500 }} rowKey="sno">
-          <Table.Column title="Index" dataIndex="sno" width="55px" align="center"/>
-          <Table.Column title="ENG Name" dataIndex="engName" width="150px"
+          <Table.Column title={locale['label.index']} dataIndex="sno" width="65px" align="center"/>
+          <Table.Column title={locale['label.fieldName']} dataIndex="engName" width="150px"
             render={(val, record, idx) => <Form.Item>{getFieldDecorator("fields["+idx+"].engName", {initialValue: val})(<Input size="small" />)}</Form.Item>}/>
-          <Table.Column title="KOR Name" dataIndex="name" width="150px"
+          <Table.Column title={locale['label.fieldLocalName']} dataIndex="name" width="150px"
             render={(val, record, idx) => <Form.Item>{getFieldDecorator("fields["+idx+"].name", {initialValue: val})(<Input size="small" />)}</Form.Item>}/>
-          <Table.Column title="Type" dataIndex="type" width="110px"
+          <Table.Column title={locale['label.fieldType']} dataIndex="type" width="110px"
             render={(val, record, idx) => <Form.Item>{getFieldDecorator("fields["+idx+"].type", {initialValue: val})(
               <Select size="small">
                 <Select.Option key="c" value="C">Character</Select.Option>
@@ -138,13 +140,13 @@ const QueryEditorForm = (props) => {
                 <Select.Option key="b" value="B">Binary</Select.Option>
               </Select>)}
             </Form.Item>}/>
-          <Table.Column title="DateFormat" dataIndex="dateFormat"
+          <Table.Column title={locale['label.dFormat']} dataIndex="dateFormat"
             render={(val, record, idx) => <Form.Item>{getFieldDecorator("fields["+idx+"].dateFormat", {initialValue: val})(<Input size="small" />)}</Form.Item>}/>
-          <Table.Column title="Length" dataIndex="length"
+          <Table.Column title={locale['label.len']} dataIndex="length"
             render={(val, record, idx) => <Form.Item>{getFieldDecorator("fields["+idx+"].length", {initialValue: val})(<Input size="small" />)}</Form.Item>}/>
-          <Table.Column title="Nullable" dataIndex="nullable" width="75px" render={(val, record, idx) => method.renderYesOrNo(val, 'fields['+idx+'].nullable')}/>
-          <Table.Column title="IsKey" dataIndex="keyYN" width="70px" render={(val, record, idx) => method.renderYesOrNo(val, 'fields['+idx+'].keyYN')}/>
-          <Table.Column title="IsSql" dataIndex="sqlYN" width="70px" render={(val, record, idx) => method.renderYesOrNo(val, 'fields['+idx+'].sqlYN')}/>
+          <Table.Column title={locale['label.nullable']} dataIndex="nullable" width="75px" render={(val, record, idx) => method.renderYesOrNo(val, 'fields['+idx+'].nullable')}/>
+          <Table.Column title={locale['label.isKey']} dataIndex="keyYN" width="85px" render={(val, record, idx) => method.renderYesOrNo(val, 'fields['+idx+'].keyYN')}/>
+          <Table.Column title={locale['label.isSQL']} dataIndex="sqlYN" width="100px" render={(val, record, idx) => method.renderYesOrNo(val, 'fields['+idx+'].sqlYN')}/>
         </Table>
       </Form>
             

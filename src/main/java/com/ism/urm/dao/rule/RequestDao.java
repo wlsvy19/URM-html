@@ -35,6 +35,7 @@ public class RequestDao extends RuleDao<Request> {
                                           Restrictions.eq("sendAdminId", userId),
                                           Restrictions.eq("rcvAdminId", userId)));
         crit.add(Restrictions.ne("chgStat", "4"));
+        crit.add(Restrictions.ne("delYN", false));
         
         crit.addOrder(Order.desc("chgDate"));
         

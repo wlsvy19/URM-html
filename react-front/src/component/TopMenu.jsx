@@ -7,6 +7,8 @@ import { initCode, initAuth } from '../store/modules/code'
 import { logout } from '../store/modules/auth'
 import * as urmsc from '../urm-utils'
 
+const urmProps = require('urmProperties')
+
 class TopMenu extends React.Component {
   constructor(props) {
     super(props)
@@ -36,7 +38,7 @@ class TopMenu extends React.Component {
         let $this = this
         urmsc.ajax({
           type: 'GET',
-          url:  '/URM/code/common',
+          url:  'api/code/common',
           success: function(res) {
             $this.props.initCode(res)
           },
@@ -48,24 +50,26 @@ class TopMenu extends React.Component {
         let $this = this
         urmsc.ajax({
           type: 'GET',
-          url:  '/URM/code/auth',
+          url:  'api/code/auth',
           success: function(res) {
             $this.props.initAuth(res)
           },
         })
       }
     },
-    
+      
     logout: e => {
+      logout()
       /*urmsc.ajax({
         type: 'GET',
         url: '/URM/logout',
+        dataType: 'text',
         success: function(res) {
-          //sessionStorage.removeItem('URMUser')
-          window.location = 'http://localhost:9080/URM/'
+          sessionStorage.removeItem('URMUser')
+          logout()
         }
       })*/
-    }
+    },
   }
 
   render() {
@@ -73,31 +77,23 @@ class TopMenu extends React.Component {
       <div className="urm-menu">
         <div className="urm-logo">
           <Link to="/" onClick={this.method.clickMain}>
-            <img src="/logo.gif" alt="logo" height="29" />
+            <img src="logo.gif" alt="logo" height="29" />
             <span>EAI 요건 관리 시스템</span>
           </Link>
         </div>
         
         <Menu onClick={this.method.handleClick} selectedKeys={[this.state.current]} mode="horizontal">
-          <Menu.Item key="request"><Link to="/request">Request</Link></Menu.Item>
-          <Menu.Item key="data"><Link to="/data">Data</Link></Menu.Item>
-          <Menu.Item key="system"><Link to="/system">System</Link></Menu.Item>
-          <Menu.SubMenu title={<span>Manage</span>}>
-            <Menu.Item key="user"><Link to="/user">User</Link></Menu.Item>
-            <Menu.Item key="biz"><Link to="/biz">Business Code</Link></Menu.Item>
+          <Menu.Item key="request"><Link to="/request">{urmProps['page.request.name']}</Link></Menu.Item>
+          <Menu.Item key="data"><Link to="/data">{urmProps['page.data.name']}</Link></Menu.Item>
+          <Menu.Item key="system"><Link to="/system">{urmProps['page.system.name']}</Link></Menu.Item>
+          <Menu.SubMenu title={<span>관리자</span>}>
+            <Menu.Item key="user"><Link to="/user">{urmProps['page.user.name']}</Link></Menu.Item>
+            <Menu.Item key="biz"><Link to="/biz">{urmProps['page.biz.name']}</Link></Menu.Item>
           </Menu.SubMenu>
-          <Menu.SubMenu title={<span>Result</span>}>
+          {/*<Menu.SubMenu title={<span>Result</span>}>
             <Menu.Item key="log"><Link to="/">Process Log</Link></Menu.Item>
             <Menu.Item key="stat"><Link to="/">Statics</Link></Menu.Item>
-          </Menu.SubMenu>
-          <Menu.SubMenu title={<span>SubMenu</span>}>
-            <Menu.ItemGroup title="group1">
-              <Menu.Item key="group1"><Link to="/">URM</Link></Menu.Item>
-            </Menu.ItemGroup>
-            <Menu.ItemGroup title="group2">
-              <Menu.Item key="group2"><Link to="/">URM</Link></Menu.Item>
-            </Menu.ItemGroup>
-          </Menu.SubMenu>
+          </Menu.SubMenu>*/}
         </Menu>
         
         <div className="urm-user">

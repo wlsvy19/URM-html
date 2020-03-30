@@ -30,7 +30,7 @@ public class SessionUtil {
         String userID = (String) req.getSession().getAttribute(USER_ID);
         
         if (userID == null) {
-            return "eai"; //"unknown-user";
+            return "eai"; //throw new Exception("empty session.")
         }
         return userID;
     }

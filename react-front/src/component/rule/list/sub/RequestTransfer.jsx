@@ -2,10 +2,10 @@ import React from 'react'
 import { Table, Button, message } from 'antd'
 import { Form, Input } from 'antd'
 
-import SubModal from '../../SubModal'
-import UserList from '../../../manage/list/User-list'
+import SubModal from '@/component/SubModal'
+import UserList from '@/component/manage/list/User-list'
 
-import * as urmsc from '../../../../urm-utils'
+import * as urmsc from '@/urm-utils'
 
 class TransferForm extends React.Component {
   method = {
@@ -108,7 +108,7 @@ class RequestTransfer extends React.Component {
       let $this = this
       urmsc.ajax({
         type: 'GET',
-        url: '/URM/request/list',
+        url: 'api/request/list',
         data: param,
         success: function(res) {
           $this.setState({ items: res })
@@ -130,7 +130,7 @@ class RequestTransfer extends React.Component {
       console.log(tmp)
       /*urmsc.ajax({
         type: 'POST',
-        url: '/URM/request/transfer',
+        url: 'api/request/transfer',
         data: JSON.stringify(tmp),
         contentType: 'applicaion/json; charset=UTF-8',
         success: function(res) {

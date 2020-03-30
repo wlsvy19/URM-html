@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ism.urm.config.URMProperties;
 import com.ism.urm.service.manage.UserService;
 import com.ism.urm.util.SessionUtil;
 import com.ism.urm.vo.JobResult;
@@ -18,16 +19,9 @@ public class LoginController {
     
     UserService service = new UserService();
 
-    @GetMapping("/")
-    public String page(HttpServletRequest req) {
-        System.out.println("default path");
-        return loginPage(req);
-    }
-
     @GetMapping("/login/login.page")
     public String loginPage(HttpServletRequest req) {
-        //req.setAttribute("version", WEB_VERSION);
-        String loginPage = ""; //Common.getProperty("common.loginpage");
+        String loginPage = URMProperties.get("login.page");
         if(loginPage == null || loginPage.trim().length() == 0) {
             return "/login";
         } else {
@@ -41,33 +35,7 @@ public class LoginController {
         JobResult rtn = null;
         try {
             String userId = (String) req.getSession().getAttribute(SessionUtil.USER_ID);
-            if (userId == null || userId.length() == 0) {
-                if (user.getPassword() == null || user.getPassword().length() == 0) {
-                    throw new Exception("session expired!!!");
-                }
-                userId = user.getId();
-                User org = service.get(userId);
-                
-                if (org == null) {
-                    throw new Exception("user not exist."); //code 1
-                } else {
-                    String passwd = SessionUtil.getDecString(org.getPassword());
-                    if (!passwd.equals(user.getPassword())) {
-                        throw new Exception("invalid password."); //code 2
-                    }
-                }
-                
-                SessionUtil.setUserID(userId);
-                User obj = new User();
-                obj.setId(userId);
-                obj.setName(org.getName());
-                obj.setAuthId(org.getAuthId());
-                
-                rtn = new JobResult(0, "login success.");
-                rtn.setObj(obj);
-            } else {
-                rtn = new JobResult(0, "already logged!!!");
-            }
+            rtn = service.login(user, userId);
         } catch (Exception e) {
             rtn = new JobResult(99, e.getMessage());
         }
@@ -75,8 +43,16 @@ public class LoginController {
     }
 
     @GetMapping("/logout")
-    public void logout() {
+    public String logout() {
         SessionUtil.invalidate();
+        return "redirect:/login/login.page";
+    }
+    
+
+    /* default page */
+    @GetMapping(value = {"/request", "/data", "/system", "/user", "/biz"})
+    public String redirect() {
+        return "forward:/index.html";
     }
 
 }

@@ -7,21 +7,17 @@ import java.util.Properties;
 public class URMProperties {
 
     private static Properties urmProps = new Properties();
-    
+
     public URMProperties() {
         // TODO Auto-generated constructor stub
     }
     
     public synchronized static void init() {
-//        String ismHomeDir = System.getenv("ISM_HOME");
-//        if (ismHomeDir == null || ismHomeDir.trim().length() == 0) {
-//            ismHomeDir = ".";
-//        }
-
         String confFileName = System.getProperty("urm.conf");
         try {
             if (confFileName == null || confFileName.trim().length() == 0 ) {
-                confFileName = "/urm.properties";
+                String resourcePath = URMProperties.class.getClassLoader().getResource("").getPath();
+                confFileName = resourcePath + "/urm.properties";
             }
             File file = new File(confFileName);
             if (!file.exists()) {
@@ -50,4 +46,5 @@ public class URMProperties {
         }
         return value;
     }
+
 }

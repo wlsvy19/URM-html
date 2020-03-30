@@ -4,12 +4,29 @@ import { Form, Input } from 'antd'
 import { Stage, Layer, Line } from 'react-konva'
 
 import RuleEditor from './RuleEditor'
-import SubModal from '../SubModal'
+import SubModal from '@/component/SubModal'
 import CopyData from './sub/CopyData'
 
-import * as urmsc from '../../../urm-utils'
+import * as urmsc from '@/urm-utils'
+
+const locale = urmsc.locale
 
 class DataMap extends RuleEditor {
+  state = {
+    ...this.state,
+    confirm: undefined
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.state.visible !== nextState.visible) {
+      return true
+    }
+    if (JSON.stringify(this.state.item) !== JSON.stringify(nextState.item)) {
+      return true
+    }
+    return false
+  }
+
   childMethod = {
     ...this.childMethod,
 
@@ -19,18 +36,16 @@ class DataMap extends RuleEditor {
         return false
       }
       
-      console.log('save')
-      return false
-      
       let $this = this
       urmsc.ajax({
         type: 'POST',
-        url: '/URM/' + this.props.path,
+        url: 'api/' + this.props.path,
         data: JSON.stringify(saveItem),
         contentType: 'application/json',
         success: function(res) {
           console.log(res)
           $this.setState({item: res})
+          $this.state.confirm && $this.state.confirm(res.id)
         }
       })
     },
@@ -53,6 +68,7 @@ const DataMapEditor = (props) => {
   const { DirectoryTree, TreeNode } = Tree
   const [ lines, setLines ] = useState([])
   const [ values, setValues ] = useState([])
+  const [ expanded, setExpanded ] = useState({src: true, tgt: true})
 
   // Only re-run the effect if props.item changes
   useEffect(() => {
@@ -84,7 +100,6 @@ const DataMapEditor = (props) => {
     clearMapping: e => {
       item.children.mapLines = []
       method.setMapLines()
-      method.drawLine()
     },
     
     setData: (type) => {
@@ -92,7 +107,7 @@ const DataMapEditor = (props) => {
       let callback = (data) => {
         urmsc.ajax({
           type: 'GET',
-          url: '/URM/data/' + data.id,
+          url: 'api/data/' + data.id,
           success: function(result) {
             if (type === 'src') {
               item.sourceData = result
@@ -134,6 +149,10 @@ const DataMapEditor = (props) => {
     },
     
     dropNode: (node, dragNode) => {
+      if (!dragNode || !node.props.isLeaf) {
+        console.log(node, dragNode)
+        return false
+      }
       let lines = item.children.mapLines
       let exist = false
       
@@ -154,7 +173,6 @@ const DataMapEditor = (props) => {
       item.children.mapLines = lines
       
       method.setMapLines()
-      method.drawLine()
     },
     
     renderTreeNode: (type, treeData, isChild) => {
@@ -189,7 +207,11 @@ const DataMapEditor = (props) => {
     },
     
     renderDVal: (fieldId) => {
-      return values.filter(it => it.fieldId === fieldId).map((it) => <span className="org">{it.defaultValue}</span>)
+      let index = 0
+      return values.filter((it, idx) => {
+        index = idx
+        return it.fieldId === fieldId
+      }).map((it) => <span key={index} className="org">{it.defaultValue}</span>)
     },
     
     editDefault: (e, data) => {
@@ -207,7 +229,10 @@ const DataMapEditor = (props) => {
         if ($span) $span.classList.remove('hide')
       }
       
-      if ($el.classList.contains('dVal')) {
+      if ($el.classList.contains('dVal') || $el.classList.contains('org')) {
+        if ($el.classList.contains('org')) {
+          $el = $el.parentNode
+        }
         let isEdit = $el.classList.contains('edit')
         if (!isEdit) {
           $el.classList.add('edit')
@@ -247,44 +272,87 @@ const DataMapEditor = (props) => {
     },
     
     setMapLines: () => {
-      let $canvas = document.querySelector('.line-canvas')
-      let cR = $canvas.getBoundingClientRect()
       if (item.children.mapLines) {
         let lines = item.children.mapLines.map((it, idx) => {
+          let $p = document.querySelector('.map-tree > ul > li > span:first-child')
           let $src = document.querySelector('.s-'+it.sourceFieldId)
           let $tgt = document.querySelector('.t-'+it.targetFieldId)
+          let pR = $p.getBoundingClientRect()
           let sR = $src.getBoundingClientRect()
           let tR = $tgt.getBoundingClientRect()
           
-          let y1 = sR.top-cR.top+sR.height/2
-          let y2 = tR.top-cR.top+tR.height/2
-          
-          let points = [0, y1, 200, y2]
-          let lineProps = {
-            key: idx,
-            stroke: '#0000ff'
-          }
-          
-          if (y1 !== y2) {
-            points = [0, y1, 100, y1, 100, y2, 200, y2]
-            lineProps.bezier = true
-          }
-          
-          return <Line points={points} {...lineProps} />
+          return {e: {sR: sR, tR: tR}, c: {pR: pR}}
         })
+        console.log(lines)
         setLines(lines)
       }
     },
     
-    drawLine: () => {
-      console.log(lines)
-      return lines
+    drawLine: (expanded) => {
+      let $canvas = document.querySelector('.line-canvas')
+      let cR = $canvas ? $canvas.getBoundingClientRect() : null
+      return lines.map((it, idx) => {
+        let sR = expanded.src ? it.e.sR : it.c.pR
+        let tR = expanded.tgt ? it.e.tR : it.c.pR
+        let y1 = sR.top-cR.top+sR.height/2
+        let y2 = tR.top-cR.top+tR.height/2
+        
+        let points = [0, y1, 200, y2]
+        let lineProps = {
+          key: idx,
+          stroke: '#0000ff'
+        }
+        
+        if (y1 !== y2) {
+          points = [0, y1, 100, y1, 100, y2, 200, y2]
+          lineProps.bezier = true
+        }
+        
+        return <Line points={points} {...lineProps} />
+      })
     },
     
-    onExpand: () => {
-      console.log('expand')
+    onExpand: (yn, type) => {
+      let res = {...expanded}
+      if (type === 'src') {
+        res.src = yn
+      } else if (type === 'tgt') {
+        res.tgt = yn
+      }
+      setExpanded(res)
+    },
+    
+    setSelectNode: (node) => {
+      node.props.isLeaf || setExpanded({...expanded, src: false})
+      return node.props.isLeaf ? node : null
+    },
+    
+    mappingName: () => {
+      let lines = item.children.mapLines
+      let srcFlds = item.sourceData.fields
+      let tgtFlds = item.targetData.fields
+      
+      tgtFlds.forEach((it) => {
+        let src = srcFlds.filter((fld) => fld.engName === it.engName)
+        let exist = false
+        if (src.length > 0) {
+          if (lines && lines.length > 0) {
+            exist = (lines.filter((line) => {
+              return (line.sourceFieldId === src[0].fieldId &&
+                line.targetFieldId === it.fieldId)
+            }).length > 0)
+          }
+          
+          if (!exist) {
+            lines.push({
+              sourceFieldId: src[0].fieldId,
+              targetFieldId: it.fieldId
+            })
+          }
+        }
+      })
+      item.children.mapLines = lines
       method.setMapLines()
-      method.drawLine()
     }
   }
 
@@ -293,28 +361,28 @@ const DataMapEditor = (props) => {
   return (
     <div className="urm-editor">
       <div className="editor-buttons">
-        <Button onClick={method.clickSave}>Save</Button>
+        <Button onClick={method.clickSave} disabled={!props.isPageSave()}>{locale['label.save']}</Button>
       </div>
       <Form colon={false}>
         <div className="row">
-          <Form.Item label="Mapping ID">{getFieldDecorator("id")(<Input size="small" className="size-id" readOnly />)}</Form.Item>
-          <Form.Item label="Mapping Name">{getFieldDecorator("name")(<Input size="small" className="size-name" />)}</Form.Item>
+          <Form.Item label="매핑 ID">{getFieldDecorator("id")(<Input size="small" className="size-id" readOnly />)}</Form.Item>
+          <Form.Item label={locale['label.dataMapName']}>{getFieldDecorator("name")(<Input size="small" className="size-name" />)}</Form.Item>
         </div>
         
         <hr />
         
         <div className="row">
           <div className="col-2">
-            <Form.Item label="Source" className="src-id">
+            <Form.Item label={locale['label.outData']} className="src-id">
               {getFieldDecorator("sourceDataId")(<Input.Search size="small" className="size-id" readOnly onSearch={vars => { method.setData('src') }} />)}
             </Form.Item>
           </div>
           <div className="col-1 center">
-            <Button icon="disconnect" onClick={method.clearMapping} />
-            <Button icon="link" />
+            <Button icon="disconnect" onClick={method.clearMapping} title={locale['label.deleteMapping']} />
+            <Button icon="link" onClick={method.mappingName} title={locale['label.connectName']} />
           </div>
           <div className="col-3 row">
-            <Form.Item label="Target" className="flex-right tgt-id">
+            <Form.Item label={locale['label.inData']} className="flex-right tgt-id">
               {getFieldDecorator("targetDataId")(<Input.Search size="small" className="size-id" readOnly onSearch={vars => { method.setData('tgt') }} />)}
             </Form.Item>
           </div>
@@ -325,13 +393,14 @@ const DataMapEditor = (props) => {
               <div className="col-1 title">Eng Name</div>
               <div className="col-1 title">Kor Name</div>
             </div>
-            <DirectoryTree draggable defaultExpandAll onDragStart={info => { selectNode = info.node }}>
+            <DirectoryTree draggable defaultExpandAll onDragStart={info => { selectNode = method.setSelectNode(info.node) }}
+                onExpand={(expandedKeys, {expanded, node}) => { method.onExpand(expanded, 'src') }}>
               {method.renderTreeNode('src', method.parseTreeData(item.sourceData))}
             </DirectoryTree>
           </div>
           <Stage className="col-1 line-canvas" width={200} height={300}>
             <Layer>
-              {method.drawLine()}
+              {method.drawLine(expanded)}
             </Layer>
           </Stage>
           <div className="col-3 map-tree">
@@ -340,7 +409,8 @@ const DataMapEditor = (props) => {
               <div className="col-1 title">Kor Name</div>
               <div className="col-1 title">Default Value</div>
             </div>
-            <DirectoryTree draggable defaultExpandAll onDrop={info => { method.dropNode(info.node, selectNode) }}>
+            <DirectoryTree draggable defaultExpandAll onDrop={info => { method.dropNode(info.node, selectNode) }}
+                onExpand={(expandedKeys, {expanded, node}) => { method.onExpand(expanded, 'tgt') }}>
               {method.renderTreeNode('tgt', method.parseTreeData(item.targetData))}
             </DirectoryTree>
           </div>

@@ -1,3 +1,5 @@
+export const locale = require('msgProperties')
+
 export const CODEKEY = {
   procStat: '1',
   chgStat: '2',
@@ -61,11 +63,18 @@ export function ajax (props) {
     if (this.readyState === 4) {
       let res = this.response
       if (this.status === 200) {
-        if (props.dataType === 'json') res = JSON.parse(this.response)
-        if (props.success) props.success(res)
+        let curUrl = window.location.href
+        if (curUrl !== this.responseURL && this.responseURL &&
+            this.responseURL.indexOf('/api/') === -1) {
+          if (props.success) props.success(res)
+          window.location.href = this.responseURL
+        } else {
+          if (props.dataType === 'json') res = JSON.parse(this.response)
+          if (props.success) props.success(res)
+        }
       } else {
         if (props.error) {
-          props.error(res)
+          props.error(this)
         } else {
           ajaxHandleError(this.statusText, res)
         }
@@ -93,4 +102,34 @@ export function convertYN (obj) {
 
 export function getSubListByKey (list, key, val) {
   return list.filter(item => item[key] === val);
+}
+
+const urmProps = require('urmProperties')
+export function isSelectAuth (type, value, auth) {
+  let values = urmProps['auth.' + auth + '.' + type]
+  if (!values) {
+    return true
+  }
+  values = values.split(',')
+  for(let i = 0; i < values.length; i++) {
+    if(values[i] === value) {
+      return true
+    }
+  }
+  return false
+}
+
+export function isPageEdit (page, type, auth) {
+  if (page === 'datamap') page = 'request'
+  let values = urmProps['page.' + page + '.' + type]
+  if (!values) {
+    return false
+  }
+  values = values.split(',')
+  for(let i = 0; i < values.length; i++) {
+    if(values[i] === auth) {
+      return true
+    }
+  }
+  return false
 }

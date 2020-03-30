@@ -15,6 +15,10 @@ public class DataMap extends RuleVo {
     Data sourceData;
     Data targetData;
 
+    String requestId;
+    String interfaceId;
+    boolean delYN;
+    
     public String getSourceDataId() {
         return sourceDataId;
     }

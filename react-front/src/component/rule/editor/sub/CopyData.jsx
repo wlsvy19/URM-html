@@ -3,7 +3,9 @@ import { Button, Table } from 'antd'
 import { Form, Input, Select } from 'antd'
 import moment from 'moment'
 
-import * as urmsc from '../../../../urm-utils'
+import * as urmsc from '@/urm-utils'
+
+const locale = urmsc.locale
 
 class CopySearch extends React.Component {
   componentDidMount() {
@@ -28,16 +30,16 @@ class CopySearch extends React.Component {
       <div className="search-bar">
         <Form colon={false}>
           <div className="row">
-            <Form.Item label="ID">{getFieldDecorator("id")(<Input size="small" className="search-id" />)}</Form.Item>
-            <Form.Item label="Name">{getFieldDecorator("name")(<Input size="small" className="search-name" />)}</Form.Item>
-            <Form.Item label="Type">
+            <Form.Item label={locale['label.dataId']}>{getFieldDecorator("id")(<Input size="small" className="search-id" />)}</Form.Item>
+            <Form.Item label={locale['label.dataName']}>{getFieldDecorator("name")(<Input size="small" className="search-name" />)}</Form.Item>
+            <Form.Item label={locale['label.dataType']}>
               {getFieldDecorator("type", {initialValue: ""})(<Select size={"small"} className="search-id">
                 <Select.Option value="">ALL</Select.Option>
                 {this.method.renderOpts("dataType")}
               </Select>)}
             </Form.Item>
             <Form.Item className="search-buttons">
-              <Button icon="search" onClick={this.method.clickSearch} />
+              <Button icon="search" onClick={this.method.clickSearch} title={locale['label.search']} />
             </Form.Item>
           </div>
         </Form>
@@ -98,7 +100,7 @@ class CopyList extends React.Component {
       let $this = this
       urmsc.ajax({
         type: 'GET',
-        url: '/URM/data',
+        url: 'api/data',
         data: param,
         success: function(list) {
           $this.setState({items: list})
@@ -110,7 +112,7 @@ class CopyList extends React.Component {
       let $this = this
       urmsc.ajax({
         type: 'GET',
-        url: '/URM/data/field/' + record.id,
+        url: 'api/data/field/' + record.id,
         success: function(fields) {
           $this.setState({fields: (fields ? fields : [])})
         }
@@ -132,11 +134,11 @@ class CopyList extends React.Component {
             }
           }
         }>
-          <Table.Column title="ID" dataIndex="id" width="150px"/>
-          <Table.Column title="Name" dataIndex="name" width="250px"/>
-          <Table.Column title="Type" dataIndex="type" render={(val) => ( this.method.getTypeStr('sysType', val) )} />
-          <Table.Column title="Register" dataIndex="regId"/>
-          <Table.Column title="RegDate" dataIndex="regDate" render={(val) => ( moment(val).format('YYYY-MM-DD HH:mm') )} />
+          <Table.Column title={locale['label.id']} dataIndex="id" width="150px"/>
+          <Table.Column title={locale['label.name']} dataIndex="name" width="250px"/>
+          <Table.Column title={locale['label.dataType']} dataIndex="type" render={(val) => ( this.method.getTypeStr('dataType', val) )} />
+          <Table.Column title={locale['label.registId']} dataIndex="regId"/>
+          <Table.Column title={locale['label.registDate']} dataIndex="regDate" render={(val) => ( moment(val).format('YYYY-MM-DD HH:mm') )} />
         </Table>
         
         <hr />
@@ -144,15 +146,15 @@ class CopyList extends React.Component {
         <Table className="table-striped" rowClassName="editable-row"
           dataSource={this.state.fields} pagination={false} bordered
           size={"small"} scroll={{ y: 500 }} rowKey="sno">
-          <Table.Column title="Index" dataIndex="sno" width="55px" align="center"/>
-          <Table.Column title="ENG Name" dataIndex="engName" width="150px"/>
-          <Table.Column title="KOR Name" dataIndex="name" width="150px"/>
-          <Table.Column title="Type" dataIndex="type" width="110px" render={(val) => ( this.method.getFieldStr('type', val) )}/>
-          <Table.Column title="DateFormat" dataIndex="dateFormat"/>
-          <Table.Column title="Length" dataIndex="length"/>
-          <Table.Column title="Nullable" dataIndex="nullable" width="75px" render={(val) => ( this.method.getFieldStr('yn', val) )}/>
-          <Table.Column title="IsKey" dataIndex="keyYN" width="70px" render={(val) => ( this.method.getFieldStr('yn', val) )}/>
-          <Table.Column title="IsSql" dataIndex="sqlYN" width="70px" render={(val) => ( this.method.getFieldStr('yn', val) )}/>
+          <Table.Column title={locale['label.index']} dataIndex="sno" width="65px" align="center"/>
+          <Table.Column title={locale['label.fieldName']} dataIndex="engName" width="150px"/>
+          <Table.Column title={locale['label.fieldLocalName']} dataIndex="name" width="150px"/>
+          <Table.Column title={locale['label.fieldType']} dataIndex="type" width="110px" render={(val) => ( this.method.getFieldStr('type', val) )}/>
+          <Table.Column title={locale['label.dFormat']} dataIndex="dateFormat"/>
+          <Table.Column title={locale['label.len']} dataIndex="length"/>
+          <Table.Column title={locale['label.nullable']} dataIndex="nullable" width="75px" render={(val) => ( this.method.getFieldStr('yn', val) )}/>
+          <Table.Column title={locale['label.isKey']} dataIndex="keyYN" width="85px" render={(val) => ( this.method.getFieldStr('yn', val) )}/>
+          <Table.Column title={locale['label.isSQL']} dataIndex="sqlYN" width="100px" render={(val) => ( this.method.getFieldStr('yn', val) )}/>
         </Table>
       </div>
     );

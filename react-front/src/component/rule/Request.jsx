@@ -1,5 +1,8 @@
 import React from 'react'
+
 import RuleMain from './RuleMain'
+import RequestList from './list/Request-list'
+import RequestEditor from './editor/Request-editor'
 
 export default class Request extends RuleMain {
   constructor (props) {
@@ -9,20 +12,18 @@ export default class Request extends RuleMain {
     }
   }
   
-  getAuth = () => {
+  authList = () => {
     let authList = this.props.authCode
     return authList ? authList : []
   }
   
   render() {
-    const { RequestList, RequestEditor} = this.components
-    
     return (
       <div className="urm-panel">
-        <RequestList ref="list" path={this.state.path}
-          codeList={this.getCode()} authList={this.getAuth()} edit={this.method.handleEdit} />
-        <RequestEditor ref="editor" path={this.state.path}
-          codeList={this.getCode()} authList={this.getAuth()} save={this.method.handleSave} />
+        <RequestList ref="list" path={this.state.path} userInfo={this.props.userInfo}
+          codeList={this.codeList()} authList={this.authList()} edit={this.method.handleEdit} />
+        <RequestEditor ref="editor" path={this.state.path} userInfo={this.props.userInfo}
+          codeList={this.codeList()} authList={this.authList()} save={this.method.handleSave} />
       </div>
     );
   }

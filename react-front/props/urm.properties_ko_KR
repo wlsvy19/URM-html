@@ -1,0 +1,50 @@
+﻿##################################################
+## URM PAGE AUTH
+# 0 : URM    ADMIN ( ALL CRUD )
+# 1 : USER   ADMIN
+# 2 : USER   VIEWER
+# 3 : SYSTEM ADMIN
+# 4 : SYSTEM VIEWER
+# 5 :
+# 6 :
+# 7 : INTERFACE & DATA ADMIN
+# 8 : INTERFACE & DATA VIEWER
+# 9 : INTERFACE & DATA ADMIN   
+#            - Server Side : only Person in Charge 
+###################################################
+page.request.name=요건 관리
+page.request.view=0,5,6,7,8,9
+page.request.save=0,5,7,9
+page.request.delete=0,5,7
+
+page.data.name=데이터 관리
+page.data.view=0,5,6,9
+page.data.save=0,5,9
+page.data.delete=0,5
+
+page.system.name=시스템 관리
+page.system.view=0,3,4
+page.system.save=0,3
+page.system.delete=0,3
+
+page.user.name=사용자 관리
+page.user.view=0,1,2
+page.user.save=0,1
+page.user.delete=0,1
+
+page.biz.name=업무 코드
+page.biz.view=0
+
+page.stat.name=요건 통계
+page.stat.view=0,1,2,3,4,5,6,7,8,9
+
+page.result.name=거래 확인
+page.result.view=0,1,2,3,4,5,6,7,8,9
+
+##################################################
+## URM special AUTH
+##################################################
+#auth.9.prcStat=1,7,8,9,11
+auth.9.chgStat=1,3
+
+auth.showPassword=0

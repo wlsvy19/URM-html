@@ -1,6 +1,7 @@
 package com.ism.urm.service.manage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -10,7 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ism.urm.dao.manage.UserDao;
+import com.ism.urm.util.SessionUtil;
 import com.ism.urm.vo.HiberUtill;
+import com.ism.urm.vo.JobResult;
 import com.ism.urm.vo.RelationOp;
 import com.ism.urm.vo.manage.User;
 
@@ -102,5 +105,52 @@ public class UserService {
         return rtn;
     }
 
-   
+    public JobResult login(User vo, String sessionId) throws Exception {
+        JobResult rtn = null;
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            
+            User org = null;
+            if (sessionId == null || sessionId.length() == 0) {
+                if (vo.getPassword() == null || vo.getPassword().length() == 0) {
+                    SessionUtil.invalidate();
+                    throw new Exception("session expired!!!");
+                }
+                sessionId = vo.getId();
+
+                org = userDao.get(session, sessionId);
+                if (org == null) {
+                    rtn = new JobResult(1, "user not exist.");
+                    rtn.setObj("/login/login.page");
+                    return rtn;
+                } else {
+                    String passwd = SessionUtil.getDecString(org.getPassword());
+                    if (!passwd.equals(vo.getPassword())) {
+                        rtn = new JobResult(2, "invalid password.");
+                        rtn.setObj("/login/login.page");
+                        return rtn;
+                    }
+                }
+
+                SessionUtil.setUserID(sessionId);
+                rtn = new JobResult(0, "login success.");
+            } else {
+                rtn = new JobResult(0, "already logged!!!");
+                org = userDao.get(session, sessionId);
+            }
+
+            HashMap<String, String> map = new HashMap<>();
+            map.put("id", sessionId);
+            map.put("name", org.getName());
+            map.put("authId", org.getAuthId());
+            rtn.setObj(map);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (session != null) try { session.close(); } catch (Exception ignore) { }
+        }
+        return rtn;
+    }
 }

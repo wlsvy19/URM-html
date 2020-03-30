@@ -1,7 +1,7 @@
 import React from 'react'
-import BizList from './list/BusinessCode-list'
+import BizList from './list/BizCode-list'
 
-class BusinessCode extends React.Component {
+export default class BizCode extends React.Component {
   render() {
     return (
       <div className="urm-panel">
@@ -10,5 +10,3 @@ class BusinessCode extends React.Component {
     );
   }
 }
-
-export default BusinessCode

@@ -52,7 +52,7 @@
         <property name="sqlPlain" type="string" column="SQL_PLAIN" />
         <property name="dbCrudType" type="string" column="DB_CRUD_TYPE" />
         <property name="fileCrudType" type="string" column="FILE_CRUD_TYPE" />
-        <property name="ifFileName" type="string" column="IF_FILE_NM" />
+        <property name="infFileName" type="string" column="IF_FILE_NM" />
 
         <property name="dcnt" type="string" column="DCNT" />
         <property name="openYMD" type="string" column="OPEN_YMD" />

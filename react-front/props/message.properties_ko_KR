@@ -1,0 +1,262 @@
+﻿###################################################
+## LABEL
+###################################################
+label.main=EAI 요건관리
+label.save=저장
+label.cancel=취소
+label.list=목록
+label.add=등록
+label.confirm=확인
+label.idConfirm=ID 확인
+label.idUse=ID 사용
+label.info=정보
+label.init=초기화
+label.modify=수정
+label.delete=삭제
+label.search=검색
+label.append=추가
+label.upsert=등록 변경
+label.statistics=통계
+label.index=INDEX
+label.logout=LOGOUT
+label.reload=다시 읽기
+label.modifyUserInfo=정보변경
+label.downExcel=Excel
+
+label.tempUserList=임시사용자
+label.idRegisty=ID 등록
+label.id=ID
+label.name=이름
+label.pass=비밀번호
+label.type=구분
+label.index=INDEX
+
+label.all=-- ALL
+label.selectText=SELECT ....
+
+label.reqDefindReport=요건정의서
+label.dataDefindReport=데이터정의서
+label.fileName=파일명
+label.dataId=DATA ID
+label.dataName=DATA 명
+label.dataType=DATA 타입
+label.inoutType=INOUT 타입
+label.standardCheck=표준항목 사용
+label.autoCreate=자동생성
+label.excelUpload=Excel Upload
+label.fieldId=필드 ID
+label.fieldName=영문필드명
+label.fieldLocalName=한글필드명
+label.fieldType=필드유형
+label.len=길이
+label.dotLen=소수 길이
+label.seqNo=일련번호
+label.repSeqNo=반복일련번호
+label.repeatYn=반복여부
+label.repeatNo=반복회수
+label.nullable=널가능
+label.isKey=키값여부
+label.isSQL=SQL함수여부
+label.desc=부가 설명
+label.hdnId=항목 ID
+label.hdnKrNm=항목한글명
+label.hdnEnNm=항목영문명
+label.dFormat=날짜포멧
+
+label.title.noti=알림
+
+label.interfaceId=인터페이스 ID
+label.interfaceType=유형
+label.requestId=요건ID
+label.requestName=요건명
+label.changeStatus=변경요청상태
+label.processStatus=진행상태
+label.sourceSystem=송신 시스템
+label.targetSystem=수신 시스템
+label.registId=등록자
+label.registDate=등록일시
+label.changeId=변경자
+label.changeDate=수정일시
+label.request=요청
+label.response=응답
+label.lastChangeDate=최종변경일자
+
+
+label.testDate=테스트예정일자
+label.isMapping=매핑사용
+
+label.openDate=변경요청일
+label.jobType=업무구분
+label.sndJobCode=송신업무코드
+label.rcvJobCode=수신업무코드
+label.eaiYn=EAI 여부
+label.2pcYn=2PC 여부
+label.sourceMethod=송신방식
+label.targetMethod=수신방식
+label.trType=전송유형
+label.syncType=Sync타입
+
+label.sourceInfo=송신 추가정보
+label.targetInfo=수신 추가정보
+label.sourceQuery=송신 쿼리
+label.targetFileCRUD=File CUD
+label.targetDBCRUD=DB CUD
+label.sourceAdmin=송신 담당자
+label.targetAdmin=수신 담당자
+label.sourceTable=송신 테이블
+label.sourceFile=송신 파일명
+label.sourceService=송신 서비스
+label.targetTable=수신 테이블
+label.targetFile=수신 파일명
+label.targetService=수신 서비스
+label.etcRequest=기타 요청
+label.eaiRequest=요청 응답
+
+label.systemId=시스템 ID
+label.systemCd=시스템 Code
+label.devType=개발 구분
+label.systemName=시스템명
+label.systemType=시스템타입
+label.host=Host 명
+label.ip=IP
+label.port=Port
+label.dbType=DB TYPE
+label.dbName=DB(Service) Name
+label.jdbcType=JDBC TYPE
+label.connectParam=연결 파라미터
+label.etcRemark=부가정보
+
+label.auth=권한코드
+label.dept=부서
+label.position=직위
+label.grade=직급
+label.officeTel=Office Tel
+label.generalTel=General Tel
+label.mobile=Mobile
+
+label.fileSelect=파일 선택
+label.dataMapId=데이터매핑 ID
+label.dataMapName=데이터매핑명
+label.inData=입력데이터
+label.outData=출력데이터
+label.dataMapping=데이터매핑
+label.deleteMapping=매핑삭제
+label.connectName=이름연결
+label.map.item1=영문 필드명
+label.map.item2=한글 필드명
+label.map.defaultVal=기본값
+
+label.searchData=데이터 검색
+label.searchMetaData=메타 데이터 검색
+label.queryEdit=Query 등록
+label.interfaceHistory=인터페이스 변경 이력
+label.copyData=데이터 복사
+
+label.attachmentFile=첨부파일
+label.selectFile=파일선택
+label.DB=DB
+label.FILE=파일
+
+
+label.bizId=ID
+label.bizNm=Business 명
+label.biz.level1.code=Level1 ID
+label.biz.level1.name=Level1 명
+label.biz.level2.code=Level2 ID
+label.biz.level2.name=Level2 명
+label.biz.level3.code=Level3 ID
+label.biz.level3.name=Level3 명
+
+
+###################################################
+## TITLE
+###################################################
+label.title.popupDataSearch=데이터 검색
+label.title.popupExcelUpload=Excel Upload
+label.title.popupMetaDataSearch=메타 데이터 검색
+label.title.popupDataMapping=데이터 매핑
+label.title.popupQuery=Query 등록
+label.title.popupSystemSearch=시스템 검색
+label.title.popupUserSearch=사용자 검색
+label.title.popupBizSearch=업무코드 검색
+label.title.regId=ID 등록 신청
+label.title.jobExcelUpload=업무코드 Excel Upload
+label.title.requestExcelUpload=요건 Excel Upload
+label.title.systemExcelUpload=시스템 Excel Upload
+label.title.influence=영향도
+
+###################################################
+## DATE Chooser Format
+###################################################
+label.dateChooser.dayNames=일,월,화,수,목,금,토
+label.dateChooser.monthNames=1월,2월,3월,4월,5월,6월,7월,8월,9월,10월,11월,12월
+
+###################################################
+## MESSAGE
+###################################################
+message.0001=정상적으로 저장되었습니다.
+message.0002=작업이 성공하였습니다.
+message.0003=삭제 되었습니다.
+message.0004=정상적으로 저장되었습니다.\n데이터매핑을 진행하시겠습니까?
+message.0005=변경하실 경우 데이터가 초기화됩니다.\n계속 하시겠습니까?
+message.0006=File Download Complate.
+message.0007=File Upload Complate.
+message.0008=변경하실 경우 아래의 요건에 영향이 있습니다. 계속하실경우 확인을 선택하세요.
+
+message.1001=작업이 실패하였습니다.
+message.1002=ID를 입력하세요.
+message.1003=이름을 입력하세요.
+message.1004=선택된 아이템이 없습니다.
+message.1005=FIELD를 선택하세요.
+message.1006=출력 데이터를 선택하여야 합니다.
+message.1007=입력 데이터를 선택하여야 합니다.
+message.1008=송신 시스템을 선택하여야 합니다.
+message.1009=수신 시스템을 선택하여야 합니다.
+message.1010=선택가능하지 않습니다.
+message.1011=요건명을 입력하여야 합니다.
+message.1012=계정 또는 비밀번호를 확인해 주세요.
+message.1013=요건 신청이 되어야 매핑이 가능합니다. 저장하여주세요.
+message.1014=데이터를 선택하여야 합니다.
+message.1015=필수 항목입니다.
+message.1016=비밀번호가 틀립니다.
+message.1017=수정 권한이 없습니다.
+message.1018=데이터 검증 실패.
+message.1019=업무구분을 선택하여야 합니다.
+message.1020=데이터명을 입력하여야 합니다.
+message.1021=파일 저장에 실패하였습니다.\n파일이 열려있는지 확인하여주세요.
+
+message.2001=ID 사용 가능합니다.
+message.2002=ID 사용 가능하지 않습니다.
+message.2003=수정권한이 없습니다.
+
+message.2101=데이터를 등록하지 않은 경우 데이터를 먼저 등록하여주세요.
+message.2102=출력(송신)데이터를 선택합니다.
+message.2103=입력(수신)데이터를 선택합니다.
+message.2104=아이템을 찾지 못하였습니다.
+
+###################################################
+## TOOLTIP
+###################################################
+tooltip.0001=요건명 입력.
+tooltip.0002=진행 상태 선택\n 요건신청, 테스트중, 테스트완료, 테스트이관요청, 운영이관요청 가능
+tooltip.0003=변경 상태 선택\n 변경요청, 삭제요청만 가능
+tooltip.0004=업무구분 선택.
+tooltip.0005=EAI 여부 선택.
+tooltip.0006=2PC 여부 선택.\n REALTIME 2PC 일 경우 EAI 팀과 협의 요망
+tooltip.0007=송신방식 선택.
+tooltip.0008=수신방식 선택.
+tooltip.0009=전송유형 선택.\n  양방향 : REALTIME 거래, DB 거래시 송신 필드 Update 요건\n  단방향 : 그 외
+tooltip.0010=Sync유형 선택.
+tooltip.0011=EAI 인터페이스 ID
+tooltip.0012=송신 시스템 선택. 등록할 시스템이 없을 경우 EAI 팀에 요청. 또는 시스템미정 선택.
+tooltip.0013=송신 서비스, 파일, 테이블 입력(DB 일 경우 대표성 테이블 입력)
+tooltip.0014=송신 시스템 추가 정보 입력.
+tooltip.0015=수신 시스템 선택. 등록할 시스템이 없을 경우 EAI 팀에 요청. 또는 시스템미정 선택.
+tooltip.0016=수신 서비스, 파일, 테이블 입력(DB 일 경우 대표성 테이블 입력)
+tooltip.0017=수신 시스템 추가 정보 입력.
+tooltip.0018=송신 시스템이 DB 일 경우 Query 문 등록.
+tooltip.0019=수신 시스템이 DB 일 경우 CRUD 타입 선택.
+tooltip.0020=송신 담당자 선택.\n 선택하지 않을 경우 등록자 ID 자동입력
+tooltip.0021=수신 담당자 선택.\n 선택하지 않을 경우 등록자 ID 자동입력
+tooltip.0022=테스트 예정 일자 선택.
+tooltip.0023=매핑 사용여부 체크.\n REALTIME 또는 FILE 배치 일 경우 By Pass 가능, 그 외에는 매핑하여야 함.

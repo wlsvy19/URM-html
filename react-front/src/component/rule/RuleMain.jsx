@@ -1,14 +1,8 @@
 import React from 'react'
-import * as urmsc from '../../urm-utils'
+import { message } from 'antd'
+import * as urmsc from '@/urm-utils'
 
-import RequestList from './list/Request-list'
-import RequestEditor from './editor/Request-editor'
-import DataList from './list/Data-list'
-import DataEditor from './editor/Data-editor'
-import SystemList from './list/System-list'
-import SystemEditor from './editor/System-editor'
-
-
+const locale = urmsc.locale
 const LIST_STATE = urmsc.LIST_STATE
 
 export default class RuleMain extends React.Component {
@@ -22,7 +16,7 @@ export default class RuleMain extends React.Component {
         let $this = this
         urmsc.ajax({
           type: 'GET',
-          url: '/URM/' + this.state.path + '/' + id,
+          url: 'api/' + this.state.path + '/' + id,
           success: function(res) {
             let $editor = $this.refs.editor
             console.log(res)
@@ -34,11 +28,11 @@ export default class RuleMain extends React.Component {
       }
     },
     
-    handleSave: (data, comp) => {
+    handleSave: (data) => {
       let $this = this
       urmsc.ajax({
         type: 'POST',
-        url: '/URM/' + this.state.path,
+        url: 'api/' + this.state.path,
         data: JSON.stringify(data),
         contentType: 'application/json; charset=UTF-8',
         success: function(res) {
@@ -48,22 +42,14 @@ export default class RuleMain extends React.Component {
           
           let $list = $this.refs.list
           $list.method._updateItems(LIST_STATE.UPDATE, res)
+          message.success(locale['message.0001'])
         }
       })
     }
   }
   
-  getCode = () => {
+  codeList = () => {
     let codeList = this.props.commonCode
     return codeList ? codeList : []
-  }
-  
-  components = {
-    RequestList: RequestList,
-    RequestEditor: RequestEditor,
-    DataList: DataList,
-    DataEditor: DataEditor,
-    SystemList: SystemList,
-    SystemEditor: SystemEditor,
   }
 }

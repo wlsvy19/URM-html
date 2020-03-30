@@ -6,12 +6,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.ism.urm.config.URMProperties;
 import com.ism.urm.dao.manage.BusinessCodeDao;
 import com.ism.urm.dao.rule.AppSystemDao;
 import com.ism.urm.dao.rule.RequestDao;
@@ -166,10 +169,8 @@ public class RequestService extends RuleService<Request> {
 //        }
 //    }
 
-    public String requestFileUpload(String fileName, byte[] data) throws Exception {
-        logger.info("RequestService.requestFileUpload() call.");
-        
-        logger.info("file name:" + fileName);
+    public String requestFileUpload(MultipartFile item) throws Exception {
+        String fileName = item.getOriginalFilename();
         
         int i = fileName.lastIndexOf('.');
         String extension = "";
@@ -179,76 +180,29 @@ public class RequestService extends RuleService<Request> {
         String upFileName = null;
         
         synchronized (_lock) {
-            upFileName = null;//Accessory.getFormatDate("yyyyMMdd_HHmmss") + "_" + _seq++ + extension;
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            upFileName = format.format(new Date()) + "_" + _seq++ + extension;
             if (_seq > 999) {
                 _seq = 1;
             }
         }
-         
-        logger.info("FILE ENCODING :" + System.getProperty("file.encoding"));
         
-        String utfFileName = new String(upFileName.getBytes("UTF-8"));
-        logger.info("UTF-8  file name :" + utfFileName);
-        
-        String euckrFileName = new String(upFileName.getBytes("euc-kr")); 
-        logger.info("EUC-KR file name :" + euckrFileName);
-        
-        String localFileName = new String(upFileName.getBytes(System.getProperty("file.encoding"))); 
-        logger.info("Local file name :" + localFileName);
-        
-        File outFile = new File(System.getProperty("urm.file.repository"), upFileName);
-        
+        File outFile = new File(URMProperties.get("file.repository"), upFileName);
+        FileOutputStream fos = null;
         BufferedOutputStream bos = null;
-        
         try {
-            bos = new BufferedOutputStream(new FileOutputStream(outFile));
-            bos.write(data);
+            fos = new FileOutputStream(outFile);
+            bos = new BufferedOutputStream(fos);
+            bos.write(item.getBytes());
             bos.flush();
         } catch (Exception e) {
             throw e;
         } finally {
-            try {
-                bos.close();
-            } catch (Exception ee) {}
-            bos = null;
+            if (fos != null) try { fos.close(); } catch (Exception ignore) {}
+            if (bos != null) try { bos.close(); } catch (Exception ignore) {}
         }
         
         return upFileName;
-    }
-
-    private byte[] getBytesFromFile(File file) throws IOException {
-        InputStream is = new FileInputStream(file);
-
-        // Get the size of the file
-        long length = file.length();
-
-        // You cannot create an array using a long type.
-        // It needs to be an int type.
-        // Before converting to an int type, check
-        // to ensure that file is not larger than Integer.MAX_VALUE.
-        if (length > Integer.MAX_VALUE) {
-            // File is too large
-        }
-
-        // Create the byte array to hold the data
-        byte[] bytes = new byte[(int)length];
-
-        // Read in the bytes
-        int offset = 0;
-        int numRead = 0;
-        while (offset < bytes.length
-               && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
-            offset += numRead;
-        }
-
-        // Ensure all the bytes have been read in
-        if (offset < bytes.length) {
-            throw new IOException("Could not completely read file "+file.getName());
-        }
-
-        // Close the input stream and return bytes
-        is.close();
-        return bytes;
     }
 
 }

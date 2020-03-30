@@ -28,7 +28,7 @@ export default class URMRouter extends React.Component {
           <KeepAlive key="user"><Router.CodeContainer component={Router.User} /></KeepAlive>
         )} />
         <Route path="/biz" render={props => (
-          <KeepAlive key="biz"><Router.BusinessCode /></KeepAlive>
+          <KeepAlive key="biz"><Router.CodeContainer component={Router.BizCode} /></KeepAlive>
         )} />
         
         <Router.AuthContainer />

@@ -25,6 +25,8 @@ public class DataMapDao extends RuleDao<DataMap> {
     }
 
     public void delete(Session session, String id) throws Exception {
+        lineDao.deleteByMapId(session, id);
+        valueDao.deleteByMapId(session, id);
         session.createQuery("delete from " + entityName + " a where a.id = :id")
                .setString("id", id).executeUpdate();
     }
@@ -52,8 +54,8 @@ public class DataMapDao extends RuleDao<DataMap> {
 
     @Override
     protected void beforeSave(Session session, DataMap vo) throws Exception {
-        lineDao.delete(session, vo.getId());
-        valueDao.delete(session, vo.getId());
+        lineDao.deleteByMapId(session, vo.getId());
+        valueDao.deleteByMapId(session, vo.getId());
     }
 
     @Override

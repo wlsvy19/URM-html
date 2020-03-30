@@ -37,21 +37,46 @@ input {
   height: 150px;
   margin: 0 auto;
   margin-top: 20%;
+  border: 1px solid #e8e8e8;
+}
+
+#login-form {
+  width: 300px;
+  margin: 0 auto;
+  margin-top: 40px;
+}
+
+#login-form > label {
+  display: inline-block;
+  text-align: right;
+  width: 100px;
+}
+
+.logo {
+  display: flex;
+  padding: 7px;
+}
+
+.logo > span {
+  padding: 5px;
 }
 </style>
 </head>
 <body>
 <div class="login-header">
-  <div>LOGO</div>
+  <div class="logo">
+    <img src="../logo.gif" height="29" />
+    <span>EAI 요건 관리 시스템</span>
+  </div>
 </div>
 
 <div class="login-body">
-  <div id="login-form" style="width: 300px; margin: 0 auto;">
+  <div id="login-form">
     <label for="login-user">ID</label> <input type="text" id="login-user">
     <br/>
     <label for="login-passwd">Password</label> <input type="password" id="login-passwd" onkeydown="loginHandler(event)">
     <br/>
-    <button onclick="loginHandler()">Login</button>
+    <div style="text-align: right;"><button onclick="loginHandler()">Login</button></div>
   </div>
 </div>
 
@@ -61,7 +86,7 @@ function loginHandler (e) {
 
   let loginForm = {
     id: document.getElementById('login-user').value,
-    passwd: document.getElementById('login-passwd').value,
+    password: document.getElementById('login-passwd').value,
   };
 
   let xhr = new XMLHttpRequest();
@@ -71,15 +96,13 @@ function loginHandler (e) {
       let res = this.response
       if (this.status === 200) {
         res = JSON.parse(this.response);
-        // TODO login success
         if (res.code === 0) {
-          sessionStorage.setItem('URMUser', res.obj.id);
+          sessionStorage.setItem('URMUser', JSON.stringify(res.obj));
           self.location = '/URM/';
         } else {
           console.log(res.message)
         }
       } else {
-        // TODO login fail
         console.log('statusText [' + this.statusText + '] error [' + res + ']');
       }
     } else if (this.readyState === 1) {

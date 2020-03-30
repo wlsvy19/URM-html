@@ -5,6 +5,8 @@ import { Form, Input, Select } from 'antd'
 import RuleList, { RuleSearch } from './RuleList'
 import * as urmsc from '../../../urm-utils'
 
+const locale = urmsc.locale
+
 class SystemSearch extends RuleSearch {
   method = {
     ...this.method,
@@ -22,26 +24,26 @@ class SystemSearch extends RuleSearch {
       <div className="search-bar">
         <Form colon={false}>
           <div className="row">
-            <Form.Item label="ID">{getFieldDecorator("id")(<Input size="small" className="search-id" />)}</Form.Item>
-            <Form.Item label="Name">{getFieldDecorator("name")(<Input size="small" className="search-name" />)}</Form.Item>
-            <Form.Item label="Host">{getFieldDecorator("hostId")(<Input size="small" className="search-id" />)}</Form.Item>
-            <Form.Item label="Type">
+            <Form.Item label={locale['label.systemId']}>{getFieldDecorator("id")(<Input size="small" className="search-id" />)}</Form.Item>
+            <Form.Item label={locale['label.systemName']}>{getFieldDecorator("name")(<Input size="small" className="search-name" />)}</Form.Item>
+            <Form.Item label={locale['label.host']}>{getFieldDecorator("hostId")(<Input size="small" className="search-id" />)}</Form.Item>
+            <Form.Item label={locale['label.systemType']}>
               {getFieldDecorator("type", {initialValue: ""})(<Select size={"small"} className="search-id">
                 <Select.Option value="">ALL</Select.Option>
                 {this.method.renderOpts("sysType")}
               </Select>)}
             </Form.Item>
-            <Form.Item label="DevType">
+            <Form.Item label={locale['label.devType']}>
               {getFieldDecorator("devType", {initialValue: ""})(<Select size={"small"} className="search-id">
                 <Select.Option value="">ALL</Select.Option>
                 {this.method.renderOpts("devType")}
               </Select>)}
             </Form.Item>
             <Form.Item className="search-buttons">
-              <Button icon="search" onClick={this.method.clickSearch} />
+              <Button icon="search" onClick={this.method.clickSearch} title={locale['label.search']} />
               {this.method.renderButton(
                 <div className="inline">
-                  <Button icon="plus" onClick={this.method.clickAdd} />
+                  <Button icon="plus" onClick={this.method.clickAdd} title={locale['label.add']} />
                 </div>
               )}
             </Form.Item>
@@ -61,18 +63,18 @@ class SystemList extends RuleList {
           dataSource={this.state.items} pagination={false} bordered
           size={"small"} scroll={{ y: 500 }} rowKey="id"
           onRow={this.onRow}>
-          <Table.Column title="ID" dataIndex="id" width="130px"/>
-          <Table.Column title="Name" dataIndex="name" width="180px"/>
-          <Table.Column title="Type" dataIndex="type" render={(val) => ( this.method.getTypeStr('sysType', val) )}/>
-          <Table.Column title="DevType" dataIndex="devType" render={(val) =>  ( this.method.getTypeStr('devType', val) )}/>
-          <Table.Column title="Host" dataIndex="hostId" width="120px"/>
-          <Table.Column title="IP" dataIndex="ip"/>
-          <Table.Column title="port" dataIndex="port"/>
-          <Table.Column title="DBType" dataIndex="dbType" render={(val) =>  ( this.method.getTypeStr('dbType', val) )}/>
-          <Table.Column title="DBName" dataIndex="dbName"/>
+          <Table.Column title={locale['label.systemId']} dataIndex="id" width="130px"/>
+          <Table.Column title={locale['label.systemName']} dataIndex="name" width="180px"/>
+          <Table.Column title={locale['label.systemType']} dataIndex="type" render={(val) => ( this.method.getTypeStr('sysType', val) )}/>
+          <Table.Column title={locale['label.devType']} dataIndex="devType" render={(val) =>  ( this.method.getTypeStr('devType', val) )}/>
+          <Table.Column title={locale['label.host']} dataIndex="hostId" width="120px"/>
+          <Table.Column title={locale['label.ip']} dataIndex="ip"/>
+          <Table.Column title={locale['label.port']} dataIndex="port"/>
+          <Table.Column title={locale['label.dbType']} dataIndex="dbType" render={(val) =>  ( this.method.getTypeStr('dbType', val) )}/>
+          <Table.Column title={locale['label.dbName']} dataIndex="dbName"/>
           {this.method.renderButton(
             <Table.Column title="Operations" className="operations" width="90px" render={(val) => 
-              (<Button icon="edit" onClick={e => { this.method.clickEdit(val.id) }} />)} />
+              (<Button icon="edit" onClick={e => { this.method.clickEdit(val.id) }} title={locale['label.modify']} />)} />
           )}
         </Table>
       </div>

@@ -4,13 +4,15 @@ import { Form, Input, Select, DatePicker } from 'antd'
 import moment from 'moment'
 
 import RuleList, { RuleSearch } from './RuleList'
-import SubModal from '../SubModal'
+import SubModal from '@/component/SubModal'
 import RequestTransfer from './sub/RequestTransfer'
 import SystemList from './System-list'
-import BizList from '../../manage/list/BusinessCode-list'
+import BizList from '@/component/manage/list/BizCode-list'
 import HistoryList from './RequestHistory-list'
 
-import * as urmsc from '../../../urm-utils'
+import * as urmsc from '@/urm-utils'
+
+const locale = urmsc.locale
 
 class RequestSearch extends RuleSearch {
   method = {
@@ -72,30 +74,30 @@ class RequestSearch extends RuleSearch {
       <div className="advanced-search-bar">
         <Form colon={false}>
           <div className="row">
-            <Form.Item label="Interface ID">{getFieldDecorator("interfaceId")(<Input size="small" className="search-id" />)}</Form.Item>
-            <Form.Item label="Type">
+            <Form.Item label={locale['label.interfaceId']}>{getFieldDecorator("interfaceId")(<Input size="small" className="search-id" />)}</Form.Item>
+            <Form.Item label={locale['label.interfaceType']}>
               {getFieldDecorator("interfaceType", {initialValue: ""})(<Select size={"small"} className="search-id">
                 <Select.Option value="">ALL</Select.Option>
                 {this.method.renderOpts("infType")}
               </Select>)}
             </Form.Item>
-            <Form.Item label="Request ID">{getFieldDecorator("id")(<Input size="small"  className="search-id" />)}</Form.Item>
-            <Form.Item label="Request Name">{getFieldDecorator("name")(<Input size="small" className="search-name" />)}</Form.Item>
+            <Form.Item label={locale['label.requestId']}>{getFieldDecorator("id")(<Input size="small"  className="search-id" />)}</Form.Item>
+            <Form.Item label={locale['label.requestName']}>{getFieldDecorator("name")(<Input size="small" className="search-name" />)}</Form.Item>
           </div>
           <div className="row">
-            <Form.Item label="SendSystemID">
+            <Form.Item label={locale['label.sourceSystem']}>
               {getFieldDecorator("sendSystemId")(<Input size="small" readOnly allowClear className="search-id" onClick={e => { this.method.setSystem('send') }} />)}
             </Form.Item>
-            <Form.Item label="SourceBizCode">
+            <Form.Item label={locale['label.sndJobCode']}>
               {getFieldDecorator("sendJobCodeId")(<Input size="small" readOnly allowClear className="search-id" onClick={e => { this.method.setBizCode('send') }} />)}
             </Form.Item>
-            <Form.Item label="ChangeState">
+            <Form.Item label={locale['label.changeStatus']}>
               {getFieldDecorator('chgStat', {initialValue: ""})(<Select size={"small"} className="search-id">
                 <Select.Option value="">ALL</Select.Option>
                 {this.method.renderOpts("chgStat")}
               </Select>)}
             </Form.Item>
-            <Form.Item label="ProcessState">
+            <Form.Item label={locale['label.processStatus']}>
               {getFieldDecorator('processStat', {initialValue: ""})(<Select size={"small"} style={{width: "150px"}}>
                 <Select.Option value="">ALL</Select.Option>
                 {this.method.renderOpts("procStat")}
@@ -103,20 +105,20 @@ class RequestSearch extends RuleSearch {
             </Form.Item>
           </div>
           <div className="row">
-            <Form.Item label="ReceiveSystemID">
+            <Form.Item label={locale['label.targetSystem']}>
               {getFieldDecorator("rcvSystemId")(<Input size="small" readOnly allowClear className="search-id" onClick={e => { this.method.setSystem('rcv') }} />)}
             </Form.Item>
-            <Form.Item label="TargetBizCode">
+            <Form.Item label={locale['label.rcvJobCode']}>
               {getFieldDecorator("rcvJobCodeId")(<Input size="small" readOnly allowClear className="search-id" onClick={e => { this.method.setBizCode('rcv') }} />)}
             </Form.Item>
-            <Form.Item label="ChangeDate">{getFieldDecorator("chgDate", {
+            <Form.Item label={locale['label.lastChangeDate']}>{getFieldDecorator("chgDate", {
               initialValue: [moment().subtract(1, 'y'), moment()]
             })(<RangePicker size="small" style={{width: "220px"}} />)}</Form.Item>
             <Form.Item className="search-buttons row">
-              <Button icon="search" onClick={this.method.clickSearch} />
-              <Button icon="plus" onClick={this.method.clickAdd} />
-              <Button icon="switcher" onClick={this.method.clickTransfer} />
-              <Button icon="delete" onClick={this.method.clickDelete} />
+              <Button icon="search" onClick={this.method.clickSearch} title={locale['label.search']} />
+              <Button icon="plus" onClick={this.method.clickAdd} title={locale['label.add']} />
+              <Button icon="switcher" onClick={this.method.clickTransfer} title="이관" />
+              <Button icon="delete" onClick={this.method.clickDelete} title={locale['label.delete']} disabled={!this.props.canDelete()} />
             </Form.Item>
           </div>
         </Form>
@@ -175,7 +177,7 @@ class RequestList extends RuleList {
       let $this = this
       urmsc.ajax({
         type: 'GET',
-        url: '/URM/' + this.props.path,
+        url: 'api/' + this.props.path,
         data: param,
         success: function(res) {
           $this.setState({
@@ -200,7 +202,7 @@ class RequestList extends RuleList {
         list: { scparam: {id: reqId} }
       }
       this.refs.hisList.setState({visible: true, childState: childState})
-    },
+    }
   }
   
   pageSizes = ['30', '50', '100']
@@ -211,27 +213,27 @@ class RequestList extends RuleList {
 
     return (
       <div className="urm-list">
-        <WrappedRequestSearch {...this.props} search={this.method.searchPage} delete={this.method.clickDelete}
+        <WrappedRequestSearch {...this.props} search={this.method.searchPage} delete={this.method.clickDelete} canDelete={this.method.isPageDelete}
           wrappedComponentRef={ref => { if (ref) form = ref.props.form }} />
         <Table className="table-striped"
             dataSource={this.state.items} pagination={false} bordered
-            size={"small"} scroll={{ y: 500 }} rowKey="id" rowSelection={this.rowSelection}>
-          <Table.Column title="ID" dataIndex="id" width="130px" />
-          <Table.Column title="Name" dataIndex="name" width="180px" />
-          <Table.Column title="Type" dataIndex="interfaceType" render={(val) => ( this.method.getTypeStr('infType', val) )} />
-          <Table.Column title="ReqState" dataIndex="chgStat" render={(val) =>  ( this.method.getTypeStr('chgStat', val) )} />
-          <Table.Column title="State" dataIndex="processStat" render={(val) => ( this.method.getTypeStr('procStat', val) )} />
-          <Table.Column title="InterfaceID" dataIndex="interfaceId" width="120px"/>
-          <Table.Column title="SendMethod" dataIndex="sendSystemType" width="100px" render={(val) => ( this.method.getTypeStr('sysType', val) )}/>
-          <Table.Column title="RcvMethod" dataIndex="rcvSystemType" width="100px" render={(val) => ( this.method.getTypeStr('sysType', val) )}/>
-          <Table.Column title="SendSystem" dataIndex="sendSystem.name" width="110px"/>
-          <Table.Column title="RcvSystem" dataIndex="rcvSystem.name" width="110px"/>
-          <Table.Column title="LastUpdate" dataIndex="chgDate" width="150px" render={(val) => ( moment(val).format('YYYY-MM-DD HH:mm') )}/>/>
+            size={"small"} scroll={{ x: 1400, y: 500 }} rowKey="id" rowSelection={this.rowSelection}>
+          <Table.Column title={locale['label.id']} dataIndex="id" width="130px" />
+          <Table.Column title={locale['label.name']} dataIndex="name" width="180px" />
+          <Table.Column title={locale['label.interfaceType']} dataIndex="interfaceType" render={(val) => ( this.method.getTypeStr('infType', val) )} />
+          <Table.Column title={locale['label.changeStatus']} dataIndex="chgStat" render={(val) =>  ( this.method.getTypeStr('chgStat', val) )} />
+          <Table.Column title={locale['label.processStatus']} dataIndex="processStat" render={(val) => ( this.method.getTypeStr('procStat', val) )} />
+          <Table.Column title={locale['label.interfaceId']} dataIndex="interfaceId" width="120px"/>
+          <Table.Column title={locale['label.sourceMethod']} dataIndex="sendSystemType" width="100px" render={(val) => ( this.method.getTypeStr('sysType', val) )}/>
+          <Table.Column title={locale['label.targetMethod']} dataIndex="rcvSystemType" width="100px" render={(val) => ( this.method.getTypeStr('sysType', val) )}/>
+          <Table.Column title={locale['label.sourceSystem']} dataIndex="sendSystem.name" width="110px"/>
+          <Table.Column title={locale['label.targetSystem']} dataIndex="rcvSystem.name" width="110px"/>
+          <Table.Column title={locale['label.lastChangeDate']} dataIndex="chgDate" width="150px" render={(val) => ( moment(val).format('YYYY-MM-DD HH:mm') )}/>/>
           <Table.Column title="Operations" className="operations" width="120px" render={(val) =>
             (<div>
-              <Button icon="edit" onClick={e => { this.method.clickEdit(val.id) }} />
-              <Button icon="delete" onClick={e => { this.method.clickDelete([val.id]) }} />
-              <Button icon="history" onClick={e => { this.method.viewHistory([val.id]) }} />
+              <Button icon="edit" onClick={e => { this.method.clickEdit(val.id) }} title={locale['label.modify']} />
+              <Button icon="delete" onClick={e => { this.method.clickDelete([val.id]) }} title={locale['label.delete']} disabled={!this.method.isPageDelete()} />
+              <Button icon="history" onClick={e => { this.method.viewHistory([val.id]) }} title={locale['label.interfaceHistory']} />
             </div>)}
           />
         </Table>

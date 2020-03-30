@@ -37,13 +37,8 @@ task reactBuild(type: Exec) {
     commandLine npm, 'run', 'build'
 }
 
-task copyWebApp(type: Copy, dependsOn: 'reactBuild') {
-    from 'react-front/build'
-    into 'src/main/webapp/.'
-}
-
 war {
-    dependsOn copyWebApp
+    dependsOn reactBuild
 }
 
 gretty {

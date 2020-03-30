@@ -8,11 +8,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.ism.urm.util.SessionUtil;
 
-/**
- * if user logged, then while logging, don't see login view!
- * @author HeoJongTae
- * 
- */
 public class LoginPageInterceptor extends HandlerInterceptorAdapter {
 
     @Override
@@ -28,7 +23,7 @@ public class LoginPageInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public void postHandle(HttpServletRequest req, HttpServletResponse res, Object handler, ModelAndView modelAndView) throws Exception {
-        //req.setAttribute("locale", SessionUtil.getLocale());
+        // do nothing
     }
 
 }

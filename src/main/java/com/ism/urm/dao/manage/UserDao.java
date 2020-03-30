@@ -1,8 +1,5 @@
 package com.ism.urm.dao.manage;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.hibernate.Criteria;
 
 import org.hibernate.Session;
@@ -15,9 +12,6 @@ import com.ism.urm.vo.manage.User;
 
 public class UserDao extends BasicDao<User> {
     protected SessionFactory sessionFactory;
-    
-    @PersistenceContext
-    EntityManager em;
     
     public UserDao() {
         entityName = "USER";

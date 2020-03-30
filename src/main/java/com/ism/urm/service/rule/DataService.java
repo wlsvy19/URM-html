@@ -143,7 +143,6 @@ public class DataService extends RuleService<Data> {
         Workbook workbook = null;
         try {
             String fileName = item.getOriginalFilename();
-            System.out.println("###### Excel FILE : " + fileName + " ############");
             if (fileName.endsWith(".xls")) {
                 workbook = new HSSFWorkbook(item.getInputStream());
             } else {

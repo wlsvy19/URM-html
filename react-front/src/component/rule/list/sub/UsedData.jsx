@@ -1,8 +1,10 @@
 import React from 'react'
 import { Table, Button } from 'antd'
 
-import ResizeableTitle from '../../ResizeableTitle'
-import * as urmsc from '../../../../urm-utils'
+import ResizeableTitle from '@/component/ResizeableTitle'
+import * as urmsc from '@/urm-utils'
+
+const locale = urmsc.locale
 
 export default class UsedData extends React.Component {
  state = {
@@ -56,7 +58,7 @@ export default class UsedData extends React.Component {
       let $this = this
       urmsc.ajax({
         type: 'GET',
-        url: '/URM/data/used',
+        url: 'api/data/used',
         data: param,
         success: function(list) {
           list.forEach((it, idx) => {
@@ -68,8 +70,9 @@ export default class UsedData extends React.Component {
     },
     
     renderButton: () => {
-      return !this.props.onlySearch && <div className="row">
-        <span>변경하실 경우 아래의 요건에 영항이 있습니다.</span><div className="flex-right"><Button icon="save" onClick={this.props.onDbClick} /></div>
+      return this.props.isEditor && <div className="row">
+        <span>{locale['message.0008']}</span>
+        <div className="flex-right"><Button icon="save" onClick={this.props.onDbClick} title={locale['label.save']} /></div>
       </div>
     }
   }
@@ -79,19 +82,17 @@ export default class UsedData extends React.Component {
 
     return (
       <div className="urm-list">
-        <div className="row">
-          <span>변경하실 경우 아래의 요건에 영항이 있습니다.</span><div className="flex-right"><Button icon="save" onClick={this.props.onDbClick} /></div>
-        </div>
+        {this.method.renderButton()}
         <Table className="table-striped" components={this.components}
             dataSource={this.state.items} pagination={false} bordered
             size={"small"} scroll={{ y: 500 }}>
-          <Table.Column title="Request ID" dataIndex="reqId" width={colWidth[0]}
+          <Table.Column title={locale['label.requestId']} dataIndex="reqId" width={colWidth[0]}
             onHeaderCell={column => ({ width: column.width, onResize: this.method.handleResize(0) })} />
-          <Table.Column title="Request Name" dataIndex="reqName" width={colWidth[1]}
+          <Table.Column title={locale['label.requestName']} dataIndex="reqName" width={colWidth[1]}
             onHeaderCell={column => ({ width: column.width, onResize: this.method.handleResize(1) })} />
-          <Table.Column title="Mapping Id" dataIndex="mapId" width={colWidth[2]}
+          <Table.Column title={locale['label.dataMapId']} dataIndex="mapId" width={colWidth[2]}
             onHeaderCell={column => ({ width: column.width, onResize: this.method.handleResize(2) })}  />
-          <Table.Column title="Mapping Name" dataIndex="mapName" width={colWidth[3]}
+          <Table.Column title={locale['label.dataMapName']} dataIndex="mapName" width={colWidth[3]}
             onHeaderCell={column => ({ width: column.width, onResize: this.method.handleResize(3) })}/>
         </Table>
       </div>
@@ -100,5 +101,5 @@ export default class UsedData extends React.Component {
 }
 
 UsedData.defaultProps = {
-  onlySearch: true
+  isEditor: true
 }

@@ -35,15 +35,19 @@ public class URMSpringConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("forward:/index.html");
+        // registry.addViewController("/").setViewName("forward:/index.html");
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/**").addResourceLocations("/");
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        /*registry.addInterceptor(new LoginPageInterceptor())
-        .addPathPatterns("/")
+        registry.addInterceptor(new LoginPageInterceptor())
         .addPathPatterns("/login/**")
-        .excludePathPatterns("/login/process");*/
+        .excludePathPatterns("/login/process");
         
         registry.addInterceptor(new NoCacheInterceptor()).excludePathPatterns("/login/**");
         registry.addInterceptor(new SessionInterceptor()).excludePathPatterns("/login/**");
@@ -62,6 +66,7 @@ public class URMSpringConfig implements WebMvcConfigurer {
         viewResolver.setViewClass(JstlView.class);
         viewResolver.setPrefix("/view");
         viewResolver.setSuffix(".jsp");
+        viewResolver.setOrder(2);
         return viewResolver;
     }
 
@@ -91,12 +96,6 @@ public class URMSpringConfig implements WebMvcConfigurer {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // TODO Auto-generated method stub
         
     }

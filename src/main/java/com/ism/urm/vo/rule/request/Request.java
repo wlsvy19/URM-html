@@ -50,7 +50,7 @@ public class Request extends RuleVo {
     String sqlPlain;
     String dbCrudType;
     String fileCrudType;
-    String ifFileName;
+    String infFileName;
 
     String dcnt;
     String openYMD;
@@ -286,11 +286,11 @@ public class Request extends RuleVo {
     public void setFileCrudType(String fileCrudType) {
         this.fileCrudType = fileCrudType;
     }
-    public String getIfFileName() {
-        return ifFileName;
+    public String getInfFileName() {
+        return infFileName;
     }
-    public void setIfFileName(String ifFileName) {
-        this.ifFileName = ifFileName;
+    public void setInfFileName(String infFileName) {
+        this.infFileName = infFileName;
     }
     public String getDcnt() {
         return dcnt;

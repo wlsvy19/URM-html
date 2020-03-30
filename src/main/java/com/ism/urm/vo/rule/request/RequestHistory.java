@@ -62,7 +62,7 @@ public class RequestHistory extends Request implements Serializable {
         sqlPlain = req.sqlPlain;
         dbCrudType = req.dbCrudType;
         fileCrudType = req.fileCrudType;
-        ifFileName = req.ifFileName;
+        infFileName = req.infFileName;
 
         dcnt = req.dcnt;
         openYMD = req.openYMD;

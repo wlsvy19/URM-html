@@ -1,12 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { login, logout } from '../store/modules/auth'
-import * as urmsc from '../urm-utils'
+import { login, logout } from '@/store/modules/auth'
+import * as urmsc from '@/urm-utils'
 
 class AuthContainer extends React.Component {
   componentDidMount() {
-    console.log(this, sessionStorage)
     this.method.checkUser()
   }
 
@@ -20,16 +19,20 @@ class AuthContainer extends React.Component {
   method = {
     checkUser: () => {
       let { userInfo, login, logout } = this.props
-      let userId = sessionStorage.getItem('URMUser')
+      let user = JSON.parse(sessionStorage.getItem('URMUser'))
+      let userId = !user ? '' : user.id
       
       if (userId && userId.length > 0) {
         if (userInfo.id.trim().length > 0 && userId !== userInfo.id) {
           logout()
+        } else {
+          login(user)
+          return false
         }
       } else if (userInfo.id.trim().length > 0) {
         userId = userInfo.id
       }
-      login({id: 'eai', name: 'eai'})
+      login({id: 'eai', name: 'eai', authId: '0'})
       /*urmsc.ajax({
         type: 'POST',
         url: '/URM/login/process',
@@ -37,10 +40,11 @@ class AuthContainer extends React.Component {
         contentType: 'application/json; charset=UTF-8',
         success: function(res) {
           if (res.code === 0) {
-            sessionStorage.setItem('URMUser', res.obj.Id);
+            sessionStorage.setItem('URMUser', JSON.stringify(res.obj));
             login(res.obj)
           } else {
             console.log(res.message)
+            window.location = '/URM/' + res.obj
           }
         }
       })*/

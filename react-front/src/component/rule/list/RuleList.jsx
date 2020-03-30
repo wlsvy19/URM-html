@@ -92,7 +92,7 @@ class RuleList extends React.Component {
       let $this = this
       urmsc.ajax({
         type: 'POST',
-        url: '/URM/' + this.props.path + '/delete',
+        url: 'api/' + this.props.path + '/delete',
         data: JSON.stringify(ids),
         contentType: 'application/json; charset=UTF-8',
         success: function(res) {
@@ -106,7 +106,7 @@ class RuleList extends React.Component {
       let $this = this
       urmsc.ajax({
         type: 'GET',
-        url: '/URM/' + this.props.path,
+        url: 'api/' + this.props.path,
         data: param,
         success: function(list) {
           $this.setState({items: list})
@@ -132,6 +132,7 @@ class RuleList extends React.Component {
         let update = false
         for (let i = 0; i < tmp.length; i++) {
           if (tmp[i].id === data.id) {
+            delete data.children
             tmp[i] = data
             update = true
             break
@@ -141,6 +142,11 @@ class RuleList extends React.Component {
       }
       
       this.setState({items: tmp})
+    },
+
+    isPageDelete: () => {
+      let auth = this.props.userInfo ? this.props.userInfo.auth : ''
+      return urmsc.isPageEdit(this.props.path, 'delete', auth)
     }
   }
   

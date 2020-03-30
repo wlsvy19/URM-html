@@ -8,4 +8,4 @@ export { default as System } from '../component/rule/System';
 export { default as Data } from '../component/rule/Data';
 
 export { default as User } from '../component/manage/User';
-export { default as BusinessCode } from '../component/manage/BusinessCode';
+export { default as BizCode } from '../component/manage/BizCode';

@@ -1,5 +1,8 @@
 import React from 'react'
 import { message } from 'antd'
+import * as urmsc from '@/urm-utils'
+
+const locale = urmsc.locale
 
 export default class RequestEditor extends React.Component {
   state = {
@@ -21,14 +24,14 @@ export default class RequestEditor extends React.Component {
     
     validator: (data) => {
       if (!data.name || data.name.trim().length === 0) {
-        message.warning('please input name.')
+        message.warning(locale['message.1003'])
         return false
       }
       if (this.customMethod && !this.customMethod.validator(data)) {
         return false
       }
       return true
-    },
+    }
   }
   
   childMethod = {
@@ -37,9 +40,6 @@ export default class RequestEditor extends React.Component {
       if (!this.method.validator(saveItem)) {
         return false
       }
-      
-      //console.log('save')
-      //return false
       
       this.props.save(saveItem)
     },
@@ -76,6 +76,10 @@ export default class RequestEditor extends React.Component {
         }
       })
       return obj
+    },
+    
+    isPageSave: () => {
+      return urmsc.isPageEdit(this.props.path, 'save', this.props.userInfo.auth)
     }
   }
 }
