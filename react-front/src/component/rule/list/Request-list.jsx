@@ -20,6 +20,7 @@ class RequestSearch extends RuleSearch {
   }
 
   componentWillMount(){
+    
     let auth = this.props.userInfo ? this.props.userInfo.auth : ''
     if(auth === '0' || auth === '5' || auth === '7' ){ // uncheck
        this.setState({
@@ -127,7 +128,7 @@ class RequestSearch extends RuleSearch {
                 {this.method.renderOpts("procStat")}
               </Select>)}
             </Form.Item>
-          </div>
+          </div>    
           
           <div className="row">
             <Form.Item label={locale['label.targetSystem']}>
