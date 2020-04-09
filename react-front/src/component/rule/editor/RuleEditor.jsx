@@ -14,6 +14,9 @@ export default class RequestEditor extends React.Component {
     if (this.state.visible !== nextState.visible) {
       return true
     }
+    if (this.state.item.chgDate !== nextState.item.chgDate) {
+      return true
+    }
     return false
   }
 
@@ -49,7 +52,9 @@ export default class RequestEditor extends React.Component {
         let fields = form.getFieldsValue()
         let formItem = {}
         for (let key in fields) {
-          formItem[key] = item[key]
+          if (typeof item[key] !== 'object') {
+            formItem[key] = item[key]
+          }
         }
         if (customSetter) customSetter(formItem, item)
         form.setFieldsValue(formItem)
@@ -64,14 +69,14 @@ export default class RequestEditor extends React.Component {
       
       let keys = Object.keys(item)
       let dataKeys = Object.keys(data)
-      if (dataKeys > keys) {
+      if (dataKeys.length > keys.length) {
         dataKeys.forEach((it) => {
           if (keys.indexOf(it) === -1) keys.push(it)
         })
       }
       
       keys.forEach((key) => {
-        if (item[key] === null || typeof item[key] !== 'object') {
+        if (!item[key] || typeof item[key] !== 'object') {
           obj[key] = (key in data) ? data[key] : item[key]
         }
       })

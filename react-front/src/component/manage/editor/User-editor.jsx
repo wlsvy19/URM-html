@@ -51,6 +51,9 @@ class UserEditor extends React.Component {
         let fields = form.getFieldsValue()
         let formItem = {}
         for (let key in fields) {
+          if (key === 'password') {
+            continue
+          }
           formItem[key] = item[key]
         }
         form.setFieldsValue(formItem)
@@ -78,11 +81,14 @@ class UserEditor extends React.Component {
       })
     },
 
+    isPageSave: () => {
+      return urmsc.isPageEdit(this.props.path, 'save', this.props.userInfo.auth)
+    }
   }
 
   render() {
     return (
-      <Modal visible={this.state.visible} width="900px"
+      <Modal visible={this.state.visible} width="875px"
           footer={null} onCancel={this.method.handleCancel} className="urm-modal">
         <WrappedUserEditor authList={this.props.authList} item={this.state.item} {...this.userMethod} />
       </Modal>
@@ -93,7 +99,6 @@ class UserEditor extends React.Component {
 const UserEditorForm = (props) => {
   const { form, item } = props
   const { getFieldDecorator } = form
-  const { confirm } = Modal
 
   // Only re-run the effect if props.item changes
   useEffect(() => {
@@ -101,61 +106,66 @@ const UserEditorForm = (props) => {
     // eslint-disable-next-line
   }, [item]);
 
+  let chkId = null
+  let modal = null
+
   let method = {
     renderOpts: () => {
       return props.authList.map((it) => <Select.Option key={it.id} value={it.id}>{it.name}</Select.Option>)
     },
 
     clickSave: e => {
-      console.log(form.getFieldsValue(), item)
       props.save(form)
     },
 
-    idCheckButton: () =>{
-      return (
-        !item.id && <Button onClick={method.idCheck} size="small" style={{ marginLeft: "5px", marginTop: "9px" } }>Check</Button>
-      )
-    },
+    popupCheckID: () => {
+      if (item.id) return false
+      let content = <div className="row">
+        <Input ref={input => { chkId = input }} size="small" style={{width: 220}} />
+        <Button size="small" onClick={method.checkID}>{locale['label.idConfirm']}</Button>
+      </div>
 
-    idCheck: (param) => { 
-      let inputData = form.getFieldsValue() 
+      modal = Modal.confirm({
+        title: locale['label.modifyUserInfo'],
+        content: content,
+        width: 390,
+        cancelText: 'NO',
+        okText: locale['label.idUse'],
+        okButtonProps: {
+          disabled: true,
+          size: 'small',
+        },
+        cancelButtonProps: {
+          size: 'small',
+        },
+        onOk() {
+          form.setFieldsValue({id: chkId.state.value})
+        }
+      });
+    },
+    
+    checkID: () => { 
+      let id = chkId.state.value
+      if (!id || id.trim().length === 0) return false
+
       urmsc.ajax({
         type: 'GET',
         url: 'api/user/check',
-        data: JSON.stringify(inputData),
+        data: JSON.stringify({id: id}),
         success: function (data) {
-          if(data === 1) { //duplicate
-            confirm({
-              title: 'Duplicate ID',
-              content: 'Please use a other ID',
-              okText: 'Yes',
-              okType: 'danger',
-              okButtonProps: {
-                disabled: true,
-              },
-              cancelText: 'Cancel',
-              onOk() {
-                console.log('OK');
-              },
-              onCancel() {
-                console.log('Cancel');
-              },
-            });
+          if(data > 0) { //duplicate
+            modal.update({okButtonProps: {
+              disabled: true,
+              size: 'small',
+            }})
+            message.warning(locale['message.2002'])
           } else{
-            confirm({
-              title: 'Not Duplicate ID',
-              content: 'Use ID?',
-              onOk() {
-                console.log('OK');
-              },
-              onCancel() {
-                console.log('Cancel');
-              },
-            });
+            modal.update({okButtonProps: {
+              disabled: false,
+              size: 'small',
+            }})
+            message.warning(locale['message.2001'])
           }
-        },
-        error: function(error) {
-          console.log('ajax error')
         }
       })
     },
@@ -163,46 +173,45 @@ const UserEditorForm = (props) => {
 
   return (
     <div className="urm-editor">
-      <div style={{ textAlign: "right", marginRight: "20px" }}>
-        <Button onClick={method.clickSave}>{locale['label.save']}</Button>
+      <div className="editor-buttons">
+        <Button onClick={method.clickSave} disabled={!props.isPageSave()}>{locale['label.save']}</Button>
       </div>
 
       <Form colon={false}>
         <div className="row">
-          <Form.Item label={locale['label.id']} className="col-1">
-            {getFieldDecorator("id")(<Input size="small" className="user-input" readOnly={item.id} />)}
-            {method.idCheckButton()}
+          <Form.Item label={locale['label.id']}>
+            {getFieldDecorator("id")(<Input size="small" className="user-input" readOnly onClick={method.popupCheckID} />)}
           </Form.Item>
-          <Form.Item label={locale['label.name']} className="col-1">{getFieldDecorator("name")(<Input size="small" className="user-input" />)}</Form.Item>
+          <Form.Item label={locale['label.name']}>{getFieldDecorator("name")(<Input size="small" className="user-input" />)}</Form.Item>
         </div>
 
         <div className="row">
           <Form.Item label={locale['label.pass']}>
             {getFieldDecorator("password")(<Input.Password size="small" className="user-input" visibilityToggle={false} />)}
           </Form.Item>
-          <Form.Item style={{marginLeft: "5px"}}>
-            {getFieldDecorator("confirm")(<Input.Password size="small" style={{width: "420px"}} visibilityToggle={false} />)}
+          <Form.Item style={{marginLeft: 5}}>
+            {getFieldDecorator("confirm")(<Input.Password size="small" style={{width: 375}} visibilityToggle={false} />)}
           </Form.Item>
         </div>
 
         <div className="row">
-          <Form.Item label={locale['label.dept']} className="col-1">{getFieldDecorator("deptName")(<Input size="small" className="user-input" />)}</Form.Item>
-          <Form.Item label={locale['label.position']} className="col-1">{getFieldDecorator("positionName")(<Input size="small" className="user-input" />)}</Form.Item>
+          <Form.Item label={locale['label.dept']}>{getFieldDecorator("deptName")(<Input size="small" className="user-input" />)}</Form.Item>
+          <Form.Item label={locale['label.position']}>{getFieldDecorator("positionName")(<Input size="small" className="user-input" />)}</Form.Item>
         </div>
 
         <div className="row">
-          <Form.Item label={locale['label.grade']} className="col-1">{getFieldDecorator("gradeName")(<Input size="small" className="user-input" />)}</Form.Item>
-          <Form.Item label={locale['label.generalTel']} className="col-1">{getFieldDecorator("generalTelNo")(<Input size="small" className="user-input" />)}</Form.Item>
+          <Form.Item label={locale['label.grade']}>{getFieldDecorator("gradeName")(<Input size="small" className="user-input" />)}</Form.Item>
+          <Form.Item label={locale['label.generalTel']}>{getFieldDecorator("generalTelNo")(<Input size="small" className="user-input" />)}</Form.Item>
         </div>
 
         <div className="row">
-          <Form.Item label={locale['label.officeTel']} className="col-1">{getFieldDecorator("officeTelNo")(<Input size="small" className="user-input" />)}</Form.Item>
-          <Form.Item label={locale['label.mobile']} className="col-1">{getFieldDecorator("celNo")(<Input size="small" className="user-input" />)}</Form.Item>
+          <Form.Item label={locale['label.officeTel']}>{getFieldDecorator("officeTelNo")(<Input size="small" className="user-input" />)}</Form.Item>
+          <Form.Item label={locale['label.mobile']}>{getFieldDecorator("celNo")(<Input size="small" className="user-input" />)}</Form.Item>
         </div>
 
         <div className="row">
           <Form.Item label={locale['label.auth']}>
-            {getFieldDecorator("authId", { initialValue: "0" })(<Select size={"small"} className="user-input">
+            {getFieldDecorator("authId", { initialValue: "0" })(<Select size="small" className="user-input">
               {method.renderOpts()}
             </Select>)}
           </Form.Item>

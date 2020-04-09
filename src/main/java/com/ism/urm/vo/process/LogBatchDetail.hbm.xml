@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2009. 8. 24 ???? 12:54:53 by Hibernate Tools 3.2.4.GA -->
+<hibernate-mapping>
+    <class name="com.ism.urm.vo.process.LogBatchDetail" table="LOGBATCHDETAIL" entity-name="LOGBATCHDETAIL">
+        <id name="batchId" type="string">
+            <column name="BATCHID" />
+            <generator class="assigned" />
+        </id>
+        <property name="processDate"  type="string" column="PROCESSDATE" />
+        <property name="appId"  type="string" column="APPID" />
+        <property name="modelName"  type="string" column="MODELCOMPONENTNAME" />
+        <property name="processContent"  type="string" column="MODELPROCESSCONTENT" />
+        <property name="processTime"  type="string" column="PROCESSMESSAGETIME" />
+        <property name="result"  type="string" column="RESULTCODE" />
+        <property name="errorContents"  type="string" column="ERRORCONTENTS" />
+    </class>
+</hibernate-mapping>

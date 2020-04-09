@@ -43,6 +43,9 @@ export default class RuleMain extends React.Component {
           let $list = $this.refs.list
           $list.method._updateItems(LIST_STATE.UPDATE, res)
           message.success(locale['message.0001'])
+        },
+        error: function(xhr) {
+          message.warning('Update Fail. ' + xhr.statusText)
         }
       })
     }

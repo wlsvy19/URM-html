@@ -73,7 +73,7 @@ public class UserService {
         try {
             session = sessionFactory.openSession();
             session.beginTransaction();
-            rtn = userDao.getUserById(session, userId);
+            rtn = userDao.get(session, userId);
 
         } catch (Exception e) {
             logger.error("Failed to User get()", e);
@@ -92,6 +92,15 @@ public class UserService {
         try {
             session = sessionFactory.openSession();
             tx = session.beginTransaction();
+            
+            String passwd = vo.getPassword();
+            if (passwd == null || passwd.trim().length() == 0) {
+                User org = userDao.get(session, vo.getId());
+                vo.setPassword(org.getPassword());
+            } else {
+                vo.setPassword(SessionUtil.getEncString(passwd));
+            }
+            
             userDao.save(session, vo);
             tx.commit();
             rtn = userDao.get(session, vo.getId());

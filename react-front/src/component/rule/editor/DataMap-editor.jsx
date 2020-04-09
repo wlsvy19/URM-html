@@ -54,7 +54,7 @@ class DataMap extends RuleEditor {
 
   render() {
     return (
-      <Modal visible={this.state.visible} width="1000px" 
+      <Modal visible={this.state.visible} width="1040px" 
           footer={null} onCancel={this.method.handleCancel} className="urm-modal">
         <WrappedDataMapEditor codeList={this.props.codeList} item={this.state.item} {...this.childMethod} />
       </Modal>
@@ -74,32 +74,41 @@ const DataMapEditor = (props) => {
   useEffect(() => {
     props.setItem(form, item)
     setValues(item.mapValues ? item.mapValues : [])
-    item.children = { mapLines: (item.mapLines ? item.mapLines : [])}
+    item.subRule = { mapLines: (item.mapLines ? item.mapLines : [])}
     method.setMapLines()
     // TODO subscribe...
     // eslint-disable-next-line
   }, [item]);
 
+  useEffect(() => {
+    let $el = document.querySelectorAll('.map-tree > .ant-tree')
+    $el.forEach((it) => {
+      it.addEventListener('scroll', function(e) {
+        method.setMapLines()
+      })
+    })
+  }, []);
+
   let dataList = null
 
   let method = {
     clickSave: e => {
-      item.children.mapValues = values
+      item.subRule.mapValues = values
       let saveItem = method.makeMapObj()
       props.save(saveItem)
     },
     
     makeMapObj: () => {
       let saveItem = props.makeRuleObj(form, item);
-      saveItem.mapLines = item.children.mapLines
-      saveItem.mapValues = item.children.mapValues
+      saveItem.mapLines = item.subRule.mapLines
+      saveItem.mapValues = item.subRule.mapValues
       
       return saveItem
     },
     
     clearMapping: e => {
-      item.children.mapLines = []
-      method.setMapLines()
+      item.subRule.mapLines = []
+      setLines([])
     },
     
     setData: (type) => {
@@ -116,6 +125,8 @@ const DataMapEditor = (props) => {
               item.targetData = result
               form.setFieldsValue({targetDataId: data.id})
             }
+            item.subRule.mapLines = []
+            setLines([])
           }
         })
         ref.setState({visible: false})
@@ -136,7 +147,10 @@ const DataMapEditor = (props) => {
           data: data,
         }
         parent.children = data.fields.map((field, idx) => {
-          let title = <div className={"inline s-"+field.fieldId}><div style={{width: 80}}>{field.engName}</div><div style={{width: 80}}>{field.name}</div></div>
+          let title = <div className={"inline s-"+field.fieldId}>
+            <div style={{width: 100}}>{field.engName}</div>
+            <div style={{width: 150}}>{field.name}</div>
+          </div>
           return {
             title: title,
             key: '0-' + idx,
@@ -153,7 +167,7 @@ const DataMapEditor = (props) => {
         console.log(node, dragNode)
         return false
       }
-      let lines = item.children.mapLines
+      let lines = item.subRule.mapLines
       let exist = false
       
       if (lines && lines.length > 0) {
@@ -170,7 +184,7 @@ const DataMapEditor = (props) => {
         })
         console.log('push line', node)
       }
-      item.children.mapLines = lines
+      item.subRule.mapLines = lines
       
       method.setMapLines()
     },
@@ -187,8 +201,8 @@ const DataMapEditor = (props) => {
           nodeProp.isLeaf = true
           if (type === 'tgt') {
             nodeProp.title = (<div className={"inline t-"+field.fieldId} onClick={e => { method.editDefault(e, field) }}>
-              <div key={0} style={{width: 80}}>{field.engName}</div>
-              <div key={1} style={{width: 120}}>{field.name}</div>
+              <div key={0} style={{width: 100}}>{field.engName}</div>
+              <div key={1} style={{width: 150}}>{field.name}</div>
               <div key={2} className="dVal">
                 {method.renderDVal(field.fieldId)}
               </div>
@@ -272,8 +286,8 @@ const DataMapEditor = (props) => {
     },
     
     setMapLines: () => {
-      if (item.children.mapLines) {
-        let lines = item.children.mapLines.map((it, idx) => {
+      if (item.subRule.mapLines) {
+        let lines = item.subRule.mapLines.map((it, idx) => {
           let $p = document.querySelector('.map-tree > ul > li > span:first-child')
           let $src = document.querySelector('.s-'+it.sourceFieldId)
           let $tgt = document.querySelector('.t-'+it.targetFieldId)
@@ -328,7 +342,7 @@ const DataMapEditor = (props) => {
     },
     
     mappingName: () => {
-      let lines = item.children.mapLines
+      let lines = item.subRule.mapLines
       let srcFlds = item.sourceData.fields
       let tgtFlds = item.targetData.fields
       
@@ -351,8 +365,12 @@ const DataMapEditor = (props) => {
           }
         }
       })
-      item.children.mapLines = lines
+      item.subRule.mapLines = lines
       method.setMapLines()
+    },
+    
+    onScroll: e => {
+      console.log('scroll')
     }
   }
 
@@ -365,7 +383,7 @@ const DataMapEditor = (props) => {
       </div>
       <Form colon={false}>
         <div className="row">
-          <Form.Item label="매핑 ID">{getFieldDecorator("id")(<Input size="small" className="size-id" readOnly />)}</Form.Item>
+          <Form.Item label={locale['label.dataMapId']}>{getFieldDecorator("id")(<Input size="small" className="size-id" readOnly />)}</Form.Item>
           <Form.Item label={locale['label.dataMapName']}>{getFieldDecorator("name")(<Input size="small" className="size-name" />)}</Form.Item>
         </div>
         
@@ -373,16 +391,16 @@ const DataMapEditor = (props) => {
         
         <div className="row">
           <div className="col-2">
-            <Form.Item label={locale['label.outData']} className="src-id">
+            <Form.Item label={locale['label.outData']} className="data-id">
               {getFieldDecorator("sourceDataId")(<Input.Search size="small" className="size-id" readOnly onSearch={vars => { method.setData('src') }} />)}
             </Form.Item>
           </div>
-          <div className="col-1 center">
+          <div className="center" style={{width: 200}}>
             <Button icon="disconnect" onClick={method.clearMapping} title={locale['label.deleteMapping']} />
             <Button icon="link" onClick={method.mappingName} title={locale['label.connectName']} />
           </div>
           <div className="col-3 row">
-            <Form.Item label={locale['label.inData']} className="flex-right tgt-id">
+            <Form.Item label={locale['label.inData']} className="data-id">
               {getFieldDecorator("targetDataId")(<Input.Search size="small" className="size-id" readOnly onSearch={vars => { method.setData('tgt') }} />)}
             </Form.Item>
           </div>
@@ -390,27 +408,27 @@ const DataMapEditor = (props) => {
         <div className="row">
           <div className="col-2 map-tree">
             <div className="row">
-              <div className="col-1 title">Eng Name</div>
-              <div className="col-1 title">Kor Name</div>
+              <div className="col-1 title">{locale['label.map.item1']}</div>
+              <div className="col-1 title">{locale['label.map.item2']}</div>
             </div>
             <DirectoryTree draggable defaultExpandAll onDragStart={info => { selectNode = method.setSelectNode(info.node) }}
-                onExpand={(expandedKeys, {expanded, node}) => { method.onExpand(expanded, 'src') }}>
+                onExpand={(expandedKeys, {expanded, node}) => { method.onExpand(expanded, 'src') }} onScroll={method.onScroll}>
               {method.renderTreeNode('src', method.parseTreeData(item.sourceData))}
             </DirectoryTree>
           </div>
-          <Stage className="col-1 line-canvas" width={200} height={300}>
+          <Stage className="line-canvas" width={200} height={555}>
             <Layer>
               {method.drawLine(expanded)}
             </Layer>
           </Stage>
           <div className="col-3 map-tree">
             <div className="row">
-              <div className="col-1 title">Eng Name</div>
-              <div className="col-1 title">Kor Name</div>
-              <div className="col-1 title">Default Value</div>
+              <div className="col-1 title">{locale['label.map.item1']}</div>
+              <div className="col-1 title">{locale['label.map.item2']}</div>
+              <div className="col-1 title">{locale['label.map.defaultVal']}</div>
             </div>
-            <DirectoryTree draggable defaultExpandAll onDrop={info => { method.dropNode(info.node, selectNode) }}
-                onExpand={(expandedKeys, {expanded, node}) => { method.onExpand(expanded, 'tgt') }}>
+            <DirectoryTree draggable defaultExpandAll onDrop={info => { method.dropNode(info.node, selectNode) }} className="test1"
+                onExpand={(expandedKeys, {expanded, node}) => { method.onExpand(expanded, 'tgt') }} onScroll={method.onScroll}>
               {method.renderTreeNode('tgt', method.parseTreeData(item.targetData))}
             </DirectoryTree>
           </div>

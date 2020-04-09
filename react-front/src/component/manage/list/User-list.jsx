@@ -5,12 +5,18 @@ import * as urmsc from '@/urm-utils'
 const locale = urmsc.locale
 
 class UserSearch extends React.Component {
-  state = {
-    vlsible: false,
-  }
-
   componentDidMount() {
     this.props.search()
+    
+    let $el = document.querySelectorAll('.search-bar input.ant-input')
+    let $this = this
+    $el.forEach((it) => {
+      it.addEventListener('keydown', function(e) {
+        if (e && e.keyCode === 13) {
+          $this.props.search($this.props.form.getFieldsValue())
+        }
+      })
+    })
   }
 
   method = {
@@ -106,18 +112,18 @@ class UserList extends React.Component {
       <div className="urm-list">
         <WrappedUserSearch {...this.props} search={this.method.search} />
         <Table className="table-striped" dataSource={this.state.items} pagination={false}
-            bordered size={"small"} scroll={{ x: 1200, y: 500 }} rowKey="id" onRow={this.onRow}>
-          <Table.Column title={locale['label.id']} dataIndex="id" width="130px" />
-          <Table.Column title={locale['label.name']} dataIndex="name" width="130px" />
-          <Table.Column title={locale['label.dept']} dataIndex="dept" width="130px" />
-          <Table.Column title={locale['label.position']} dataIndex="positionName" width="130px" />
-          <Table.Column title={locale['label.grade']} dataIndex="gradeName" width="130px" />
-          <Table.Column title={locale['label.generalTel']} dataIndex="generalTelNo" width="130px" />
-          <Table.Column title={locale['label.officeTel']} dataIndex="officeTelNo" width="130px" />
-          <Table.Column title={locale['label.mobile']} dataIndex="celNo" width="130px" />
-          <Table.Column title={locale['label.auth']} dataIndex="authId" width="130px" render={(val) => (this.method.getAuthStr(val))} />
+            bordered size="small" scroll={{ x: 1200, y: 500 }} rowKey="id" onRow={this.onRow}>
+          <Table.Column title={locale['label.id']} dataIndex="id" width="145px" />
+          <Table.Column title={locale['label.name']} dataIndex="name" width="155px" />
+          <Table.Column title={locale['label.dept']} dataIndex="deptName" />
+          <Table.Column title={locale['label.position']} dataIndex="positionName" />
+          <Table.Column title={locale['label.grade']} dataIndex="gradeName" />
+          <Table.Column title={locale['label.generalTel']} dataIndex="generalTelNo" />
+          <Table.Column title={locale['label.officeTel']} dataIndex="officeTelNo" />
+          <Table.Column title={locale['label.mobile']} dataIndex="celNo" />
+          <Table.Column title={locale['label.auth']} dataIndex="authId" width="155px" render={(val) => (this.method.getAuthStr(val))} />
           {this.method.renderButton(
-            <Table.Column title="Operations" className="operations" width="100px" render={(val) =>
+            <Table.Column className="operations" width="65px" render={(val) =>
               (<Button onClick={e => this.method.clickEdit(val.id)} icon="edit" />)} />
           )}
         </Table>

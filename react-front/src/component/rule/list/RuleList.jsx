@@ -1,13 +1,26 @@
 import React from 'react'
-import { message } from 'antd'
+import { message, Modal } from 'antd'
 import * as urmsc from '../../../urm-utils'
 
 const LIST_STATE = urmsc.LIST_STATE
+const locale = urmsc.locale
 
 class RuleSearch extends React.Component {
   componentDidMount() {
     this.props.form.setFieldsValue(this.props.scparam)
-    this.props.search(this.props.scparam)
+    this.props.search(this.props.form.getFieldsValue())
+    
+    let $el = this.props.path === 'request' ?
+      document.querySelectorAll('.advanced-search-bar input.ant-input') :
+      document.querySelectorAll('.search-bar input.ant-input')
+    let $this = this
+    $el.forEach((it) => {
+      it.addEventListener('keydown', function(e) {
+        if (e && e.keyCode === 13) {
+          $this.props.search($this.props.form.getFieldsValue())
+        }
+      })
+    })
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -85,20 +98,27 @@ class RuleList extends React.Component {
         ids = this.state.selectedKeys
       }
       if (!ids || ids.length === 0) {
-        message.warning('please row selected!!!')
+        message.warning(locale['message.1004'])
         return false
       }
-      
       let $this = this
-      urmsc.ajax({
-        type: 'POST',
-        url: 'api/' + this.props.path + '/delete',
-        data: JSON.stringify(ids),
-        contentType: 'application/json; charset=UTF-8',
-        success: function(res) {
-          console.log('delete ' + res + ' ' + $this.props.path.toUpperCase())
-          $this.method._updateItems(LIST_STATE.DELETE, ids)
-        },
+      Modal.confirm({
+        autoFocusButton: 'cancel',
+        content: '정말 삭제 하시겠습니까?',
+        cancelText: 'NO',
+        okText: 'YES',
+        onOk() {
+          urmsc.ajax({
+            type: 'POST',
+            url: 'api/' + $this.props.path + '/delete',
+            data: JSON.stringify(ids),
+            contentType: 'application/json; charset=UTF-8',
+            success: function(res) {
+              console.log('delete ' + res + ' ' + $this.props.path.toUpperCase())
+              $this.method._updateItems(LIST_STATE.DELETE, ids)
+            },
+          })
+        }
       })
     },
 
@@ -132,7 +152,6 @@ class RuleList extends React.Component {
         let update = false
         for (let i = 0; i < tmp.length; i++) {
           if (tmp[i].id === data.id) {
-            delete data.children
             tmp[i] = data
             update = true
             break

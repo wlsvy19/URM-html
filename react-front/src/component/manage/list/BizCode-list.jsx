@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { Table, Button } from 'antd'
 import { Form, Input } from 'antd'
 
@@ -9,6 +9,16 @@ const locale = urmsc.locale
 class BizSearch extends React.Component {
   componentDidMount() {
     this.props.search()
+    
+    let $el = document.querySelectorAll('.search-bar input.ant-input')
+    let $this = this
+    $el.forEach((it) => {
+      it.addEventListener('keydown', function(e) {
+        if (e && e.keyCode === 13) {
+          $this.props.search($this.props.form.getFieldsValue())
+        }
+      })
+    })
   }
   
   method = {
@@ -37,7 +47,7 @@ class BizSearch extends React.Component {
             <Form.Item label={locale['label.biz.level1.name']}>{getFieldDecorator("part1Name")(<Input size="small" className="search-id" />)}</Form.Item>
             <Form.Item label={locale['label.biz.level2.code']}>{getFieldDecorator("part2Id")(<Input size="small" className="search-id" />)}</Form.Item>
             <Form.Item label={locale['label.biz.level2.name']}>{getFieldDecorator("part2Name")(<Input size="small" className="search-id" />)}</Form.Item>
-            <Form.Item style={{marginLeft: "15px"}}>
+            <Form.Item className="search-buttons">
               <Button icon="search" onClick={this.method.clickSearch} title={locale['label.search']} />
               {this.method.renderButton(
                 <Button icon="plus" onClick={this.method.clickAdd} title={locale['label.add']} />
@@ -76,7 +86,7 @@ class BizList extends React.Component {
       let $this = this
       urmsc.ajax({
         type: 'GET',
-        url: 'api/code/business',
+        url: '/URM/api/code/business',
         data: param,
         success: function(list) {
           $this.setState({items: list})
@@ -105,7 +115,8 @@ BizList.defaultProps = {
 
 const EditableTable = Form.create({name:'editable_table'})((props) => {
   const { getFieldDecorator } = props.form
-  const [editingKey, setEditingKey] = useState('')
+  const [ editingKey, setEditingKey ] = useState('')
+  const [ colWidth, setColWidth ] = useState(65)
   
   let method = {
     isEditing: record => record.id === editingKey,
@@ -133,14 +144,18 @@ const EditableTable = Form.create({name:'editable_table'})((props) => {
       if (biz.id.startsWith('undefined')) {
         biz.id = ''
       }
-      if (!biz.part1Id || biz.part1Id.trim().length === 0) {
-        console.log('please input part1Id')
+      if (!biz.part2Id || biz.part2Id.trim().length === 0) {
+        console.log('Level2 ID 를 입력하세요.')
+        return false
+      }
+      if (!biz.part2Name || biz.par21Name.trim().length === 0) {
+        console.log('Level2 명 을 입력하세요.')
         return false
       }
       
       urmsc.ajax({
         type: 'POST',
-        url: 'api/code/business',
+        url: '/URM/api/code/business',
         data: JSON.stringify(biz),
         contentType: 'application/json; charset=UTF-8',
         success: function(res) {
@@ -159,20 +174,24 @@ const EditableTable = Form.create({name:'editable_table'})((props) => {
     },
 
     renderOperations: (val, record, idx) => {
-      return ( method.isEditing(record) ? 
-        <div>
+      let render = undefined
+      if (method.isEditing(record)) {
+        setColWidth(85)
+        render = <div>
           <Button icon="save" onClick={e => { method.clickSave(idx) }} title={locale['label.save']} />
           <Button icon="close" onClick={method.clickCancel} title={locale['label.cancel']} />
         </div>
-         : <Button icon="edit" onClick={e => { method.clickEdit(record.id) }} title={locale['label.modify']} />
-      );
+      } else {
+        render = <Button icon="edit" onClick={e => { method.clickEdit(record.id) }} title={locale['label.modify']} />
+      }
+      return render
     },
   }
   
   return (
     <Table className="table-striped" rowClassName="editable-row"
       dataSource={props.items} pagination={false} bordered
-      size={"small"} scroll={{ y: 500 }} rowKey="id"
+      size="small" scroll={{ y: 500 }} rowKey="id"
       onRow={(record, index) => {
         return {
           onDoubleClick: e => { if (props.onDbClick) props.onDbClick(record) }
@@ -191,7 +210,7 @@ const EditableTable = Form.create({name:'editable_table'})((props) => {
       <Table.Column title={locale['label.biz.level2.name']} dataIndex="part2Name"
         render={(val, record, idx) => method.editableCell(val, record, 'items['+idx+'].part2Name')}/>
       {method.renderButton(
-        <Table.Column title="Operations" className="operations" width="90px"
+        <Table.Column className="operations" width={colWidth}
           render={(val, record, idx) => (method.renderOperations(val, record, idx))} />
       )}
     </Table>

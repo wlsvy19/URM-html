@@ -14,7 +14,7 @@ class System extends RuleMain {
 
   render() {
     return (
-      <div className="urm-panel" style={{minWidth: "1100px"}}>
+      <div className="urm-panel">
         <SystemList ref="list" path={this.state.path} userInfo={this.props.userInfo}
           codeList={this.codeList()} edit={this.method.handleEdit} />
         <SystemEditor ref="editor" path={this.state.path} userInfo={this.props.userInfo}

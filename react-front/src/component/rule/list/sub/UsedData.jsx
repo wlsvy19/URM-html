@@ -1,10 +1,31 @@
 import React from 'react'
 import { Table, Button } from 'antd'
 
-import ResizeableTitle from '@/component/ResizeableTitle'
+import { Resizable } from 'react-resizable'
+//import ResizeableTitle from '@/component/ResizeableTitle'
 import * as urmsc from '@/urm-utils'
 
 const locale = urmsc.locale
+
+const ResizeableTitle = (props) => {
+  const { onResize, width, className, ...restProps } = props;
+
+  if (!width) {
+    return <th {...restProps} />;
+  }
+
+  return (
+    <Resizable
+      width={width}
+      height={0}
+      className={className}
+      onResize={onResize}
+      draggableOpts={{ enableUserSelectHack: false }}
+    >
+      <th {...restProps} />
+    </Resizable>
+  );
+}
 
 export default class UsedData extends React.Component {
  state = {
@@ -85,7 +106,7 @@ export default class UsedData extends React.Component {
         {this.method.renderButton()}
         <Table className="table-striped" components={this.components}
             dataSource={this.state.items} pagination={false} bordered
-            size={"small"} scroll={{ y: 500 }}>
+            size="small" scroll={{ y: 500 }}>
           <Table.Column title={locale['label.requestId']} dataIndex="reqId" width={colWidth[0]}
             onHeaderCell={column => ({ width: column.width, onResize: this.method.handleResize(0) })} />
           <Table.Column title={locale['label.requestName']} dataIndex="reqName" width={colWidth[1]}

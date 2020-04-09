@@ -22,11 +22,12 @@ export default class SubModal extends React.Component {
 
   render() {
     const { childState } = this.state
+    const { width, children, ...restProps } = this.props
     
     return (
-      <Modal visible={this.state.visible} width={this.props.width}
+      <Modal visible={this.state.visible} width={width} {...restProps}
         footer={null} onCancel={this.method.handleCancel} className="urm-modal">
-        {React.Children.map(this.props.children, (child) => {
+        {React.Children.map(children, (child) => {
           if (child.key && (child.key.endsWith('list') || child.key.endsWith('List'))) {
             let childFunc = childState[child.key] ? childState[child.key].onDbClick : undefined
             let scparam = childState[child.key] ? childState[child.key].scparam : undefined

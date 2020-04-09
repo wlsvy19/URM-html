@@ -3,7 +3,7 @@ import { Table, Button } from 'antd'
 import { Form, Input, Select } from 'antd'
 
 import RuleList, { RuleSearch } from './RuleList'
-import * as urmsc from '../../../urm-utils'
+import * as urmsc from '@/urm-utils'
 
 const locale = urmsc.locale
 
@@ -28,13 +28,13 @@ class SystemSearch extends RuleSearch {
             <Form.Item label={locale['label.systemName']}>{getFieldDecorator("name")(<Input size="small" className="search-name" />)}</Form.Item>
             <Form.Item label={locale['label.host']}>{getFieldDecorator("hostId")(<Input size="small" className="search-id" />)}</Form.Item>
             <Form.Item label={locale['label.systemType']}>
-              {getFieldDecorator("type", {initialValue: ""})(<Select size={"small"} className="search-id">
+              {getFieldDecorator("type", {initialValue: ""})(<Select size="small" className="search-id">
                 <Select.Option value="">ALL</Select.Option>
                 {this.method.renderOpts("sysType")}
               </Select>)}
             </Form.Item>
             <Form.Item label={locale['label.devType']}>
-              {getFieldDecorator("devType", {initialValue: ""})(<Select size={"small"} className="search-id">
+              {getFieldDecorator("devType", {initialValue: ""})(<Select size="small" className="search-id">
                 <Select.Option value="">ALL</Select.Option>
                 {this.method.renderOpts("devType")}
               </Select>)}
@@ -61,7 +61,7 @@ class SystemList extends RuleList {
         <WrappedSystemSearch {...this.props} search={this.method.search} />
         <Table className="table-striped"
           dataSource={this.state.items} pagination={false} bordered
-          size={"small"} scroll={{ y: 500 }} rowKey="id"
+          size="small" /*scroll={{ y: 500 }}*/ rowKey="id"
           onRow={this.onRow}>
           <Table.Column title={locale['label.systemId']} dataIndex="id" width="130px"/>
           <Table.Column title={locale['label.systemName']} dataIndex="name" width="180px"/>
@@ -73,7 +73,7 @@ class SystemList extends RuleList {
           <Table.Column title={locale['label.dbType']} dataIndex="dbType" render={(val) =>  ( this.method.getTypeStr('dbType', val) )}/>
           <Table.Column title={locale['label.dbName']} dataIndex="dbName"/>
           {this.method.renderButton(
-            <Table.Column title="Operations" className="operations" width="90px" render={(val) => 
+            <Table.Column className="operations" width="65px" render={(val) => 
               (<Button icon="edit" onClick={e => { this.method.clickEdit(val.id) }} title={locale['label.modify']} />)} />
           )}
         </Table>

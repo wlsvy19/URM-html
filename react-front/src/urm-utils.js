@@ -29,7 +29,7 @@ export function ajax (props) {
     dataType: 'json',
   }
     
-  if (props === undefined) {
+  if (!props) {
     props = defaultProps
   } else {
     if (props.method === undefined)  props.method = props.type ? props.type : defaultProps.method
@@ -64,8 +64,7 @@ export function ajax (props) {
       let res = this.response
       if (this.status === 200) {
         let curUrl = window.location.href
-        if (curUrl !== this.responseURL && this.responseURL &&
-            this.responseURL.indexOf('/api/') === -1) {
+        if (curUrl !== this.responseURL && this.responseURL && this.responseURL.endsWith('.page')) {
           if (props.success) props.success(res)
           window.location.href = this.responseURL
         } else {

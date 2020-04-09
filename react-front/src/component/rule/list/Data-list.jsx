@@ -4,7 +4,6 @@ import { Form, Input, Select } from 'antd'
 import moment from 'moment'
 
 import RuleList, { RuleSearch } from './RuleList'
-import ResizeableTitle from '@/component/ResizeableTitle'
 import SubModal from '@/component/SubModal'
 import UsedData from './sub/UsedData'
 
@@ -32,7 +31,7 @@ class DataSearch extends RuleSearch {
             <Form.Item label={locale['label.dataId']}>{getFieldDecorator("id")(<Input size="small" className="search-id" />)}</Form.Item>
             <Form.Item label={locale['label.dataName']}>{getFieldDecorator("name")(<Input size="small" className="search-name" />)}</Form.Item>
             <Form.Item label={locale['label.dataType']}>
-              {getFieldDecorator("type", {initialValue: ""})(<Select size={"small"} className="search-id">
+              {getFieldDecorator("type", {initialValue: ""})(<Select size="small" className="search-id">
                 <Select.Option value="">ALL</Select.Option>
                 {this.method.renderOpts("dataType")}
               </Select>)}
@@ -42,7 +41,7 @@ class DataSearch extends RuleSearch {
               {this.method.renderButton(
                 <div className="inline">
                   <Button icon="plus" onClick={this.method.clickAdd} title={locale['label.add']} />
-                  <Button icon="delete" onClick={this.method.clickDelete} title={locale['label.delete']} disabled={!this.props.canDelete()} />
+                  <Button icon="delete" type="danger" onClick={this.method.clickDelete} title={locale['label.delete']} disabled={!this.props.canDelete()} />
                 </div>
               )}
             </Form.Item>
@@ -54,34 +53,9 @@ class DataSearch extends RuleSearch {
 }
 
 class DataList extends RuleList {
- state = {
-    colWidth: [
-      250, 275, 275, 275
-    ],
-  }
-
-  components = {
-    header: {
-      cell: ResizeableTitle,
-    },
-  }
-  
   method = {
     ...this.method,
 
-    handleResize: index => (e, prop) => {
-      console.log(prop)
-      if (prop) {
-      let { size } = prop
-      this.setState(({ colWidth }) => {
-        const nextColumns = [...colWidth]
-        nextColumns[index] = size.width
-        return { colWidth: nextColumns }
-      })
-      }
-      return false
-    },
-    
     clickUsed: (id) => {
       let ref = this.refs.usedList
       let childState = {
@@ -92,25 +66,23 @@ class DataList extends RuleList {
   }
 
   render() {
-    const { colWidth } = this.state
-
     return (
       <div className="urm-list">
         <WrappedDataSearch  {...this.props} search={this.method.search} delete={this.method.clickDelete} canDelete={this.method.isPageDelete} />
-        <Table className="table-striped" components={this.components}
+        <Table className="table-striped"
             dataSource={this.state.items} pagination={false} bordered
-            size={"small"} scroll={{ y: 500 }} rowKey="id"
+            size="small" /*scroll={{ y: 500 }}*/ rowKey="id"
             rowSelection={this.rowSelection} onRow={this.onRow}>
           <Table.Column title={locale['label.id']} dataIndex="id" width="150px"/>
-          <Table.Column title={locale['label.name']} dataIndex="name" width={colWidth[0]} />
-          <Table.Column title={locale['label.dataType']} dataIndex="type" width={colWidth[1]} render={(val) => ( this.method.getTypeStr('dataType', val) )} />
-          <Table.Column title={locale['label.registId']} dataIndex="regId" width={colWidth[2]}/>
-          <Table.Column title={locale['label.registDate']} dataIndex="regDate" width={colWidth[3]} render={(val) => ( moment(val).format('YYYY-MM-DD HH:mm') )} />
+          <Table.Column title={locale['label.name']} dataIndex="name" width="250px" />
+          <Table.Column title={locale['label.dataType']} dataIndex="type" render={(val) => ( this.method.getTypeStr('dataType', val) )} />
+          <Table.Column title={locale['label.registId']} dataIndex="regId" />
+          <Table.Column title={locale['label.registDate']} dataIndex="regDate" render={(val) => ( moment(val).format('YYYY-MM-DD HH:mm') )} />
           {this.method.renderButton(
-            <Table.Column title="Operations" className="operations" width="120px" render={(val) =>
+            <Table.Column className="operations" width="115px" render={(val) =>
               (<div>
                 <Button icon="edit" onClick={e => { this.method.clickEdit(val.id) }} title={locale['label.modify']} />
-                <Button icon="delete" onClick={e => { this.method.clickDelete([val.id]) }} title={locale['label.delete']} disabled={!this.method.isPageDelete()} />
+                <Button icon="delete" type="danger" onClick={e => { this.method.clickDelete([val.id]) }} title={locale['label.delete']} disabled={!this.method.isPageDelete()} />
                 <Button icon="interaction" onClick={e => { this.method.clickUsed(val.id) }} title="영향도" />
               </div>)}
             />

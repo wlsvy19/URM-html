@@ -31,11 +31,10 @@ public class RequestDao extends RuleDao<Request> {
 
     public List<Request> listByManager(Session session, String userId) throws Exception {
         Criteria crit = session.createCriteria(entityName);
-        crit.add(Restrictions.disjunction(Restrictions.eq("regId", userId),
-                                          Restrictions.eq("sendAdminId", userId),
-                                          Restrictions.eq("rcvAdminId", userId)));
-        crit.add(Restrictions.ne("chgStat", "4"));
-        crit.add(Restrictions.ne("delYN", false));
+        crit.add(Restrictions.disjunction().add(Restrictions.eq("regId", userId))
+                             .add(Restrictions.eq("sendAdminId", userId))
+                             .add(Restrictions.eq("rcvAdminId", userId)));
+        crit.add(Restrictions.eq("delYN", false));
         
         crit.addOrder(Order.desc("chgDate"));
         

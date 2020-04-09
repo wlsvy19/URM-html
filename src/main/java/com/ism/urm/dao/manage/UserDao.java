@@ -27,11 +27,6 @@ public class UserDao extends BasicDao<User> {
   
     @Override
     public User get(Session session, String id) throws Exception {
-        User rtn = getUserById(session, id);
-        return rtn;
-    }
-
-    public User getUserById(Session session, String id) throws Exception {
         User rtn = (User) session.get("USER", id);
         return rtn;
     }

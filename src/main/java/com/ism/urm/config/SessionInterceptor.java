@@ -19,7 +19,7 @@ public class SessionInterceptor implements HandlerInterceptor {
         
         // TODO : login session check... temporary
         String userid = (String)req.getSession().getAttribute(SessionUtil.USER_ID);
-        /*String ajaxCall = req.getHeader("AjaxCall");
+        String ajaxCall = req.getHeader("AjaxCall");
         if (ajaxCall != null && ajaxCall.equals("true")) {
             if(userid == null) {
                 resp.sendError(403); //SC_FORBIDDEN
@@ -30,7 +30,7 @@ public class SessionInterceptor implements HandlerInterceptor {
                 resp.sendRedirect(req.getContextPath() + "/login/login.page");
                 return false;
             }
-        }*/
+        }
 
         return true;
     }

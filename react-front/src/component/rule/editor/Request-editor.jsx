@@ -55,12 +55,28 @@ class RequestEditor extends RuleEditor {
     }
   }
 
+  childMethod = {
+    ...this.childMethod,
+
+    isPageDelete: () => {
+      let auth = this.props.userInfo ? this.props.userInfo.auth : ''
+      return urmsc.isPageEdit(this.props.path, 'delete', auth)
+    },
+
+    canSave: () => {
+      let loginUser = this.props.userInfo
+      let item = this.state.item
+      return this.childMethod.isPageDelete() || item.regId === loginUser.id ||
+        item.sendAdminId === loginUser.id || item.rcvAdminId === loginUser.id
+    },
+  }
+
   render() {
     return (
-      <Modal visible={this.state.visible} width="1080px"
+      <Modal visible={this.state.visible} width="1355px"
           footer={null} onCancel={this.method.handleCancel} className="urm-modal">
         <WrappedRequestEditor codeList={this.props.codeList} authList={this.props.authList}
-          item={this.state.item} {...this.childMethod} />
+          item={this.state.item} userInfo={this.props.userInfo} {...this.childMethod} />
       </Modal>
     );
   }
@@ -74,7 +90,11 @@ const RequestEditorForm = (props) => {
   // Only re-run the effect if props.item changes
   useEffect(() => {
     props.setItem(form, item, method.initialSetter)
-    item.children = {}
+    item.subRule = {
+      sqlPlain: item.sqlPlain,
+      dbCrudType: item.dbCrudType,
+      fileCrudType: item.fileCrudType,
+    }
     // TODO subscribe...
     // eslint-disable-next-line
   }, [item]);
@@ -97,8 +117,10 @@ const RequestEditorForm = (props) => {
       formItem.rcvSystemName = propsItem.rcvSystem.name
       formItem.sendJobCodeName = propsItem.sendJobCode.part2Name + '(' + propsItem.sendJobCode.part2Id + ')'
       formItem.rcvJobCodeName = propsItem.rcvJobCode.part2Name + '(' + propsItem.rcvJobCode.part2Id + ')'
-      formItem.sendAdminName = propsItem.sendAdmin.name + '(' + propsItem.sendAdmin.positionName + ')'
-      formItem.rcvAdminName = propsItem.rcvAdmin.name + '(' + propsItem.rcvAdmin.positionName + ')'
+      formItem.sendAdminName = propsItem.sendAdmin.name + '(' +
+      (propsItem.sendAdmin.positionName ? propsItem.sendAdmin.positionName : '--' ) + ')'
+      formItem.rcvAdminName = propsItem.rcvAdmin.name + '(' +
+      (propsItem.rcvAdmin.positionName ? propsItem.rcvAdmin.positionName : '--' ) + ')'
     },
 
     makeRequestObj: () => {
@@ -108,7 +130,7 @@ const RequestEditorForm = (props) => {
       saveItem.testStartYMD = testDate[0].format('YYYYMMDD')
       saveItem.testEndYMD = testDate[1].format('YYYYMMDD')
       
-      let children = item.children
+      let children = item.subRule
       if (children.sendSystem) saveItem.sendSystemId = children.sendSystem.id
       if (children.rcvSystem) saveItem.rcvSystemId = children.rcvSystem.id
       if (children.sendJobCode) saveItem.sendJobCodeId = children.sendJobCode.id
@@ -116,7 +138,16 @@ const RequestEditorForm = (props) => {
       if (children.sendAdmin) saveItem.sendAdminId = children.sendAdmin.id
       if (children.rcvAdmin) saveItem.rcvAdminId = children.rcvAdmin.id
       
-      saveItem.sql = saveItem.sqlPlain
+      saveItem.sqlPlain = undefined
+      saveItem.sql = undefined
+      saveItem.dbCrudType = undefined
+      saveItem.fileCrudType = undefined
+      if (saveItem.sendSystemType === '2') {
+        saveItem.sqlPlain = children.sqlPlain
+        saveItem.sql = saveItem.sqlPlain
+      }
+      if (saveItem.rcvSystemType === '2') saveItem.dbCrudType = children.dbCrudType
+      if (saveItem.rcvSystemType === '1') saveItem.fileCrudType = children.fileCrudType
       
       return saveItem
     },
@@ -153,7 +184,7 @@ const RequestEditorForm = (props) => {
 
     setSystem: (type) => {
       let ref = sysList
-      let children = item.children
+      let children = item.subRule
       let callback = (system) => {
         if (type === 'rcv') {
           children.rcvSystem = system
@@ -180,7 +211,7 @@ const RequestEditorForm = (props) => {
 
     setBizCode: (type) => {
       let ref = bizList
-      let children = item.children
+      let children = item.subRule
       let callback = (biz) => {
         let name = biz.part2Name + '(' + biz.part2Id + ')'
         if (type === 'rcv') {
@@ -201,9 +232,9 @@ const RequestEditorForm = (props) => {
 
     setUser: (type) => {
       let ref = usrList
-      let children = item.children
+      let children = item.subRule
       let callback = (user) => {
-        let name = user.name + '(' + user.positionName + ')'
+        let name = user.name + '(' + (user.positionName ? user.positionName : '--') + ')'
         if (type === 'rcv') {
           children.rcvAdmin = user
           form.setFieldsValue({rcvAdminName: name})
@@ -254,13 +285,19 @@ const RequestEditorForm = (props) => {
               .map((it) => <Select.Option key={it.code} value={it.code}>{it.name}</Select.Option>)
     },
 
+    renderRadios: (key) => {
+      return urmsc.getSubListByKey(props.codeList, 'kind', urmsc.CODEKEY[key])
+              .map((it) => <Radio key={it.code} value={it.code}>{it.name}</Radio>)
+    },
+
     renderSendSystem: () => {
       let type = form.getFieldValue('sendSystemType')
-      if (type === '2') {
-        let sqlProps = {initialValue: item.sqlPlain}
+      let children = item.subRule
+      if (children && type === '2') {
+        let sqlProps = {initialValue: children.sqlPlain}
         if (item.type !== '2') {
           let query = form.getFieldValue('sqlPlain')
-          item.sqlPlain = (query && query.length > 0) ? query : item.sqlPlain
+          children.sqlPlain = (query && query.length > 0) ? query : children.sqlPlain
         }
         
         let textarea = <Form.Item>{getFieldDecorator("sql")(<Input.TextArea style={{width: "390px", height: "200px"}} />)}</Form.Item>
@@ -278,30 +315,31 @@ const RequestEditorForm = (props) => {
 
     renderRcvSystem: () => {
       let type = form.getFieldValue('rcvSystemType')
-      if (type === '1') {
-        let fileProps = {initialValue: !item.fileCrudType ? '1' : item.fileCrudType}
+      let children = item.subRule
+      if (children && type === '1') {
+        let fileProps = {initialValue: !children.fileCrudType ? '1' : children.fileCrudType}
         if (item.rcvSystemType !== '1') {
           let crud = form.getFieldValue('fileCrudType')
-          item.fileCrudType = !crud ? item.fileCrudType : crud
+          children.fileCrudType = !crud ? children.fileCrudType : crud
         }
         
         return (
           <Form.Item label={locale['label.targetFileCRUD']}>
-            {getFieldDecorator("fileCrudType", fileProps)(<Select size={"small"} className="size-id">
+            {getFieldDecorator("fileCrudType", fileProps)(<Select size="small" className="size-id">
               {method.renderOpts("fileCrudType")}
             </Select>)}
           </Form.Item>
         );
-      } else if (type === '2') {
-        let dbProps = {initialValue: !item.dbCrudType ? '1' : item.dbCrudType}
+      } else if (children && type === '2') {
+        let dbProps = {initialValue: !children.dbCrudType ? '1' : children.dbCrudType}
         if (item.rcvSystemType !== '2') {
           let crud = form.getFieldValue('dbCrudType')
-          item.dbCrudType = !crud ? item.dbCrudType : crud
+          children.dbCrudType = !crud ? children.dbCrudType : crud
         }
         
         return (
           <Form.Item label={locale['label.targetDBCRUD']}>
-            {getFieldDecorator("dbCrudType", dbProps)(<Select size={"small"} className="size-name">
+            {getFieldDecorator("dbCrudType", dbProps)(<Select size="small" className="size-name">
               {method.renderOpts("dbCrudType")}
             </Select>)}
           </Form.Item>
@@ -315,32 +353,43 @@ const RequestEditorForm = (props) => {
       if (useDataMap) {
         let reqProps = {initialValue: props.item.reqDataMappingId}
         let resProps = {initialValue: props.item.resDataMappingId}
-        /*
-          <div>
-            <Form.Item label="Request">
-              {getFieldDecorator("reqDataMappingId", reqProps)(<Input.Search size="small" readOnly
-                onSearch={vars => { method.setDataMap('req') }} onClick={e => { method.editDataMap('req', e) }} className="size-id" />)}
-            </Form.Item>
-            <Form.Item label="Response">
-              {getFieldDecorator("resDataMappingId", resProps)(<Input.Search size="small" readOnly
-                onSearch={vars => { method.setDataMap('res') }} onClick={e => { method.editDataMap('res', e) }} className="size-id" />)}
-            </Form.Item>
-          </div>
-        */
         return (
           <div>
-            <Form.Item label={locale['label.request']}>
-              {getFieldDecorator("reqDataMappingId", reqProps)(<Input size="small" readOnly allowClear
-                onClick={e => { method.editDataMap('req', e) }} className="size-id" />)}
+            <Form.Item label="Request">
+              {getFieldDecorator("reqDataMappingId", reqProps)(<Input.Search size="small" readOnly allowClear
+                onSearch={vars => { method.getDataMapList('req') }} onClick={e => { method.editDataMap('req', e) }} className="size-id" />)}
             </Form.Item>
-            <Form.Item label={locale['label.response']}>
-              {getFieldDecorator("resDataMappingId", resProps)(<Input size="small" readOnly allowClear
-                onClick={e => { method.editDataMap('res', e) }} className="size-id" />)}
+            <Form.Item label="Response">
+              {getFieldDecorator("resDataMappingId", resProps)(<Input.Search size="small" readOnly allowClear
+                onSearch={vars => { method.getDataMapList('res') }} onClick={e => { method.editDataMap('res', e) }} className="size-id" />)}
             </Form.Item>
           </div>
         );
       }
       return undefined
+    },
+    
+    changeType: (val, opt) => {
+      if (item.id) return false
+      let obj = {}
+      if (val === '1') {
+        obj.sendSystemType = '3'
+        obj.rcvSystemType = '3'
+        obj.tpcYN = false
+        obj.trType = '2'
+        obj.dataMapYN = false
+      } else if (val === '2') {
+        obj.sendSystemType = '1'
+        obj.rcvSystemType = '1'
+        obj.tpcYN = true
+        obj.dataMapYN = false
+      } else if (val === '3') {
+        obj.sendSystemType = '2'
+        obj.rcvSystemType = '2'
+        obj.tpcYN = true
+        obj.dataMapYN = true
+      }
+      form.setFieldsValue(obj)
     },
   }
   
@@ -363,11 +412,15 @@ const RequestEditorForm = (props) => {
     }
     return 'Service'
   }
+  
+  let isOnl = () => {
+    return form.getFieldValue('interfaceType') === '1'
+  }
 
   return (
     <div className="urm-editor">
       <div className="editor-buttons">
-        <Button onClick={method.clickSave} disabled={!props.isPageSave()}>{locale['label.save']}</Button>
+        <Button onClick={method.clickSave} disabled={!props.canSave()}>{locale['label.save']}</Button>
       </div>
       <Form colon={false}>
         <div className="row">
@@ -376,45 +429,44 @@ const RequestEditorForm = (props) => {
         </div>
         <div className="row">
           <Form.Item label={locale['label.interfaceType']}>
-            {getFieldDecorator("interfaceType", {initialValue: "1"})(<Select size={"small"} className="size-id">
+            {getFieldDecorator("interfaceType", {initialValue: "1"})(<Select size="small" className="size-id" onChange={method.changeType}>
               {method.renderOpts("infType")}
             </Select>)}
           </Form.Item>
           <Form.Item label={locale['label.processStatus']}>
-            {getFieldDecorator("processStat", {initialValue: "1"})(<Select size={"small"} style={{width: "150px"}}>
+            {getFieldDecorator("processStat", {initialValue: "1"})(<Select size="small" className="size-id">
               {method.renderOpts("procStat")}
             </Select>)}
           </Form.Item>
           <Form.Item label={locale['label.changeStatus']}>
-            {getFieldDecorator("chgStat", {initialValue: "1"})(<Select size={"small"} className="size-id">
+            {getFieldDecorator("chgStat", {initialValue: "1"})(<Select size="small" className="size-id">
               {method.renderOpts("chgStat")}
             </Select>)}
           </Form.Item>
         </div>
         <div className="row">
           <Form.Item label={locale['label.syncType']}>
-            {getFieldDecorator("syncType", {initialValue: "1"})(<Select size={"small"} className="size-id">
+            {getFieldDecorator("syncType", {initialValue: "1"})(<Select size="small" className="size-id" disabled={!isOnl()}>
               {method.renderOpts("syncType")}
             </Select>)}
           </Form.Item>
-          <Form.Item label={locale['label.interfaceId']}>{getFieldDecorator("interfaceId")(<Input size="small" className="size-id" />)}</Form.Item>
+          <Form.Item label={locale['label.interfaceId']}>{getFieldDecorator("interfaceId")(<Input size="small" className="size-id" disabled={!props.isPageDelete()} />)}</Form.Item>
           <Form.Item label={locale['label.eaiYn']}>{getFieldDecorator("eaiYN", {valuePropName: "checked", initialValue: true})(<Switch size="small" />)}</Form.Item>
           <Form.Item label={locale['label.2pcYn']}>{getFieldDecorator("tpcYN", {valuePropName: "checked", initialValue: false})(<Switch size="small" />)}</Form.Item>
         </div>
         <div className="row">
           <Form.Item label={locale['label.jobType']}>{getFieldDecorator("jobType")(<Input size="small" className="size-id" />)}</Form.Item>
           <Form.Item label={locale['label.trType']}>
-            {getFieldDecorator("trType", {initialValue: "2"})(<Radio.Group >
-              <Radio value="1">OneWay</Radio>
-              <Radio value="2">BothWay</Radio>
+            {getFieldDecorator("trType", {initialValue: "2"})(<Radio.Group className="size-id">
+              {method.renderRadios('trType')}
             </Radio.Group>)}
           </Form.Item>
-        </div>
-        <div className="row">
           <Form.Item label={locale['label.testDate']}>{getFieldDecorator("testDate", {
             initialValue: [moment(), moment().add(7, 'd')]
           })(<RangePicker size="small" allowClear={false} className="size-name" />)}</Form.Item>
-          <Form.Item label={locale['label.isMapping']}>{getFieldDecorator("dataMapYN", {valuePropName: "checked", initialValue: false})(<Checkbox />)}</Form.Item>
+        </div>
+        <div className="row">
+          <Form.Item label={locale['label.isMapping']}>{getFieldDecorator("dataMapYN", {valuePropName: "checked", initialValue: false})(<Checkbox className="size-id" />)}</Form.Item>
           {method.renderDataMap()}
         </div>
         <hr/>
@@ -422,7 +474,7 @@ const RequestEditorForm = (props) => {
           <div className="col-1">
             <div className="row">
               <Form.Item label={locale['label.sourceMethod']}>
-                {getFieldDecorator("sendSystemType", {initialValue: "3"})(<Select size={"small"} className="size-id">
+                {getFieldDecorator("sendSystemType", {initialValue: "3"})(<Select size="small" className="size-id">
                   {method.renderOpts("sysType")}
                 </Select>)}
               </Form.Item>
@@ -449,7 +501,7 @@ const RequestEditorForm = (props) => {
           <div className="col-1">
             <div className="row">
               <Form.Item label={locale['label.targetMethod']}>
-                {getFieldDecorator("rcvSystemType", {initialValue: "3"})(<Select size={"small"} className="size-id">
+                {getFieldDecorator("rcvSystemType", {initialValue: "3"})(<Select size="small" className="size-id">
                   {method.renderOpts("sysType")}
                 </Select>)}
               </Form.Item>
@@ -477,7 +529,7 @@ const RequestEditorForm = (props) => {
         <hr/>
         <div className="row">
           <Form.Item label={locale['label.etcRequest']} className="col-1">{getFieldDecorator("etcRemark")(<Input.TextArea className="urm-remark" />)}</Form.Item>
-          <Form.Item label={locale['label.eaiRequest']} className="col-1">{getFieldDecorator("eaiRemark")(<Input.TextArea className="urm-remark" />)}</Form.Item>
+          <Form.Item label={locale['label.eaiRequest']} className="col-1">{getFieldDecorator("eaiRemark")(<Input.TextArea className="urm-remark" disabled={!props.isPageDelete()} />)}</Form.Item>
         </div>
         <hr/>
         <div className="row">
@@ -491,23 +543,23 @@ const RequestEditorForm = (props) => {
         </div>
       </Form>
       
-      <SubModal ref={(list) => { sysList = list }} width="1120px">
+      <SubModal ref={(list) => { sysList = list }} width="1280px" bodyStyle={{height: 600, overflow: 'auto'}}>
         <SystemList key="list" path="system" codeList={props.codeList} onlySearch={true} />
       </SubModal>
       
-      <SubModal ref={(list) => { bizList = list }} width="1215px">
+      <SubModal ref={(list) => { bizList = list }} width="1240px">
         <BizList key="list" onlySearch={true} />
       </SubModal>
       
-      <SubModal ref={(list) => { usrList = list }} width="980px">
+      <SubModal ref={(list) => { usrList = list }} width="1080px">
         <UserList key="list" path="user" authList={props.authList} onlySearch={true} />
       </SubModal>
       
-      <SubModal ref={(list) => { mapList = list }} width="1030px">
-        <DataMapList key="list" path="datamap" />
+      <SubModal ref={(list) => { mapList = list }} width="1040px">
+        <DataMapList key="list" path="datamap" userInfo={props.userInfo} />
       </SubModal>
       
-      <DataMapEditor ref={(map) => { dataMap = map }} path="datamap" codeList={props.codeList} onlySearch={true} />
+      <DataMapEditor ref={(map) => { dataMap = map }} path="datamap" userInfo={props.userInfo} codeList={props.codeList} onlySearch={true} />
     </div>
   );
 }

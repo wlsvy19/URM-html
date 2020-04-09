@@ -33,7 +33,7 @@ class CopySearch extends React.Component {
             <Form.Item label={locale['label.dataId']}>{getFieldDecorator("id")(<Input size="small" className="search-id" />)}</Form.Item>
             <Form.Item label={locale['label.dataName']}>{getFieldDecorator("name")(<Input size="small" className="search-name" />)}</Form.Item>
             <Form.Item label={locale['label.dataType']}>
-              {getFieldDecorator("type", {initialValue: ""})(<Select size={"small"} className="search-id">
+              {getFieldDecorator("type", {initialValue: ""})(<Select size="small" className="search-id">
                 <Select.Option value="">ALL</Select.Option>
                 {this.method.renderOpts("dataType")}
               </Select>)}
@@ -126,7 +126,7 @@ class CopyList extends React.Component {
         <WrappedCopySearch  {...this.props} search={this.method.search} />
         <Table className="table-striped"
           dataSource={this.state.items} pagination={false} bordered
-          size={"small"} scroll={{ y: 500 }} rowKey="id"
+          size="small" scroll={{ y: 300 }} rowKey="id"
           onRow={(record, index) => {
             return {
               onClick: e => { this.method.viewFields(record) },
@@ -143,9 +143,9 @@ class CopyList extends React.Component {
         
         <hr />
         
-        <Table className="table-striped" rowClassName="editable-row"
+        <Table className="table-striped"
           dataSource={this.state.fields} pagination={false} bordered
-          size={"small"} scroll={{ y: 500 }} rowKey="sno">
+          size="small" scroll={{ y: 300 }} rowKey="sno">
           <Table.Column title={locale['label.index']} dataIndex="sno" width="65px" align="center"/>
           <Table.Column title={locale['label.fieldName']} dataIndex="engName" width="150px"/>
           <Table.Column title={locale['label.fieldLocalName']} dataIndex="name" width="150px"/>
@@ -154,7 +154,7 @@ class CopyList extends React.Component {
           <Table.Column title={locale['label.len']} dataIndex="length"/>
           <Table.Column title={locale['label.nullable']} dataIndex="nullable" width="75px" render={(val) => ( this.method.getFieldStr('yn', val) )}/>
           <Table.Column title={locale['label.isKey']} dataIndex="keyYN" width="85px" render={(val) => ( this.method.getFieldStr('yn', val) )}/>
-          <Table.Column title={locale['label.isSQL']} dataIndex="sqlYN" width="100px" render={(val) => ( this.method.getFieldStr('yn', val) )}/>
+          <Table.Column title={locale['label.isSQL']} dataIndex="sqlYN" width="110px" render={(val) => ( this.method.getFieldStr('yn', val) )}/>
         </Table>
       </div>
     );

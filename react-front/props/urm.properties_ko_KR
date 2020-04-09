@@ -32,14 +32,14 @@ page.user.view=0,1,2
 page.user.save=0,1
 page.user.delete=0,1
 
-page.biz.name=업무 코드
-page.biz.view=0
+page.manage.name=관리자
+page.manage.view=0
 
 page.stat.name=요건 통계
 page.stat.view=0,1,2,3,4,5,6,7,8,9
 
-page.result.name=거래 확인
-page.result.view=0,1,2,3,4,5,6,7,8,9
+page.process.name=거래 확인
+page.process.view=0,1,2,3,4,5,6,7,8,9
 
 ##################################################
 ## URM special AUTH

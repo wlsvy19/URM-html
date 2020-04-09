@@ -7,7 +7,7 @@ class CodeContainer extends React.Component {
   isView = () => {
     let pathname = window.location.pathname
     let pathArr = pathname.split('/')
-    let page = pathArr[pathArr.length - 1]
+    let page = pathArr[2]
     
     let viewAuth = urmProps['page.' + page + '.view']
     let authId = this.props.userInfo.auth

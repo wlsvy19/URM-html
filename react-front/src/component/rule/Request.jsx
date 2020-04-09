@@ -19,7 +19,7 @@ export default class Request extends RuleMain {
   
   render() {
     return (
-      <div className="urm-panel">
+      <div className="urm-panel" style={{minWidth: 1315}}>
         <RequestList ref="list" path={this.state.path} userInfo={this.props.userInfo}
           codeList={this.codeList()} authList={this.authList()} edit={this.method.handleEdit} />
         <RequestEditor ref="editor" path={this.state.path} userInfo={this.props.userInfo}

@@ -12,7 +12,7 @@ const KINDS = urmsc.CODEKEY
 class SystemEditor extends RuleEditor {
   render() {
     return (
-      <Modal visible={this.state.visible} width="1080px"
+      <Modal visible={this.state.visible} width="1068px"
           footer={null} onCancel={this.method.handleCancel} className="urm-modal">
         <WrappedSystemEditor codeList={this.props.codeList} item={this.state.item} {...this.childMethod} />
       </Modal>
@@ -27,6 +27,12 @@ const SystemEditorForm = (props) => {
   // Only re-run the effect if props.item changes
   useEffect(() => {
     props.setItem(form, item)
+    item.subRule = {
+      dbType: item.dbType,
+      jdbcType: item.jdbcType,
+      dbName: item.dbName,
+      dbParams: item.dbParams
+    }
     // TODO subscribe...
     // eslint-disable-next-line
   }, [item]);
@@ -39,67 +45,68 @@ const SystemEditorForm = (props) => {
     
     clickSave: e => {
       let saveItem = props.makeRuleObj(form, item)
+      
+      saveItem.dbType = undefined
+      saveItem.jdbcType = undefined
+      saveItem.dbName = undefined
+      saveItem.dbParams = undefined
+      if (saveItem.type === '2') {
+        let children = item.subRule
+        saveItem.dbType = children.dbType
+        saveItem.jdbcType = children.jdbcType
+        saveItem.dbName = children.dbName
+        saveItem.dbParams = children.dbParams
+      }
+      
       props.save(saveItem)
     },
     
     renderDBSystem: () => {
       let type = form.getFieldValue('type')
-      if (type === '2') {
-        let dbTypeProps = {initialValue: !item.dbType ? '1' : item.dbType}
-        let jdbcTypeProps = {initialValue: !item.jdbcType ? '1' : item.jdbcType}
-        let dbNameProps = {initialValue: !item.dbName ? '' : item.dbName}
+      let children = item.subRule
+      if (children && type === '2') {
+        let dbTypeProps = {initialValue: !children.dbType ? '1' : children.dbType}
+        let jdbcTypeProps = {initialValue: !children.jdbcType ? '1' : children.jdbcType}
+        let dbNameProps = {initialValue: !children.dbName ? '' : children.dbName}
+        let dbParamsProps = {initialValue: !children.dbParams ? '' : children.dbParams}
         
         if (item.type !== '2') {
           let fields = form.getFieldsValue()
           if (fields.dbType) {
-            item.dbType = fields.dbType
-            item.jdbcType = fields.jdbcType
-            item.dbName = fields.dbName
+            children.dbType = fields.dbType
+            children.jdbcType = fields.jdbcType
+            children.dbName = fields.dbName
+            children.dbParams = fields.dbParams
           }
         }
         
         return (
-          <div className="row">
-            <Form.Item label={locale['label.dbType']}>
-              {getFieldDecorator("dbType", dbTypeProps)(<Select size={"small"} className="size-id">
-                {method.renderOpts("dbType")}
-              </Select>)}
-            </Form.Item>
-            <Form.Item label={locale['label.jdbcType']}>
-              {getFieldDecorator("jdbcType", jdbcTypeProps)(<Select size={"small"} className="size-id">
-                <Select.Option value="1">1</Select.Option>
-                <Select.Option value="2">2</Select.Option>
-                <Select.Option value="3">3</Select.Option>
-                <Select.Option value="4">4</Select.Option>
-              </Select>)}
-            </Form.Item>
-            <Form.Item label={locale['label.dbName']}>{getFieldDecorator("dbName", dbNameProps)(<Input size="small" className="size-id" />)}</Form.Item>
+          <div>
+            <div className="row">
+              <Form.Item label={locale['label.dbType']}>
+                {getFieldDecorator("dbType", dbTypeProps)(<Select size="small" className="size-id">
+                  {method.renderOpts("dbType")}
+                </Select>)}
+              </Form.Item>
+              <Form.Item label={locale['label.jdbcType']}>
+                {getFieldDecorator("jdbcType", jdbcTypeProps)(<Select size="small" className="size-id">
+                  <Select.Option value="1">1</Select.Option>
+                  <Select.Option value="2">2</Select.Option>
+                  <Select.Option value="3">3</Select.Option>
+                  <Select.Option value="4">4</Select.Option>
+                </Select>)}
+              </Form.Item>
+              <Form.Item label={locale['label.dbName']}>{getFieldDecorator("dbName", dbNameProps)(<Input size="small" className="size-name" />)}</Form.Item>
+            </div>
+            <div className="row">
+              <Form.Item label={locale['label.connectParam']}>{getFieldDecorator("dbParams", dbParamsProps)(<Input.TextArea className="urm-remark" />)}</Form.Item>
+            </div>
           </div>
         );
       }
       return undefined
     },
 
-    renderDBSystem2: () => {
-      let type = form.getFieldValue('type')
-      if (type === '2') {
-        let dbParamsProps = {}
-        
-        if (item.type === '2') {
-          dbParamsProps.initialValue = !item.dbParams ? '' : item.dbParams
-        } else {
-          let fields = form.getFieldsValue()
-          if (fields.dbType) {
-            item.dbParams = fields.dbParams
-          }
-        }
-        
-        return (
-          <Form.Item label={locale['label.connectParam']}>{getFieldDecorator("dbParams", dbParamsProps)(<Input.TextArea className="urm-remark" />)}</Form.Item>
-        );
-      }
-      return undefined
-    },
   }
 
   return (
@@ -111,16 +118,16 @@ const SystemEditorForm = (props) => {
         <div className="row">
           <Form.Item label={locale['label.systemId']}>{getFieldDecorator("id")(<Input size="small" className="size-id" readOnly />)}</Form.Item>
           <Form.Item label={locale['label.systemCd']}>{getFieldDecorator("code")(<Input size="small" className="size-id" />)}</Form.Item>
-          <Form.Item label={locale['label.systemName']}>{getFieldDecorator("name")(<Input size="small" style={{width: "220px"}} />)}</Form.Item>
+          <Form.Item label={locale['label.systemName']}>{getFieldDecorator("name")(<Input size="small" className="size-name" />)}</Form.Item>
         </div>
         <div className="row">
           <Form.Item label={locale['label.systemType']}>
-            {getFieldDecorator("type", {initialValue: "1"})(<Select size={"small"} className="size-id">
+            {getFieldDecorator("type", {initialValue: "1"})(<Select size="small" className="size-id">
               {method.renderOpts("sysType")}
             </Select>)}
           </Form.Item>
           <Form.Item label={locale['label.devType']}>
-            {getFieldDecorator("devType", {initialValue: "1"})(<Select size={"small"} className="size-id">
+            {getFieldDecorator("devType", {initialValue: "1"})(<Select size="small" className="size-id">
               {method.renderOpts("devType")}
             </Select>)}
           </Form.Item>
@@ -128,7 +135,7 @@ const SystemEditorForm = (props) => {
         <div className="row">
           <Form.Item label={locale['label.host']}>{getFieldDecorator("hostId")(<Input size="small" className="size-id" />)}</Form.Item>
           <Form.Item label={locale['label.ip']}>{getFieldDecorator("ip")(<Input size="small" className="size-id" />)}</Form.Item>
-          <Form.Item label={locale['label.port']}>{getFieldDecorator("port")(<Input size="small" className="size-id" />)}</Form.Item>
+          <Form.Item label={locale['label.port']}>{getFieldDecorator("port")(<Input size="small" className="size-name" />)}</Form.Item>
         </div>
         <div className="row">
           <Form.Item label={locale['label.id']}>{getFieldDecorator("userId")(<Input size="small" className="size-id" />)}</Form.Item>
@@ -136,8 +143,7 @@ const SystemEditorForm = (props) => {
         </div>
         {method.renderDBSystem()}
         <div className="row">
-          {method.renderDBSystem2()}
-          <Form.Item label={locale['etcRemark']}>{getFieldDecorator("remark")(<Input.TextArea className="urm-remark" />)}</Form.Item>
+          <Form.Item label={locale['label.etcRemark']}>{getFieldDecorator("remark")(<Input.TextArea className="urm-remark" />)}</Form.Item>
         </div>
       </Form>
     </div>

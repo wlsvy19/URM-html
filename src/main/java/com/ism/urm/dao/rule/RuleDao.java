@@ -5,12 +5,15 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
 import com.ism.urm.dao.BasicDao;
 import com.ism.urm.vo.PagingResult;
 import com.ism.urm.vo.RelationOp;
+import com.ism.urm.vo.RelationOp.AddType;
 import com.ism.urm.vo.rule.RuleVo;
 
 public abstract class RuleDao<T extends RuleVo> extends BasicDao<T> {
@@ -35,9 +38,15 @@ public abstract class RuleDao<T extends RuleVo> extends BasicDao<T> {
 
         Criteria critCount = session.createCriteria(entityName);
         if (filter != null) {
+            Disjunction or = Restrictions.disjunction();
             for (RelationOp op : filter) {
-                critCount.add(op.getCriterion());
+                if (op.addType == AddType.AND) {
+                    critCount.add(op.getCriterion());
+                } else if (op.addType == AddType.OR) {
+                    or.add(op.getCriterion());
+                }
             }
+            critCount.add(or);
         }
         long totalCount = ((Number) critCount.setProjection(Projections.rowCount()).uniqueResult()).longValue();
         ret.setTotalCount(totalCount);
@@ -54,9 +63,15 @@ public abstract class RuleDao<T extends RuleVo> extends BasicDao<T> {
 
             Criteria crit = session.createCriteria(entityName);
             if (filter != null) {
+                Disjunction or = Restrictions.disjunction();
                 for (RelationOp op : filter) {
-                    crit.add(op.getCriterion());
+                    if (op.addType == AddType.AND) {
+                        crit.add(op.getCriterion());
+                    } else if (op.addType == AddType.OR) {
+                        or.add(op.getCriterion());
+                    }
                 }
+                crit.add(or);
             }
             
             crit.setFirstResult((page - 1) * size);

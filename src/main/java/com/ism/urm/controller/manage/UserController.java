@@ -38,7 +38,6 @@ public class UserController {
 
     @GetMapping("/user")
     public List<User> search(@RequestParam Map<String, String> params) throws Exception {
-        System.out.println("params" + params);
         List<User> rtn = null;
         List<RelationOp> filter = new ArrayList<>();
 
@@ -70,7 +69,6 @@ public class UserController {
 
     @GetMapping("/user/{id}")
     public User get(@PathVariable String id) throws Exception {
-        System.out.println("get" + id);
         User rtn = null;
         try {
             rtn = service.get(id);
@@ -87,7 +85,7 @@ public class UserController {
     public User save(@RequestBody User user) throws Exception {
         User rtn = null;
         try {
-
+            rtn = service.save(user);
         } catch (Exception e) {
             throw e;
         }

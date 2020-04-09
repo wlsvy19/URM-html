@@ -5,8 +5,11 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Restrictions;
 
 import com.ism.urm.vo.RelationOp;
+import com.ism.urm.vo.RelationOp.AddType;
 
 public abstract class BasicDao<T> {
 
@@ -36,9 +39,15 @@ public abstract class BasicDao<T> {
         Criteria crit = session.createCriteria(entityName);
 
         if (filter != null) {
+            Disjunction or = Restrictions.disjunction();
             for (RelationOp op : filter) {
-                crit.add(op.getCriterion());
+                if (op.addType == AddType.AND) {
+                    crit.add(op.getCriterion());
+                } else if (op.addType == AddType.OR) {
+                    or.add(op.getCriterion());
+                }
             }
+            crit.add(or);
         }
 
         return crit.list();

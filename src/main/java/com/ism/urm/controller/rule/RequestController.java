@@ -17,8 +17,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.ism.urm.service.rule.RequestService;
+import com.ism.urm.util.SessionUtil;
 import com.ism.urm.vo.PagingResult;
 import com.ism.urm.vo.RelationOp;
+import com.ism.urm.vo.RelationOp.AddType;
 import com.ism.urm.vo.RelationOp.OpType;
 import com.ism.urm.vo.RelationOp.ValueType;
 import com.ism.urm.vo.rule.request.Request;
@@ -54,7 +56,15 @@ public class RequestController {
             } else if ("chgDate".equals(key)) {
                 String[] arr = val.split(",");
                 op = RelationOp.get(key, OpType.GE, new Date(Long.parseLong(arr[0])), ValueType.DATE);
+                filter.add(op);
                 op = RelationOp.get(key, OpType.LE, new Date(Long.parseLong(arr[1])), ValueType.DATE);
+            } else if ("regId".equals(key) || "sendAdminId".equals(key) || "rcvAdminId".equals(key)) {
+                if (val.equals("true")) {
+                    op = RelationOp.get(key, OpType.EQ, SessionUtil.getUserID(), ValueType.STRING);
+                    op.setAddType(AddType.OR);
+                } else {
+                    continue;
+                }
             } else {
                 op = RelationOp.get(key, OpType.EQ, val, ValueType.STRING);
             }

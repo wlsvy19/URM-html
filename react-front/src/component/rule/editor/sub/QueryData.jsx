@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { Button, Modal, Table } from 'antd'
+import { Button, Modal, message } from 'antd'
 import { Form, Input, Select } from 'antd'
 
+import EditableField from './EditableField'
 import SubModal from '@/component/SubModal'
 import SystemList from '@/component/rule/list/System-list'
 
@@ -52,9 +53,28 @@ const QueryEditorForm = (props) => {
 
   let method = {
     clickConfirm: e => {
-      props.confirm(fields)
+      let saveItem = method.makeFieldObj()
+      props.confirm(saveItem)
     },
 
+    makeFieldObj: () => {
+      let saveItem = [...fields]
+      
+      let fieldForm = form.getFieldValue('fields')
+      saveItem.forEach((it, idx) => {
+        let field = fieldForm[idx]
+        for (let key in field) {
+          if (key.endsWith('YN') || key === 'nullable') {
+            it[key] = urmsc.convertYN(field[key])
+          } else {
+            it[key] = (key in field) ? field[key] : it[key]
+          }
+        }
+      })
+      
+      return saveItem
+    },
+    
     setSystem: (type) => {
       let ref = sysList
       let callback = (system) => {
@@ -70,10 +90,24 @@ const QueryEditorForm = (props) => {
     },
 
     getStructure: () => {
+      let systemId = form.getFieldValue('systemId')
+      let type = form.getFieldValue('type')
+      let query = form.getFieldValue('query')
+      if(!systemId || systemId.trim().length === 0) {
+        message.warning("시스템을 선택하여 주세요.")
+      }
+      if(!query || query.trim().length === 0) {
+        if(type === 0) {
+          message.warning("테이블 명을 넣어주세요.")
+        } else {
+          message.warning("SELECT 문을 넣어주세요.")
+        }
+        return
+      }
       let param = {
-        systemId: form.getFieldValue('systemId'),
-        type: form.getFieldValue('type'),
-        query: form.getFieldValue('query'),
+        systemId: systemId,
+        type: type,
+        query: query,
       }
       urmsc.ajax({
         type: 'GET',
@@ -81,6 +115,9 @@ const QueryEditorForm = (props) => {
         data: param,
         success: function(res) {
           setFields(res)
+        },
+        error: function(xhr) {
+          message.warning(xhr.statusText)
         }
       })
     },
@@ -123,34 +160,10 @@ const QueryEditorForm = (props) => {
         
         <hr />
         
-        <Table className="table-striped" rowClassName="editable-row"
-          dataSource={fields} pagination={false} bordered
-          size={"small"} scroll={{ y: 500 }} rowKey="sno">
-          <Table.Column title={locale['label.index']} dataIndex="sno" width="65px" align="center"/>
-          <Table.Column title={locale['label.fieldName']} dataIndex="engName" width="150px"
-            render={(val, record, idx) => <Form.Item>{getFieldDecorator("fields["+idx+"].engName", {initialValue: val})(<Input size="small" />)}</Form.Item>}/>
-          <Table.Column title={locale['label.fieldLocalName']} dataIndex="name" width="150px"
-            render={(val, record, idx) => <Form.Item>{getFieldDecorator("fields["+idx+"].name", {initialValue: val})(<Input size="small" />)}</Form.Item>}/>
-          <Table.Column title={locale['label.fieldType']} dataIndex="type" width="110px"
-            render={(val, record, idx) => <Form.Item>{getFieldDecorator("fields["+idx+"].type", {initialValue: val})(
-              <Select size="small">
-                <Select.Option key="c" value="C">Character</Select.Option>
-                <Select.Option key="n" value="N">Number</Select.Option>
-                <Select.Option key="d" value="D">Date</Select.Option>
-                <Select.Option key="b" value="B">Binary</Select.Option>
-              </Select>)}
-            </Form.Item>}/>
-          <Table.Column title={locale['label.dFormat']} dataIndex="dateFormat"
-            render={(val, record, idx) => <Form.Item>{getFieldDecorator("fields["+idx+"].dateFormat", {initialValue: val})(<Input size="small" />)}</Form.Item>}/>
-          <Table.Column title={locale['label.len']} dataIndex="length"
-            render={(val, record, idx) => <Form.Item>{getFieldDecorator("fields["+idx+"].length", {initialValue: val})(<Input size="small" />)}</Form.Item>}/>
-          <Table.Column title={locale['label.nullable']} dataIndex="nullable" width="75px" render={(val, record, idx) => method.renderYesOrNo(val, 'fields['+idx+'].nullable')}/>
-          <Table.Column title={locale['label.isKey']} dataIndex="keyYN" width="85px" render={(val, record, idx) => method.renderYesOrNo(val, 'fields['+idx+'].keyYN')}/>
-          <Table.Column title={locale['label.isSQL']} dataIndex="sqlYN" width="100px" render={(val, record, idx) => method.renderYesOrNo(val, 'fields['+idx+'].sqlYN')}/>
-        </Table>
+        <EditableField form={props.form} item={fields} />
       </Form>
             
-      <SubModal ref={(list) => { sysList = list }} width="1120px">
+      <SubModal ref={(list) => { sysList = list }} width="1280px">
         <SystemList key="list" path="system" codeList={props.codeList} onlySearch={true} />
       </SubModal>
     </div>

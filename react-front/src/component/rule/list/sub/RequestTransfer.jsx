@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Button, message } from 'antd'
+import { Table, Button, Modal, message } from 'antd'
 import { Form, Input } from 'antd'
 
 import SubModal from '@/component/SubModal'
@@ -7,17 +7,19 @@ import UserList from '@/component/manage/list/User-list'
 
 import * as urmsc from '@/urm-utils'
 
+const locale = urmsc.locale
+
 class TransferForm extends React.Component {
   method = {
     confirm: e => {
       let userId = this.props.form.getFieldValue('userId')
       let trnUserId = this.props.form.getFieldValue('trnUserId')
       if (!userId || userId.trim().length === 0) {
-        message.warning('Please enter Manager.')
+        message.warning('담당자가 선택되지 않았습니다.')
         return false
       }
       if (!trnUserId || trnUserId.trim().length === 0) {
-        message.warning('Please enter transfer user.')
+        message.warning('이관자가 선택되지 않았습니다.')
         return false
       }
       
@@ -119,7 +121,7 @@ class RequestTransfer extends React.Component {
     transfer: (trnUserId) => {
       let tmp = [...this.state.selectors]
       if (tmp.length === 0) {
-        message.warning('please select row.')
+        message.warning('선택된 요건이 없습니다.')
         return false
       }
       tmp.forEach((it) => {
@@ -127,16 +129,26 @@ class RequestTransfer extends React.Component {
         it.sendAdminId = trnUserId
         it.rcvAdminId = trnUserId
       })
-      console.log(tmp)
-      /*urmsc.ajax({
-        type: 'POST',
-        url: 'api/request/transfer',
-        data: JSON.stringify(tmp),
-        contentType: 'applicaion/json; charset=UTF-8',
-        success: function(res) {
-          console.log(res)
+      Modal.confirm({
+        autoFocusButton: 'cancel',
+        content: tmp.length + ' 의 요건이 선택되었습니다. 이관하시겠습니까?',
+        cancelText: 'NO',
+        okText: 'YES',
+        onOk() {
+          urmsc.ajax({
+            type: 'POST',
+            url: 'api/request/transfer',
+            data: JSON.stringify(tmp),
+            contentType: 'applicaion/json; charset=UTF-8',
+            success: function(res) {
+              message.success(res + " 의 요건이 성공적으로 이관되었습니다.")
+            }
+          })
+        },
+        onCancel() {
+          message.info('취소되었습니다.')
         }
-      })*/
+      })
     },
   }
   
@@ -164,17 +176,17 @@ class RequestTransfer extends React.Component {
         <WrappedTransferForm {...this.props} search={this.method.search} confirm={this.method.transfer} />
         <Table className="table-striped"
           dataSource={this.state.items} pagination={false} bordered
-          size={"small"} scroll={{ y: 500 }} rowKey="id"
+          size="small" scroll={{ y: 500 }} rowKey="id"
           rowSelection={this.rowSelection}>
-          <Table.Column title="ID" dataIndex="id" width="130px" />
-          <Table.Column title="Name" dataIndex="name" width="180px" />
-          <Table.Column title="Type" dataIndex="interfaceType" render={(val) => ( this.method.getTypeStr('infType', val) )} />
-          <Table.Column title="InterfaceID" dataIndex="interfaceId" width="120px"/>
-          <Table.Column title="SendSystem" dataIndex="sendSystem.name" width="110px"/>
-          <Table.Column title="RcvSystem" dataIndex="rcvSystem.name" width="110px"/>
-          <Table.Column title="Register" dataIndex="regId" width="110px"/>
-          <Table.Column title="SendAdmin" dataIndex="sendAdminId" width="110px"/>
-          <Table.Column title="RcvAdmin" dataIndex="rcvAdminId" width="110px"/>
+          <Table.Column title={locale['label.requestId']} dataIndex="id" width="145px" />
+          <Table.Column title={locale['label.requestName']} dataIndex="name" width="180px" />
+          <Table.Column title={locale['label.interfaceType']} dataIndex="interfaceType" render={(val) => ( this.method.getTypeStr('infType', val) )} />
+          <Table.Column title={locale['label.interfaceId']} dataIndex="interfaceId" width="120px"/>
+          <Table.Column title={locale['label.sourceSystem']} dataIndex="sendSystem.name" width="110px"/>
+          <Table.Column title={locale['label.targetSystem']} dataIndex="rcvSystem.name" width="110px"/>
+          <Table.Column title="등록자" dataIndex="regId" width="110px"/>
+          <Table.Column title="송신자" dataIndex="sendAdminId" width="110px"/>
+          <Table.Column title="수신자" dataIndex="rcvAdminId" width="110px"/>
         </Table>
       </div>
     );

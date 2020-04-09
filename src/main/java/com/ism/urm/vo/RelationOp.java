@@ -18,9 +18,15 @@ public class RelationOp {
         EQ, LIKE, SLIKE, NE, LT, LE, GT, GE, ISNULL, ISNOTNULL, IN
     }
 
+    public static enum AddType {
+        AND, OR
+    }
+
     public String fieldName;
 
     public Object val;
+
+    public AddType addType = AddType.AND;
 
     public OpType opType = OpType.EQ;
 
@@ -58,6 +64,12 @@ public class RelationOp {
     }
     public void setVal(Object val) {
         this.val = val;
+    }
+    public AddType getAddType() {
+        return addType;
+    }
+    public void setAddType(AddType addType) {
+        this.addType = addType;
     }
 
     public Criterion getCriterion() {

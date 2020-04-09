@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Modal, Table, message } from 'antd'
+import { Button, Modal, message } from 'antd'
 import { Form, Input, Select } from 'antd'
 
 import RuleEditor from './RuleEditor'
 import SubModal from '@/component/SubModal'
+import EditableField from './sub/EditableField'
 import ExcelData from './sub/ExcelData'
 import QueryData from './sub/QueryData'
 import CopyData from './sub/CopyData'
@@ -43,7 +44,7 @@ const DataEditorForm = (props) => {
   useEffect(() => {
     props.setItem(form, item)
     setFields(item.fields ? item.fields : [])
-    item.children = {}
+    item.subRule = {}
     // TODO subscribe...
     // eslint-disable-next-line
   }, [item]);
@@ -55,7 +56,7 @@ const DataEditorForm = (props) => {
 
   let method = {
     clickSave: e => {
-      item.children.fields = fields
+      item.subRule.fields = fields
       let saveItem = method.makeDataObj()
       
       if (saveItem.id && saveItem.id.length > 0) {
@@ -67,7 +68,7 @@ const DataEditorForm = (props) => {
     
     makeDataObj: () => {
       let saveItem = props.makeRuleObj(form, item)
-      saveItem.fields = item.children.fields
+      saveItem.fields = item.subRule.fields
       
       let data = form.getFieldsValue()
       saveItem.fields.forEach((it, idx) => {
@@ -87,8 +88,9 @@ const DataEditorForm = (props) => {
     checkData: (saveItem) => {
       let id = saveItem.id
       let callback = () => {
-        saveItem.channelCodd = 'EAI'
+        saveItem.channelCode = 'EAI'
         props.save(saveItem)
+        usedList.setState({visible: false})
       }
       let childState = {
         list: {onDbClick: callback, scparam: {id: id}}
@@ -121,7 +123,7 @@ const DataEditorForm = (props) => {
     },
     
     clickRemove: e => {
-      let selectedKeys = item.children.selectedKeys
+      let selectedKeys = item.subRule.selectedKeys
       if (selectedKeys.length === 0) {
         message.warning(locale['message.1005'])
         return false
@@ -137,6 +139,7 @@ const DataEditorForm = (props) => {
         }
       })
       setFields(tmp)
+      item.subRule.selectedKeys = []
     },
     
     addByExcel: () => {
@@ -160,7 +163,7 @@ const DataEditorForm = (props) => {
       let callback = (data) => {
         urmsc.ajax({
           type: 'GET',
-          url: 'api/field/' + data.id,
+          url: 'api/data/field/' + data.id,
           success: function(fields) {
             setFields(fields ? fields : [])
           }
@@ -175,8 +178,9 @@ const DataEditorForm = (props) => {
     },
     
     renderYesOrNo: (val, dataIndex) => {
+      let yn = urmsc.convertYN(val)
       return (
-        <Form.Item>{getFieldDecorator(dataIndex, {initialValue: urmsc.convertYN(val)})(
+        <Form.Item>{getFieldDecorator(dataIndex, {initialValue: yn})(
           <Select size="small">
             <Select.Option key="y" value="Y">Yes</Select.Option>
             <Select.Option key="n" value="N">No</Select.Option>
@@ -193,15 +197,14 @@ const DataEditorForm = (props) => {
       selectedRows.forEach((it) => {
         tmp.push(it.sno)
       })
-      item.children.selectedKeys = tmp
+      item.subRule.selectedKeys = tmp
     },
     onSelectAll: (selected, selectedRows, changeRows) => {
       let tmp = []
       selectedRows.forEach((it) => {
         tmp.push(it.sno)
       })
-      console.log(tmp)
-      item.children.selectedKeys = tmp
+      item.subRule.selectedKeys = tmp
     },
   }
   
@@ -229,31 +232,7 @@ const DataEditorForm = (props) => {
             <Button icon="minus-square" onClick={method.clickRemove} title={locale['label.delete']} />
           </div>
         </div>
-        <Table className="table-striped" rowClassName="editable-row"
-          dataSource={fields} pagination={false} bordered
-          size={"small"} scroll={{ y: 500 }} rowKey="sno" rowSelection={rowSelection}>
-          <Table.Column title={locale['label.index']} dataIndex="sno" width="65px" align="center"/>
-          <Table.Column title={locale['label.fieldName']} dataIndex="engName" width="150px"
-            render={(val, record, idx) => <Form.Item>{getFieldDecorator("fields["+idx+"].engName", {initialValue: val})(<Input size="small" />)}</Form.Item>}/>
-          <Table.Column title={locale['label.fieldLocalName']} dataIndex="name" width="150px"
-            render={(val, record, idx) => <Form.Item>{getFieldDecorator("fields["+idx+"].name", {initialValue: val})(<Input size="small" />)}</Form.Item>}/>
-          <Table.Column title={locale['label.fieldType']} dataIndex="type" width="110px"
-            render={(val, record, idx) => <Form.Item>{getFieldDecorator("fields["+idx+"].type", {initialValue: val})(
-              <Select size="small">
-                <Select.Option key="c" value="C">Character</Select.Option>
-                <Select.Option key="n" value="N">Number</Select.Option>
-                <Select.Option key="d" value="D">Date</Select.Option>
-                <Select.Option key="b" value="B">Binary</Select.Option>
-              </Select>)}
-            </Form.Item>}/>
-          <Table.Column title={locale['label.dFormat']} dataIndex="dateFormat"
-            render={(val, record, idx) => <Form.Item>{getFieldDecorator("fields["+idx+"].dateFormat", {initialValue: val})(<Input size="small" />)}</Form.Item>}/>
-          <Table.Column title={locale['label.len']} dataIndex="length"
-            render={(val, record, idx) => <Form.Item>{getFieldDecorator("fields["+idx+"].length", {initialValue: val})(<Input size="small" />)}</Form.Item>}/>
-          <Table.Column title={locale['label.nullable']} dataIndex="nullable" width="75px" render={(val, record, idx) => method.renderYesOrNo(val, 'fields['+idx+'].nullable')}/>
-          <Table.Column title={locale['label.isKey']} dataIndex="keyYN" width="85px" render={(val, record, idx) => method.renderYesOrNo(val, 'fields['+idx+'].keyYN')}/>
-          <Table.Column title={locale['label.isSQL']} dataIndex="sqlYN" width="100px" render={(val, record, idx) => method.renderYesOrNo(val, 'fields['+idx+'].sqlYN')}/>
-        </Table>
+        <EditableField form={props.form} item={fields} rowSelection={rowSelection} />
       </Form>
       
       <ExcelData ref={(editor) => { excel = editor }} />
