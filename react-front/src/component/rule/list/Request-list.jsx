@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Pagination, Button } from 'antd'
+import { Table, Pagination, Button, Checkbox } from 'antd'
 import { Form, Input, Select, DatePicker } from 'antd'
 import moment from 'moment'
 
@@ -15,6 +15,29 @@ import * as urmsc from '@/urm-utils'
 const locale = urmsc.locale
 
 class RequestSearch extends RuleSearch {
+  state = {
+    checked : true,
+  }
+
+  componentWillMount(){
+    let auth = this.props.userInfo ? this.props.userInfo.auth : ''
+    if(auth === '0' || auth === '5' || auth === '7' ){ // uncheck
+       this.setState({
+         checked: false,
+       })
+    } else if(auth === '6' || auth === '8' || auth === '9'){ //check 
+      this.setState({
+        checked: true,
+      })
+    }
+  }
+
+  onCheckAllChange = e => {
+    this.setState({
+      checkAll: e.target.checked,
+    })
+  }
+
   method = {
     ...this.method,
 
@@ -64,6 +87,7 @@ class RequestSearch extends RuleSearch {
       return urmsc.getSubListByKey(this.props.codeList, 'kind', urmsc.CODEKEY[key])
               .map((it) => <Select.Option key={it.code} value={it.code}>{it.name}</Select.Option>)
     },
+  
   }
 
   render() {
@@ -104,6 +128,7 @@ class RequestSearch extends RuleSearch {
               </Select>)}
             </Form.Item>
           </div>
+          
           <div className="row">
             <Form.Item label={locale['label.targetSystem']}>
               {getFieldDecorator("rcvSystemId")(<Input size="small" readOnly allowClear className="search-id" onClick={e => { this.method.setSystem('rcv') }} />)}
@@ -114,6 +139,13 @@ class RequestSearch extends RuleSearch {
             <Form.Item label={locale['label.lastChangeDate']}>{getFieldDecorator("chgDate", {
               initialValue: [moment().subtract(1, 'y'), moment()]
             })(<RangePicker size="small" style={{width: "220px"}} />)}</Form.Item>
+
+          <div className="test">
+            <Form.Item label={locale['label.cbRegUser']}>{getFieldDecorator("cbRegUser",)(<Checkbox checked={this.state.checked} />)}</Form.Item>
+            <Form.Item label={locale['label.cbSndUser']}>{getFieldDecorator("cbSndUser",)(<Checkbox checked={this.state.checked} />)}</Form.Item>
+            <Form.Item label={locale['label.cbRcvUser']}>{getFieldDecorator("cbRcvUser",)(<Checkbox checked={this.state.checked} />)}</Form.Item>
+          </div>
+
             <Form.Item className="search-buttons row">
               <Button icon="search" onClick={this.method.clickSearch} title={locale['label.search']} />
               <Button icon="plus" onClick={this.method.clickAdd} title={locale['label.add']} />
