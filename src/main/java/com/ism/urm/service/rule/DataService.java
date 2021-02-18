@@ -11,9 +11,21 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.springframework.web.multipart.MultipartFile;
@@ -84,11 +96,17 @@ public class DataService extends RuleService<Data> {
     
     public List<Field> parseExcel(String sheetName, MultipartFile item) throws Exception {
         List<Field> list = new ArrayList<>();
+        String fileName = item.getOriginalFilename();
+
+        String fileEncoding = System.getProperty("file.encoding");
+        String localFileName = new String(fileName.getBytes(fileEncoding));
+        logger.info("FILE ENCODING :" + fileEncoding + ", Local file name :" + localFileName);
         
-//        logger.info("document encryt check!!!" );
-//        // 암호화된 파일인지 확인한다.
-//        try {
-//            logger.info("document encryt check start.." );
+//        File outFile = new File(System.getProperty("urm.file.repository"), localFileName);
+        logger.info("document encryt check!!!" );
+        // 암호화된 파일인지 확인한다.
+        try {
+            logger.info("document encryt check start.." );
 //            WorkPackager packager = new WorkPackager();
 //            logger.info("document encryt packager create." );
 //            int res = packager.GetFileType(System.getProperty("urm.file.repository") + "/" + localFileName);
@@ -116,7 +134,7 @@ public class DataService extends RuleService<Data> {
 //                encfile = true;
 //                break;
 //            }
-//            if ( encfile ) {
+//            if (encfile) {
 //                logger.info(" --> packager file." );
 //                String docHome = System.getProperty("document.enc.home");
 //                String docKey = System.getProperty("document.enc.key");
@@ -135,14 +153,13 @@ public class DataService extends RuleService<Data> {
 //            else {
 //                logger.info(" --> packager file not." );
 //            }
-//        } catch (Throwable t) {
-//            logger.info(t.getMessage(), t);
-//        }
+        } catch (Throwable t) {
+            logger.info(t.getMessage(), t);
+        }
         
         logger.info("document encryt check end.." );
         Workbook workbook = null;
         try {
-            String fileName = item.getOriginalFilename();
             if (fileName.endsWith(".xls")) {
                 workbook = new HSSFWorkbook(item.getInputStream());
             } else {
@@ -308,7 +325,7 @@ public class DataService extends RuleService<Data> {
         }
         return rtn;
     }
-    
+
     private List<Field> getTableInfo(String systemId, String catalog, String owner, String tablename, boolean isDboRetry) throws Exception {
         Connection conn = null;
         DatabaseMetaData dbmd = null;
@@ -613,5 +630,495 @@ public class DataService extends RuleService<Data> {
         logger.info("DB Connection String : " + connString);
         return connString;
     }
+    
+    public void parseDataFieldExcel(HttpServletRequest req, HttpServletResponse res) throws Exception {
+        Session session = null;
+        Workbook wb = null;
+        try {
+            String dataId = req.getParameter("dataId");
+            
+            if (dataId == null || dataId.length() == 0) {
+                throw new IllegalArgumentException("Exception:dataId is null or dataId size is 0.");
+            }
 
+            String fileName = "data_define_" + dataId + ".xls";
+            session = sessionFactory.openSession();
+            Data data = dao.get(session, dataId);
+            
+            wb = new HSSFWorkbook();
+            makeDataSheet(wb, data, "데이터");
+            
+            wb.write(res.getOutputStream());
+            
+            res.setContentType("application/octet-stream");
+            res.setHeader("Content-disposition", "attachment;filename=" + fileName);
+        } catch (Exception e) {
+            logger.error("", e);
+            throw e;
+        } finally {
+            if (wb != null) {
+                wb.close();
+            }
+            if (session != null) {
+                try { session.close(); } catch (Exception ignore) { }
+            }
+        }
+    }
+    
+    public void makeDataSheet(Workbook workbook, Data info, String sheetName) throws Exception {
+        
+        Sheet dataSheet = workbook.createSheet(sheetName);
+
+        CellStyle headerFormat = workbook.createCellStyle();
+        CellStyle dataFormat = workbook.createCellStyle();
+
+        headerFormat.setAlignment(HorizontalAlignment.CENTER);
+        headerFormat.setVerticalAlignment(VerticalAlignment.CENTER);
+        headerFormat.setBorderBottom(BorderStyle.THIN);
+        headerFormat.setBorderLeft(BorderStyle.THIN);
+        headerFormat.setBorderRight(BorderStyle.THIN);
+        headerFormat.setBorderTop(BorderStyle.THIN);
+        headerFormat.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        headerFormat.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        
+        dataFormat.setAlignment(HorizontalAlignment.LEFT);
+        dataFormat.setVerticalAlignment(VerticalAlignment.CENTER);
+        dataFormat.setBorderBottom(BorderStyle.THIN);
+        dataFormat.setBorderLeft(BorderStyle.THIN);
+        dataFormat.setBorderRight(BorderStyle.THIN);
+        dataFormat.setBorderTop(BorderStyle.THIN);
+
+        for (int i = 0; i < 24; i++) {
+            dataSheet.setColumnWidth(i, 3600);
+        }
+
+        dataSheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 2));
+        Row row = dataSheet.createRow(0);
+        Cell cell = row.createCell(0);
+        cell.setCellValue("데이터정의");
+        cell.setCellStyle(headerFormat);
+        cell = row.createCell(1);
+        cell.setCellStyle(headerFormat);
+        cell = row.createCell(2);
+        cell.setCellStyle(headerFormat);
+
+        dataSheet.addMergedRegion(new CellRangeAddress(0, 0, 4, 6));
+        cell = row.createCell(4);
+        cell.setCellValue("작성자정보");
+        cell.setCellStyle(headerFormat);
+        cell = row.createCell(5);
+        cell.setCellStyle(headerFormat);
+        cell = row.createCell(6);
+        cell.setCellStyle(headerFormat);
+
+        dataSheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 2));
+        dataSheet.addMergedRegion(new CellRangeAddress(1, 1, 5, 6));
+        row = dataSheet.createRow(1);
+        cell = row.createCell(0);
+        cell.setCellValue("데이터정의ID");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(1);
+        cell.setCellValue(info.getId());
+        cell.setCellStyle(dataFormat);
+        cell = row.createCell(2);
+        cell.setCellStyle(dataFormat);
+
+        cell = row.createCell(4);
+        cell.setCellValue("작성자");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(5);
+        cell.setCellValue(info.getChgId());
+        cell.setCellStyle(dataFormat);
+        cell = row.createCell(6);
+        cell.setCellStyle(dataFormat);
+
+        dataSheet.addMergedRegion(new CellRangeAddress(2, 2, 1, 2));
+        dataSheet.addMergedRegion(new CellRangeAddress(2, 2, 5, 6));
+        row = dataSheet.createRow(2);
+        cell = row.createCell(0);
+        cell.setCellValue("데이터명");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(1);
+        cell.setCellValue(info.getName());
+        cell.setCellStyle(dataFormat);
+        cell = row.createCell(2);
+        cell.setCellStyle(dataFormat);
+
+        cell = row.createCell(4);
+        cell.setCellValue("소속");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(5);
+        cell.setCellValue("");
+        cell.setCellStyle(dataFormat);
+        cell = row.createCell(6);
+        cell.setCellStyle(dataFormat);
+
+        dataSheet.addMergedRegion(new CellRangeAddress(3, 3, 1, 2));
+        dataSheet.addMergedRegion(new CellRangeAddress(3, 3, 5, 6));
+        row = dataSheet.createRow(3);
+        cell = row.createCell(0);
+        cell.setCellValue("처리순서");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(1);
+        cell.setCellValue(info.getInOutGbn()); // to string
+        cell.setCellStyle(dataFormat);
+        cell = row.createCell(2);
+        cell.setCellStyle(dataFormat);
+
+        cell = row.createCell(4);
+        cell.setCellValue("전화");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(5);
+        cell.setCellValue("");
+        cell.setCellStyle(dataFormat);
+        cell = row.createCell(6);
+        cell.setCellStyle(dataFormat);
+
+        dataSheet.addMergedRegion(new CellRangeAddress(4, 4, 1, 2));
+        dataSheet.addMergedRegion(new CellRangeAddress(4, 4, 5, 6));
+        row = dataSheet.createRow(4);
+        cell = row.createCell(0);
+        cell.setCellValue("데이터유형");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(1);
+        cell.setCellValue(info.getType()); // to string
+        cell.setCellStyle(dataFormat);
+        cell = row.createCell(2);
+        cell.setCellStyle(dataFormat);
+
+        cell = row.createCell(4);
+        cell.setCellValue("핸드폰");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(5);
+        cell.setCellValue("");
+        cell.setCellStyle(dataFormat);
+        cell = row.createCell(6);
+        cell.setCellStyle(dataFormat);
+
+        dataSheet.addMergedRegion(new CellRangeAddress(5, 5, 1, 2));
+        row = dataSheet.createRow(5);
+        cell = row.createCell(0);
+        cell.setCellValue("레코드구분자");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(1);
+        cell.setCellValue("");
+        cell.setCellStyle(dataFormat);
+        cell = row.createCell(2);
+        cell.setCellStyle(dataFormat);
+
+        dataSheet.addMergedRegion(new CellRangeAddress(6, 6, 1, 2));
+        row = dataSheet.createRow(6);
+        cell = row.createCell(0);
+        cell.setCellValue("컬럼구분자");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(1);
+        cell.setCellValue("");
+        cell.setCellStyle(dataFormat);
+        cell = row.createCell(2);
+        cell.setCellStyle(dataFormat);
+
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 0, 0));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 1, 1));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 2, 2));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 3, 3));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 4, 4));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 5, 5));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 6, 6));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 7, 7));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 8, 8));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 9, 9));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 10, 10));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 11, 11));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 12, 12));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 13, 13));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 14, 14));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 9, 15, 17));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 18, 18));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 19, 19));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 10, 20, 20));
+        dataSheet.addMergedRegion(new CellRangeAddress(9, 9, 22, 23));
+        row = dataSheet.createRow(9);
+        cell = row.createCell(0);
+        cell.setCellValue("구분");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(1);
+        cell.setCellValue("필드ID");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(2);
+        cell.setCellValue("한글필드명");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(3);
+        cell.setCellValue("영문필드명");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(4);
+        cell.setCellValue("길이");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(5);
+        cell.setCellValue("필드위치");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(6);
+        cell.setCellValue("길이필드타입");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(7);
+        cell.setCellValue("필드유형");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(8);
+        cell.setCellValue("필드포멧");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(9);
+        cell.setCellValue("필드검증유형");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(10);
+        cell.setCellValue("필드검증값");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(11);
+        cell.setCellValue("널가능");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(12);
+        cell.setCellValue("키값여부");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(13);
+        cell.setCellValue("채움문자");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(14);
+        cell.setCellValue("정렬타입");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(15);
+        cell.setCellValue("가변길이정보");
+        cell.setCellStyle(headerFormat);
+        cell = row.createCell(16);
+        cell.setCellStyle(headerFormat);
+        cell = row.createCell(17);
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(18);
+        cell.setCellValue("차이값");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(19);
+        cell.setCellValue("SQL함수여부");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(20);
+        cell.setCellValue("반복여부");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(21);
+        cell.setCellValue("반복횟수");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(22);
+        cell.setCellValue("반복횟수(지정필드시)");
+        cell.setCellStyle(headerFormat);
+        cell = row.createCell(23);
+        cell.setCellStyle(headerFormat);
+
+        row = dataSheet.createRow(10);
+        for (int i = 0; i < 15; i++) {
+            row.createCell(i).setCellStyle(headerFormat);
+        }
+        cell = row.createCell(15);
+        cell.setCellValue("마스터위치");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(16);
+        cell.setCellValue("디테일위치");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(17);
+        cell.setCellValue("필드위치");
+        cell.setCellStyle(headerFormat);
+        for (int i = 18; i < 21; i++) {
+            row.createCell(i).setCellStyle(headerFormat);
+        }
+        cell = row.createCell(21);
+        cell.setCellValue("지정된반복횟수");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(22);
+        cell.setCellValue("마스터위치");
+        cell.setCellStyle(headerFormat);
+
+        cell = row.createCell(23);
+        cell.setCellValue("필드위치");
+        cell.setCellStyle(headerFormat);
+        
+        // 만약 필드가 등록되어 있지 않다면..
+        if (info.getFields() == null || info.getFields().size() == 0) {
+            return;
+        }
+        
+        int i = 11;
+        int mmIndex = 1;
+        int mdIndex = 1;
+        int dmIndex = 0; // master -> detail 로 넘어갈 경우 ++ 해주기 때문에 0으로..
+        int ddIndex = 1;
+        boolean isMaster = true;
+        for (Field field : info.getFields()) {
+            if (field.getType().equalsIgnoreCase("G")) {
+                continue;
+            }
+            row = dataSheet.createRow(i);
+
+            if (!field.isRepeatYN()) {
+                if (!isMaster) {
+                    mmIndex++;
+                    mdIndex = 1;
+                }
+                cell = row.createCell(0);
+                cell.setCellValue("M" + mmIndex);
+                cell.setCellStyle(dataFormat);
+                
+                cell = row.createCell(1);
+                cell.setCellValue("M" + getNumString(mdIndex, 3));
+                cell.setCellStyle(dataFormat);
+                mdIndex++;
+                isMaster = true;
+            } else {
+                if (isMaster) {
+                    dmIndex++;
+                    ddIndex = 1;
+                }
+                cell = row.createCell(0);
+                cell.setCellValue("D" + dmIndex);
+                cell.setCellStyle(dataFormat);
+                
+                cell = row.createCell(1);
+                cell.setCellValue("D" + getNumString(ddIndex, 3));
+                cell.setCellStyle(dataFormat);
+                ddIndex++;
+                isMaster = false;
+            }
+            cell = row.createCell(2);
+            cell.setCellValue(field.getEngName());
+            cell.setCellStyle(dataFormat);
+            
+            cell = row.createCell(3);
+            cell.setCellValue(field.getName());
+            cell.setCellStyle(dataFormat);
+            
+            cell = row.createCell(4);
+            cell.setCellValue("" + field.getLength());
+            cell.setCellStyle(dataFormat);
+            cell = row.createCell(5);
+            cell.setCellValue("");
+            cell.setCellStyle(dataFormat);
+            cell = row.createCell(6);
+            cell.setCellValue("");
+            cell.setCellStyle(dataFormat);
+            cell = row.createCell(7);
+            cell.setCellValue(field.getType());
+            cell.setCellStyle(dataFormat);
+            cell = row.createCell(8);
+            cell.setCellValue(field.getDateFormat());
+            cell.setCellStyle(dataFormat);
+            cell = row.createCell(9);
+            cell.setCellValue("");
+            cell.setCellStyle(dataFormat);
+            cell = row.createCell(10);
+            cell.setCellValue("");
+            cell.setCellStyle(dataFormat);
+            cell = row.createCell(11);
+            cell.setCellValue(getBoolString(field.isNullable()));
+            cell.setCellStyle(dataFormat);
+            cell = row.createCell(12);
+            cell.setCellValue(getBoolString(field.isKeyYN()));
+            cell.setCellStyle(dataFormat);
+
+            if (field.getType().equalsIgnoreCase("N")) {
+                cell = row.createCell(13);
+                cell.setCellValue("0");
+                cell.setCellStyle(dataFormat);
+                cell = row.createCell(14);
+                cell.setCellValue("R");
+                cell.setCellStyle(dataFormat);
+            } else {
+                cell = row.createCell(13);
+                cell.setCellValue("");
+                cell.setCellStyle(dataFormat);
+                cell = row.createCell(14);
+                cell.setCellValue("L");
+                cell.setCellStyle(dataFormat);
+            }
+
+            cell = row.createCell(15);
+            cell.setCellValue("");
+            cell.setCellStyle(dataFormat);
+            cell = row.createCell(16);
+            cell.setCellValue("");
+            cell.setCellStyle(dataFormat);
+            cell = row.createCell(17);
+            cell.setCellValue("");
+            cell.setCellStyle(dataFormat);
+
+            cell = row.createCell(18);
+            cell.setCellValue("");
+            cell.setCellStyle(dataFormat);
+            cell = row.createCell(19);
+            cell.setCellValue(getBoolString(field.isSqlYN()));
+            cell.setCellStyle(dataFormat);
+            cell = row.createCell(20);
+            cell.setCellValue(getBoolString(field.isRepeatYN()));
+            cell.setCellStyle(dataFormat);
+
+            cell = row.createCell(21);
+            cell.setCellValue("");
+            cell.setCellStyle(dataFormat);
+
+            cell = row.createCell(22);
+            cell.setCellValue("");
+            cell.setCellStyle(dataFormat);
+            cell = row.createCell(23);
+            cell.setCellValue("");
+            cell.setCellStyle(dataFormat);
+
+            i++;;
+        }
+    }
+    
+    @Override
+    protected int getInfluence(String id) throws Exception {
+        return getUsedList(id).size();
+    }
+
+    private String getNumString(int data, int len) {
+        String rtnValue = "" + data;
+        if(rtnValue.length() > len) {
+            return rtnValue;
+        }
+        for(int i=rtnValue.length(); i<len; i++) {
+            rtnValue = "0" + rtnValue;
+        }
+        return rtnValue;
+    }
+    
+    private String getBoolString(boolean data) {
+        String rtnValue = data ? "Y" : "N";
+        return rtnValue;
+    }
 }

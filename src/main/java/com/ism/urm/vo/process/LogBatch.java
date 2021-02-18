@@ -2,12 +2,12 @@ package com.ism.urm.vo.process;
 
 public class LogBatch {
 
-    String id= "";
+    String batchId= "";
     String interfaceId = "";
     String status = "";
     long totalCount = 0;
     long successCount = 0;
-    long failcount = 0;
+    long failCount = 0;
     String startTime = "";
     String endTime = "";
     String sendFilePath = "";
@@ -15,11 +15,11 @@ public class LogBatch {
     String rcvFilePath = "";
     String rcvFileName = "";
 
-    public String getId() {
-        return id;
+    public String getBatchId() {
+        return batchId;
     }
-    public void setId(String id) {
-        this.id = id;
+    public void setBatchId(String batchId) {
+        this.batchId = batchId;
     }
     public String getInterfaceId() {
         return interfaceId;
@@ -45,11 +45,11 @@ public class LogBatch {
     public void setSuccessCount(long successCount) {
         this.successCount = successCount;
     }
-    public long getFailcount() {
-        return failcount;
+    public long getFailCount() {
+        return failCount;
     }
-    public void setFailcount(long failcount) {
-        this.failcount = failcount;
+    public void setFailCount(long failCount) {
+        this.failCount = failCount;
     }
     public String getStartTime() {
         return startTime;

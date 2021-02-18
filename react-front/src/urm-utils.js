@@ -1,3 +1,5 @@
+import { message } from 'antd'
+
 export const locale = require('msgProperties')
 
 export const CODEKEY = {
@@ -61,21 +63,33 @@ export function ajax (props) {
   xhr.open(props.method, props.url, props.async)
   xhr.onreadystatechange  = function () {
     if (this.readyState === 4) {
-      let res = this.response
       if (this.status === 200) {
-        let curUrl = window.location.href
-        if (curUrl !== this.responseURL && this.responseURL && this.responseURL.endsWith('.page')) {
-          if (props.success) props.success(res)
+        let location = this.getResponseHeader('Location')
+        console.log(location)
+        if (location && location.endsWith('.page')) {
+        	console.log('in', location)
+            //window.location.href = location
+        } else if (this.responseURL && this.responseURL.endsWith('.page')) {
           window.location.href = this.responseURL
         } else {
-          if (props.dataType === 'json') res = JSON.parse(this.response)
+          let res = this.response
+          if (props.dataType === 'json') {
+            try {
+              res = JSON.parse(this.response)
+            } catch (e) {
+              // session expired
+              if (!this.responseURL) {
+                message.warning('Session Expired!!! - Please refresh this page. ')
+              }
+            }
+          }
           if (props.success) props.success(res)
         }
       } else {
         if (props.error) {
           props.error(this)
         } else {
-          ajaxHandleError(this.statusText, res)
+          ajaxHandleError(this)
         }
       }
     } else if (this.readyState === 1) {
@@ -87,8 +101,21 @@ export function ajax (props) {
   xhr.send(props.data)
 }
 
-export function ajaxHandleError (statusText, error) {
-  console.log('statusText [' + statusText + '] error [' + error + ']')
+export function ajaxHandleError (xhr) {
+  let res = xhr.statusText
+  let txt = xhr.responseText
+  if (txt) txt = txt.split('<HR size="1" noshade="noshade">').join('')
+  let xmlDoc = null
+  if (window.DOMParser) {
+    let parser = new DOMParser();
+    xmlDoc = parser.parseFromString(txt, 'text/xml');
+  } else if (window.ActiveXObject) { // Internet Explorer
+    xmlDoc = new window.ActiveXObject('Microsoft.XMLDOM');
+    xmlDoc.async = false;
+    xmlDoc.loadXML(txt);
+  }
+  //console.log([xmlDoc], xmlDoc.getElementsByTagName('h1')[0].childNodes[0].nodeValue)
+  message.warning(res)
 }
 
 export function convertYN (obj) {
@@ -131,4 +158,22 @@ export function isPageEdit (page, type, auth) {
     }
   }
   return false
+}
+
+export function bgColor (match) {
+  let color = '#e6f7ff'
+  let type = match ? match.params.path.charAt(0) : ''
+  switch (type) {
+  case 'd' :
+    color = '#8888ff'
+    break
+  case 't' :
+    color = '#88ff88'
+    break
+  case 'p' :
+    color = '#ff8888'
+    break
+  default: break
+  }
+  return {backgroundColor: color}
 }

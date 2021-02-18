@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +21,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.ism.urm.service.rule.RequestService;
 import com.ism.urm.util.SessionUtil;
+import com.ism.urm.vo.JobResult;
 import com.ism.urm.vo.PagingResult;
 import com.ism.urm.vo.RelationOp;
 import com.ism.urm.vo.RelationOp.AddType;
@@ -59,9 +63,11 @@ public class RequestController {
                 filter.add(op);
                 op = RelationOp.get(key, OpType.LE, new Date(Long.parseLong(arr[1])), ValueType.DATE);
             } else if ("regId".equals(key) || "sendAdminId".equals(key) || "rcvAdminId".equals(key)) {
-                if (val.equals("true")) {
+                if (val.equals("checked true")) {
                     op = RelationOp.get(key, OpType.EQ, SessionUtil.getUserID(), ValueType.STRING);
                     op.setAddType(AddType.OR);
+                } else if (val.trim().length() != 0) {
+                    op = RelationOp.get(key, OpType.EQ, val, ValueType.STRING);
                 } else {
                     continue;
                 }
@@ -117,12 +123,12 @@ public class RequestController {
     }
 
     @PostMapping("/request/delete")
-    public int delete(@RequestBody List<String> ids) throws Exception {
-        int rtn = 0;
+    public JobResult delete(@RequestBody List<String> ids) {
+        JobResult rtn = null;
         try {
             rtn = service.delete(ids);
         } catch (Exception e) {
-            throw e;
+            rtn = new JobResult(99, e.getMessage());
         }
         return rtn;
     }
@@ -150,7 +156,7 @@ public class RequestController {
     }
 
     @PostMapping("/request/upload")
-    public String upload(MultipartHttpServletRequest mReq) throws Exception {
+    public String uploadAttachment(MultipartHttpServletRequest mReq) throws Exception {
         MultipartFile item = null;
         Iterator<String> files = mReq.getFileNames();
         while(files.hasNext()) {
@@ -168,5 +174,23 @@ public class RequestController {
             throw e;
         }
         return rtn;
+    }
+
+    @GetMapping("/request/download")
+    public void downloadAttachment(HttpServletRequest req, HttpServletResponse res) throws Exception{
+        try {
+            service.requestFileDownload(req, res);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @GetMapping("/request/defined")
+    public void downloadDefined(HttpServletRequest req, HttpServletResponse res) throws Exception{
+        try {
+            service.requestFileDownload(req, res);
+        } catch (Exception e) {
+            throw e;
+        }
     }
 }

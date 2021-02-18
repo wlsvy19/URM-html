@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ism.urm.service.manage.CodeService;
+import com.ism.urm.vo.JobResult;
 import com.ism.urm.vo.RelationOp;
 import com.ism.urm.vo.RelationOp.OpType;
 import com.ism.urm.vo.RelationOp.ValueType;
@@ -76,10 +77,21 @@ public class CodeController {
     }
 
     @PostMapping("/code/business")
-    public List<BusinessCode> save(@RequestBody BusinessCode code) throws Exception {
+    public List<BusinessCode> saveBusinessCode(@RequestBody BusinessCode code) throws Exception {
         List<BusinessCode> rtn = null;
         try {
             rtn = service.modifyBusinessCode(code);
+        } catch (Exception e) {
+            throw e;
+        }
+        return rtn;
+    }
+
+    @PostMapping("/code/business/delete")
+    public JobResult deleteBusinessCode(@RequestBody List<String> ids) throws Exception {
+        JobResult rtn = null;
+        try {
+            rtn = service.deleteBusinessCode(ids);
         } catch (Exception e) {
             throw e;
         }

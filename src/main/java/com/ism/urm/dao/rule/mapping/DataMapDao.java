@@ -1,5 +1,6 @@
 package com.ism.urm.dao.rule.mapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -23,6 +24,30 @@ public class DataMapDao extends RuleDao<DataMap> {
         valueDao = new DataMapValueDao();
         dataDao = new DataDao();
     }
+
+    public List<DataMap> search(Session session) throws Exception {
+        String hql = "select b.id, b.name, b.sourceDataId, b.targetDataId, a.id, a.name, a.interfaceId"
+                + " from REQUEST a right join DATAMAP b"
+                + " on (a.reqDataMappingId = b.id or a.resDataMappingId = b.id)"
+                + " order by b.id desc";
+        List<Object[]> list = session.createQuery(hql).list();
+        List<DataMap> rtn = null;
+        if (list != null) {
+            rtn = new ArrayList<>();
+            for (Object[] o : list) {
+                DataMap map = new DataMap();
+                map.setId((String) o[0]);
+                map.setName((String) o[1]);
+                map.setSourceDataId((String) o[2]);
+                map.setTargetDataId((String) o[3]);
+                map.setRequestId((String) o[4]);
+                map.setRequestName((String) o[5]);
+                map.setInterfaceId((String) o[6]);
+                rtn.add(map);
+            }
+        }
+        return rtn;
+    }  
 
     public void delete(Session session, String id) throws Exception {
         lineDao.deleteByMapId(session, id);
@@ -77,4 +102,10 @@ public class DataMapDao extends RuleDao<DataMap> {
         }
     }
 
+    public int getInfluence(Session session, String id) throws Exception {
+        String hql = "select count(*) from REQUEST a"
+                + " where a.resDataMappingId = :mapId or a.reqDataMappingId = :mapId";
+        int res = ((Number) session.createQuery(hql).setString("mapId", id).uniqueResult()).intValue();
+        return res;
+    }
 }

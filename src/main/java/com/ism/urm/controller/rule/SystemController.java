@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ism.urm.service.rule.AppSystemService;
+import com.ism.urm.util.SessionUtil;
+import com.ism.urm.vo.JobResult;
 import com.ism.urm.vo.RelationOp;
 import com.ism.urm.vo.RelationOp.OpType;
 import com.ism.urm.vo.RelationOp.ValueType;
@@ -72,10 +74,29 @@ public class SystemController {
     public AppSystem save(@RequestBody AppSystem system) throws Exception {
         AppSystem rtn = null;
         try {
+            String passwd = system.getUserPasswd();
+            if (passwd == null || passwd.trim().length() == 0) {
+                AppSystem org = service.get(system.getId());
+                system.setUserPasswd(org != null ? org.getUserPasswd() : "");
+            } else {
+                system.setUserPasswd(SessionUtil.getEncString(passwd));
+            }
             rtn = service.save(system);
         } catch (Exception e) {
             throw e;
         }
         return rtn;
     }
+
+    @PostMapping("/system/delete")
+    public JobResult delete(@RequestBody List<String> ids) {
+        JobResult rtn = null;
+        try {
+            rtn = service.delete(ids);
+        } catch (Exception e) {
+            rtn = new JobResult(99, e.getMessage());
+        }
+        return rtn;
+    }
+
 }

@@ -17,6 +17,7 @@ import com.ism.urm.dao.manage.BusinessCodeDao;
 import com.ism.urm.dao.manage.CommonCodeDao;
 import com.ism.urm.util.SessionUtil;
 import com.ism.urm.vo.HiberUtill;
+import com.ism.urm.vo.JobResult;
 import com.ism.urm.vo.RelationOp;
 import com.ism.urm.vo.manage.Auth;
 import com.ism.urm.vo.manage.BusinessCode;
@@ -33,7 +34,6 @@ public class CodeService {
     
     static Map<String, List<CommonCode>> commonCodeMap = new Hashtable<>();
     static List<CommonCode> commonCodeList = new ArrayList<>();
-    static List<BusinessCode> businessCodeList = new ArrayList<BusinessCode>();
     static List<Auth> authList = new ArrayList<Auth>();
 
     
@@ -105,13 +105,12 @@ public class CodeService {
     }
 
     public List<BusinessCode> getBusinessCodeList(List<RelationOp> filter) throws Exception {
+        List<BusinessCode> rtn = null;
         Session session = null;
         try {
             session = sessionFactory.openSession();
             session.beginTransaction();
-            if(businessCodeList == null || businessCodeList.isEmpty()) {
-                businessCodeList = businessCodeDao.search(session, filter);
-            } 
+            rtn = businessCodeDao.search(session, filter);
             logger.debug("getBusinessCodeList return");
         } catch (Exception e) {
             logger.error("Failed to get BusinessCodeList", e);
@@ -119,42 +118,11 @@ public class CodeService {
         } finally {
             if (session != null) try { session.close(); } catch (Exception ignore){ }
         }
-        return businessCodeList;
+        return rtn;
     }
 
-//    public List<AuthCode> getAuthCodeList() throws Exception {
-//        logger.info("CommonService.getAuthCodeList() call.");
-//        try {
-//            logger.debug("CommonService.getAuthCodeList call");
-//            if(authCodeList == null || authCodeList.isEmpty()) {
-//                authCodeList = commonCodeDao.listAuthCode();
-//            } 
-//            logger.debug("CommonService.getAuthCodeList return");
-//            return authCodeList;
-//        } catch(Exception e) {
-//            logger.error("", e);
-//            throw e;
-//        }
-//    }
-
-//    public int addBusinessCodeList(List<BusinessCode> lists) throws Exception {
-//        logger.info("CommonService.addBusinessCode() call.");
-//        try {
-//            int res = 0;
-//            for(int i=0; i<lists.size(); i++) {
-//                businessCodeDao.insert(lists.get(i));
-//            }
-//            
-//            businessCodeList = businessCodeDao.list();
-//            
-//            return res;
-//        } catch(Exception e) {
-//            logger.error("", e);
-//            throw e;
-//        }
-//    }
-
     public List<BusinessCode> modifyBusinessCode(BusinessCode code) throws Exception {
+        List<BusinessCode> rtn = null;
         Session session = null;
         Transaction tx = null;
         try {
@@ -178,7 +146,7 @@ public class CodeService {
             
             businessCodeDao.save(session, code);
             
-            businessCodeList = businessCodeDao.list(session);
+            rtn = businessCodeDao.list(session);
             tx.commit();
         } catch (Exception e) {
             logger.error("Failed to save BusinessCode", e);
@@ -187,9 +155,62 @@ public class CodeService {
         } finally {
             if (session != null) try { session.close(); } catch (Exception ignore){ }
         }
-        return businessCodeList;
+        return rtn;
     }
 
+    public JobResult deleteBusinessCode(List<String> ids) throws Exception {
+        JobResult res = new JobResult(0);
+        int count = 0;
+        Session session = null;
+        Transaction tx = null;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+
+            boolean used = false;
+            String idStr = "";
+            for (String id : ids) {
+                if (getInfluence(id) > 0) {
+                    used = true;
+                    idStr += ", " + id;
+                    continue;
+                }
+                businessCodeDao.delete(session, id);
+                count++;
+            }
+
+            if (used) {
+                res = new JobResult(1, idStr.substring(1) + " are used.");
+            } else {
+                res.setObj(count);
+            }
+            tx.commit();
+        } catch (Exception e) {
+            logger.error("Faile to delete BUSINESSCODE", e);
+            if (tx != null) try { tx.rollback(); } catch (Exception ignore) { }
+            throw e;
+        } finally {
+            if (session != null) try { session.close(); } catch (Exception ignore) { }
+        }
+        return res;
+    }
+    
+    private int getInfluence(String id) throws Exception {
+        int res = 0;
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            res = businessCodeDao.getInfluence(session, id);
+        } catch (Exception e) {
+            logger.error("Failed to getInfluence", e);
+            throw e;
+        } finally {
+            if (session != null) try { session.close(); } catch (Exception ignore) { }
+        }
+        return res;
+    }
+    
 //    public List<BusinessCode> bizFileUpload(String fileName, String sheetName, byte[] data) throws Exception {
 //        logger.info("DataService.bizFileUpload() call.");
 //        

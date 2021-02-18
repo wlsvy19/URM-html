@@ -1,7 +1,6 @@
 package com.ism.urm.service.manage;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -19,13 +18,13 @@ import com.ism.urm.vo.manage.User;
 
 public class UserService {
     private Logger logger = LoggerFactory.getLogger("debug");
-    private UserDao userDao;
+    private UserDao dao;
     protected SessionFactory sessionFactory;
 
     static List<User> userList = new ArrayList<User>();
 
     public UserService() {
-        userDao = new UserDao();
+        dao = new UserDao();
         sessionFactory = HiberUtill.getSessionFactory();
     }
     
@@ -39,12 +38,12 @@ public class UserService {
         try {
             session = sessionFactory.openSession();
             session.beginTransaction();
-            rtn = userDao.idCheck(session, userID);
+            rtn = dao.idCheck(session, userID);
         } catch (Exception e) {
+            logger.error("Failed to check ID. ", e);
             throw e;
         } finally {
-            if (session != null)
-                session.close();
+            if (session != null) try { session.close(); } catch (Exception ignore) { }
         }
         return rtn;
     }
@@ -55,14 +54,13 @@ public class UserService {
         try {
             session = sessionFactory.openSession();
             session.beginTransaction();
-            rtn = userDao.search(session, filter);
+            rtn = dao.search(session, filter);
 
         } catch (Exception e) {
-            logger.error("Failed to User search()", e);
+            logger.error("Failed to search User. ", e);
             throw e;
         } finally {
-            if (session != null)
-                session.close();
+            if (session != null) try { session.close(); } catch (Exception ignore) { }
         }
         return rtn;
     }
@@ -73,14 +71,13 @@ public class UserService {
         try {
             session = sessionFactory.openSession();
             session.beginTransaction();
-            rtn = userDao.get(session, userId);
+            rtn = dao.get(session, userId);
 
         } catch (Exception e) {
-            logger.error("Failed to User get()", e);
+            logger.error("Failed to get User. ", e);
             throw e;
         } finally {
-            if (session != null)
-                session.close();
+            if (session != null) try { session.close(); } catch (Exception ignore) { }
         }
         return rtn;
     }
@@ -95,21 +92,23 @@ public class UserService {
             
             String passwd = vo.getPassword();
             if (passwd == null || passwd.trim().length() == 0) {
-                User org = userDao.get(session, vo.getId());
+                User org = dao.get(session, vo.getId());
                 vo.setPassword(org.getPassword());
+                session.clear();
             } else {
                 vo.setPassword(SessionUtil.getEncString(passwd));
             }
             
-            userDao.save(session, vo);
+            dao.save(session, vo);
+            
+            rtn = dao.get(session, vo.getId());
             tx.commit();
-            rtn = userDao.get(session, vo.getId());
         } catch (Exception e) {
-            logger.error("Failed to User save()", e);
+            logger.error("Failed to save User. ", e);
+            if (tx != null) try { tx.rollback(); } catch (Exception ignore) { }
             throw e;
         } finally {
-            if (session != null)
-                session.close();
+            if (session != null) try { session.close(); } catch (Exception ignore) { }
         }
         return rtn;
     }
@@ -123,43 +122,88 @@ public class UserService {
             
             User org = null;
             if (sessionId == null || sessionId.length() == 0) {
-                if (vo.getPassword() == null || vo.getPassword().length() == 0) {
-                    SessionUtil.invalidate();
-                    throw new Exception("session expired!!!");
-                }
                 sessionId = vo.getId();
-
-                org = userDao.get(session, sessionId);
+                org = dao.get(session, sessionId);
+                
                 if (org == null) {
-                    rtn = new JobResult(1, "user not exist.");
+                    rtn = new JobResult(1, "user not exist");
                     rtn.setObj("/login/login.page");
                     return rtn;
                 } else {
                     String passwd = SessionUtil.getDecString(org.getPassword());
                     if (!passwd.equals(vo.getPassword())) {
-                        rtn = new JobResult(2, "invalid password.");
+                        rtn = new JobResult(2, "invalid password");
                         rtn.setObj("/login/login.page");
                         return rtn;
                     }
                 }
 
                 SessionUtil.setUserID(sessionId);
-                rtn = new JobResult(0, "login success.");
+                rtn = new JobResult(0, "login success");
+                rtn.setObj(sessionId);
             } else {
                 rtn = new JobResult(0, "already logged!!!");
-                org = userDao.get(session, sessionId);
+                rtn.setObj(sessionId);
             }
-
-            HashMap<String, String> map = new HashMap<>();
-            map.put("id", sessionId);
-            map.put("name", org.getName());
-            map.put("authId", org.getAuthId());
-            rtn.setObj(map);
         } catch (Exception e) {
+            logger.error("Faile to login. ", e);
             throw e;
         } finally {
             if (session != null) try { session.close(); } catch (Exception ignore) { }
         }
         return rtn;
+    }
+
+    public JobResult delete(List<String> ids) throws Exception {
+        JobResult res = new JobResult(0);
+        int count = 0;
+        Session session = null;
+        Transaction tx = null;
+        try {
+            session = sessionFactory.openSession();
+            tx = session.beginTransaction();
+
+            boolean used = false;
+            String idStr = "";
+            for (String id : ids) {
+                if (getInfluence(id) > 0) {
+                    used = true;
+                    idStr += ", " + id;
+                    continue;
+                }
+                dao.delete(session, id);
+                count++;
+            }
+
+            if (used) {
+                res = new JobResult(1, idStr.substring(1) + " are used.");
+            } else {
+                res.setObj(count);
+            }
+            tx.commit();
+        } catch (Exception e) {
+            logger.error("Faile to delete " + dao.getEntityName(), e);
+            if (tx != null) try { tx.rollback(); } catch (Exception ignore) { }
+            throw e;
+        } finally {
+            if (session != null) try { session.close(); } catch (Exception ignore) { }
+        }
+        return res;
+    }
+    
+    private int getInfluence(String id) throws Exception {
+        int res = 0;
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            res = dao.getInfluence(session, id);
+        } catch (Exception e) {
+            logger.error("Failed to getInfluence", e);
+            throw e;
+        } finally {
+            if (session != null) try { session.close(); } catch (Exception ignore) { }
+        }
+        return res;
     }
 }

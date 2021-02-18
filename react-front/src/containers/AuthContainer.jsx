@@ -16,24 +16,42 @@ class AuthContainer extends React.Component {
     return false
   }
 
+  componentDidUpdate(props, state) {
+    if (props.logged !== this.props.logged) this.method.checkUser()
+  }
+
   method = {
     checkUser: () => {
-      let { userInfo, login, logout } = this.props
-      let user = JSON.parse(sessionStorage.getItem('URMUser'))
-      if (user) {
-        let userId = user.id
-        if (userId && userId.length > 0) {
-          if (userInfo.id.trim().length > 0 && userId !== userInfo.id) {
-            sessionStorage.removeItem('URMUser')
-            logout()
+      let { logged, userInfo, login, logout } = this.props
+      login({id: 'eai', name: 'eai', authId: '0'})
+      
+      urmsc.ajax({
+        type: 'POST',
+        url: '/URM/check/login',
+        contentType: 'application/json; charset=UTF-8',
+        success: function(res) {
+          if (res.code === 0) {
+            if (!logged) {
+              login(res.obj)
+            } else if (userInfo.id !== res.obj.id) {
+              urmsc.ajax({
+                type: 'GET',
+                url: '/URM/logout',
+                dataType: 'text',
+                beforeSend: function () {
+                  logout()
+                },
+              })
+            }
           } else {
-            login(user)
-            return false
+            console.log(res, res.message)
+            logged && logout()
+            if (res.obj && res.obj.endsWith('.page')) {
+              window.location = res.obj
+            }
           }
         }
-      }
-      //login({id: 'eai', name: 'eai', authId: '0'})
-      window.location = '/URM/login/login.page'
+      })
     }
   }
 

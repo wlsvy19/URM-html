@@ -50,7 +50,7 @@ public class LogDeferredError {
     public String getErrorDataContents() {
         return errorDataContents;
     }
-    public void setErrDataContents(String errorDataContents) {
+    public void setErrorDataContents(String errorDataContents) {
         this.errorDataContents = errorDataContents;
     }
 

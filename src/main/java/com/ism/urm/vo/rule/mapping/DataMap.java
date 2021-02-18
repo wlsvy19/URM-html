@@ -16,8 +16,8 @@ public class DataMap extends RuleVo {
     Data targetData;
 
     String requestId;
+    String requestName;
     String interfaceId;
-    boolean delYN;
     
     public String getSourceDataId() {
         return sourceDataId;
@@ -65,6 +65,30 @@ public class DataMap extends RuleVo {
 
     public void setTargetData(Data targetData) {
         this.targetData = targetData;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
+    public String getRequestName() {
+        return requestName;
+    }
+
+    public void setRequestName(String requestName) {
+        this.requestName = requestName;
+    }
+
+    public String getInterfaceId() {
+        return interfaceId;
+    }
+
+    public void setInterfaceId(String interfaceId) {
+        this.interfaceId = interfaceId;
     }
 
 }

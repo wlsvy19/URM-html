@@ -8,22 +8,23 @@
             <column name="USER_ID" />
             <generator class="assigned" />
         </id>
-        <property name="name" type="string" column="NAME"></property>
-        <property name="password" type="string" column="PASSWD"></property>
-        <property name="dept" type="string" column="DEPT"></property>
-        <property name="deptName" type="string" column="DEPT_NM"></property>
-        <property name="position" type="string" column="POSITION"></property>
-        <property name="positionName" type="string" column="POSITION_NM"></property>
-        <property name="grade" type="string" column="GRADE"></property>
-        <property name="gradeName" type="string" column="GRADE_NM"></property>
-        <property name="officeTelNo" type="string" column="OFFICE_TEL_NO"></property>
-        <property name="generalTelNo" type="string" column="GENERAL_TEL_NO"></property>
-        <property name="celNo" type="string" column="CEL_NO"></property>
-        <property name="ip" type="string" column="IP"></property>
-        <property name="yn" type="string" column="YN"></property>
-        <property name="frsEnrTs" type="string" column="FRS_ENR_TS"></property>
-        <property name="lstAmnTs" type="string" column="LST_AMN_TS"></property>
-        <property name="ssoYn" type="string" column="SSO_YN"></property>
-        <property name="authId" type="string" column="AUTH_ID"></property>
+        <property name="name" type="string" column="NAME" />
+        <property name="password" type="string" column="PASSWD" />
+        <property name="dept" type="string" column="DEPT" />
+        <property name="deptName" type="string" column="DEPT_NM" />
+        <property name="position" type="string" column="POSITION" />
+        <property name="positionName" type="string" column="POSITION_NM" />
+        <property name="grade" type="string" column="GRADE" />
+        <property name="gradeName" type="string" column="GRADE_NM" />
+        <property name="officeTelNo" type="string" column="OFFICE_TEL_NO" />
+        <property name="generalTelNo" type="string" column="GENERAL_TEL_NO" />
+        <property name="celNo" type="string" column="CEL_NO" />
+        <property name="ip" type="string" column="IP" />
+        <property name="yn" type="yes_no" column="YN" />
+        <property name="ssoYn" type="yes_no" column="SSO_YN" />
+        <property name="authId" type="string" column="AUTH_ID" />
+        
+        <!-- <property name="frsEnrTs" type="string" column="FRS_ENR_TS" />
+        <property name="lstAmnTs" type="string" column="LST_AMN_TS" /> -->
     </class>
 </hibernate-mapping>

@@ -14,12 +14,13 @@ public class User {
     String generalTelNo;
     String celNo;
     String ip;
-    String yn;
-    String frsEnrTs;
-    String lstAmnTs;
-    String ssoYn;
+    boolean yn = true;
+    boolean ssoYn = false;
     String authId;
-    
+
+//    String frsEnrTs;
+//    String lstAmnTs;
+
     public String getId() {
         return id;
     }
@@ -98,28 +99,16 @@ public class User {
     public void setIp(String ip) {
         this.ip = ip;
     }
-    public String getYn() {
+    public boolean isYn() {
         return yn;
     }
-    public void setYn(String yn) {
+    public void setYn(boolean yn) {
         this.yn = yn;
     }
-    public String getFrsEnrTs() {
-        return frsEnrTs;
-    }
-    public void setFrsEnrTs(String frsEnrTs) {
-        this.frsEnrTs = frsEnrTs;
-    }
-    public String getLstAmnTs() {
-        return lstAmnTs;
-    }
-    public void setLstAmnTs(String lstAmnTs) {
-        this.lstAmnTs = lstAmnTs;
-    }
-    public String getSsoYn() {
+    public boolean isSsoYn() {
         return ssoYn;
     }
-    public void setSsoYn(String ssoYn) {
+    public void setSsoYn(boolean ssoYn) {
         this.ssoYn = ssoYn;
     }
     public String getAuthId() {

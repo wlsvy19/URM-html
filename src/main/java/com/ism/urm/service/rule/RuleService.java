@@ -1,6 +1,5 @@
 package com.ism.urm.service.rule;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.ism.urm.dao.rule.RuleDao;
 import com.ism.urm.util.SessionUtil;
 import com.ism.urm.vo.HiberUtill;
+import com.ism.urm.vo.JobResult;
 import com.ism.urm.vo.RelationOp;
 import com.ism.urm.vo.rule.RuleVo;
 
@@ -95,13 +95,8 @@ public abstract class RuleService<T extends RuleVo> {
         return rtn;
     }
     
-    public int delete(String id) throws Exception {
-        List<String> ids = new ArrayList<>();
-        ids.add(id);
-        return delete(ids);
-    }
-
-    public int delete(List<String> ids) throws Exception {
+    public JobResult delete(List<String> ids) throws Exception {
+        JobResult res = new JobResult(0);
         int count = 0;
         Session session = null;
         Transaction tx = null;
@@ -109,20 +104,33 @@ public abstract class RuleService<T extends RuleVo> {
             session = sessionFactory.openSession();
             tx = session.beginTransaction();
             
+            boolean used = false;
+            String idStr = "";
             for (String id : ids) {
+                if (getInfluence(id) > 0) {
+                    used = true;
+                    idStr += ", " + id ;
+                    continue;
+                }
                 dao.delete(session, id);
                 count++;
             }
             
+            if (used) {
+                res = new JobResult(1, "[" + idStr.substring(1) + " ] are used.");
+            } else {
+                res.setObj(count);
+            }
             tx.commit();
         } catch (Exception e) {
-            logger.error("Faile to delete " + dao.getEntityName(), e);
+            logger.error("Failed to delete " + dao.getEntityName(), e);
             if (tx != null) try { tx.rollback(); } catch (Exception ignore) { }
             throw e;
         } finally {
             if (session != null) try { session.close(); } catch (Exception ignore) { }
         }
-        return count;
+        return res;
     }
 
+    protected abstract int getInfluence(String id) throws Exception;
 }

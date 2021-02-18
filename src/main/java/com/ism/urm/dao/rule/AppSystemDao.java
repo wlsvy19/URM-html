@@ -1,6 +1,6 @@
 package com.ism.urm.dao.rule;
 
-import java.sql.SQLException;
+import java.util.List;
 
 import org.hibernate.Session;
 
@@ -13,12 +13,13 @@ public class AppSystemDao extends RuleDao<AppSystem> {
         entityName = "APPSYSTEM";
     }
 
-    public void delete(Session session, String id) throws SQLException {
-        // TODO Auto-generated method stub
+    public void delete(Session session, String id) throws Exception {
+        session.createQuery("delete from " + entityName + " a where a.id = :id")
+               .setString("id", id).executeUpdate();
     }
 
     @Override
-    public String createId(Session session) throws SQLException {
+    public String createId(Session session) throws Exception {
         // TODO Auto-generated method stub
 //        StringBuilder sb = new StringBuilder();
 //        sb.append("SYS");
@@ -30,18 +31,24 @@ public class AppSystemDao extends RuleDao<AppSystem> {
     }
 
     @Override
-    protected void setChild(Session session, AppSystem vo) throws SQLException {
+    protected void setChild(Session session, AppSystem vo) throws Exception {
         // do nothing
     }
 
     @Override
-    protected void beforeSave(Session session, AppSystem vo) throws SQLException {
+    protected void beforeSave(Session session, AppSystem vo) throws Exception {
         // do nothing
     }
 
     @Override
-    protected void saveChild(Session session, AppSystem vo) throws SQLException {
+    protected void saveChild(Session session, AppSystem vo) throws Exception {
         // do nothing
     }
 
+    public int getInfluence(Session session, String id) throws Exception {
+        String hql = "select count(*) from REQUEST a"
+                + " where a.sendSystemId = :systemId or a.rcvSystemId = :systemId";
+        int res = ((Number) session.createQuery(hql).setString("systemId", id).uniqueResult()).intValue();
+        return res;
+    }
 }

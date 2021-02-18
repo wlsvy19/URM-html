@@ -45,6 +45,23 @@ export default class URMRouter extends React.Component {
           <KeepAlive key="change2"><Router.CodeContainer component={Router.RequestChangeMonth} /></KeepAlive>
         )} />
         
+        {/* process */}
+        <Route path="/process/:path([d|t|p]{1}stat[1-3]{1})" render={props => (
+          <KeepAlive key={props.match.params.path}><Router.CodeContainer component={Router.ProcessStaticsHour} match={props.match} /></KeepAlive>
+        )} />
+        <Route path="/process/:path([d|t|p]{1}stat[4-6]{1})" render={props => (
+          <KeepAlive key={props.match.params.path}><Router.CodeContainer component={Router.ProcessStaticsDay} match={props.match} /></KeepAlive>
+        )} />
+        <Route path="/process/:path([d|t|p]{1}log1)" render={props => (
+          <KeepAlive key={props.match.params.path}><Router.CodeContainer component={Router.LogRealtime} match={props.match} /></KeepAlive>
+        )} />
+        <Route path="/process/:path([d|t|p]{1}log2)" render={props => (
+          <KeepAlive key={props.match.params.path}><Router.CodeContainer component={Router.LogBatch} match={props.match} /></KeepAlive>
+        )} />
+        <Route path="/process/:path([d|t|p]{1}log3)" render={props => (
+          <KeepAlive key={props.match.params.path}><Router.CodeContainer component={Router.LogDeferred} match={props.match} /></KeepAlive>
+        )} />
+        
         <Router.AuthContainer />
       </div>
     );

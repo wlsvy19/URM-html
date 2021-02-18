@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.ism.urm.service.rule.DataService;
+import com.ism.urm.vo.JobResult;
 import com.ism.urm.vo.RelationOp;
 import com.ism.urm.vo.RelationOp.OpType;
 import com.ism.urm.vo.RelationOp.ValueType;
@@ -84,12 +88,12 @@ public class DataController {
     }
 
     @PostMapping("/data/delete")
-    public int delete(@RequestBody List<String> ids) throws Exception {
-        int rtn = 0;
+    public JobResult delete(@RequestBody List<String> ids) {
+        JobResult rtn = null;
         try {
             rtn = service.delete(ids);
         } catch (Exception e) {
-            throw e;
+            rtn = new JobResult(99, e.getMessage());
         }
         return rtn;
     }
@@ -150,5 +154,14 @@ public class DataController {
             throw e;
         }
         return rtn;
+    }
+    
+    @GetMapping("/data/excel/download")
+    public void downloadDataFieldExcel(HttpServletRequest req, HttpServletResponse res) throws Exception{
+        try {
+            service.parseDataFieldExcel(req, res);
+        } catch (Exception e) {
+            throw e;
+        }
     }
 }

@@ -7,7 +7,7 @@
 <style type="text/css">
 body {
   background-color: #e6f7ff;
-  font-size: 18px;
+  font-size: 20px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
     "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial,
     sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -31,6 +31,7 @@ input {
   border-radius: 4px;
   -webkit-transition: all 0.3s;
   transition: all 0.3s;
+  font-size: 18px;
 }
 
 .login-body {
@@ -82,7 +83,7 @@ input {
   touch-action: manipulation;
   height: 38px;
   width: 100%;
-  font-size: 18px;
+  font-size: 20px;
   border-radius: 4px;
   color: rgba(255,255,255,.65);
   background-color: #007ac3;
@@ -92,21 +93,39 @@ input {
 
 .logo {
   display: flex;
-  padding: 15px 35px;
   margin-top: 25px;
 }
 
-.logo > span {
+.logo > div {
+  margin: auto;
+}
+
+.logo > div > img {
+  vertical-align: middle;
+}
+
+.logo > div > span {
   padding: 2px 10px;
   font-weight: bold;
+}
+
+#errmsg {
+  color: red;
+  height: 28px;
+  line-height: 28px;
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
 }
 </style>
 </head>
 <body>
 <div class="login-body">
   <div class="logo">
-    <img src="../logo.gif" height="29" />
-    <span>EAI 요건 관리 시스템</span>
+    <div>
+      <img src="../logo.gif" />
+      <span>EAI 요건 관리 시스템</span>
+    </div>
   </div>
   <div id="login-form">
     <div>
@@ -115,6 +134,7 @@ input {
     <div>
       <label for="login-passwd">Password</label> <input type="password" id="login-passwd" onkeydown="loginHandler(event)">
     </div>
+    <div id="errmsg"></div>
     <div><button onclick="loginHandler()">Login</button></div>
   </div>
 </div>
@@ -127,6 +147,12 @@ function loginHandler (e) {
     id: document.getElementById('login-user').value,
     password: document.getElementById('login-passwd').value,
   };
+  var $errmsg = document.getElementById('errmsg')
+  
+  if (!loginForm.password || loginForm.password.trim().length === 0) {
+    $errmsg.innerText = '비밀번호를 입력하세요.'
+    return false;
+  }
 
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/URM/login/process', true);
@@ -136,16 +162,15 @@ function loginHandler (e) {
       if (this.status === 200) {
         res = JSON.parse(this.response);
         if (res.code === 0) {
-          sessionStorage.setItem('URMUser', JSON.stringify(res.obj));
           self.location = '/URM/';
         } else {
-          console.log(res.message)
+          $errmsg.innerText = res.message
         }
       } else {
-        console.log('statusText [' + this.statusText + '] error [' + res + ']');
+        alert('statusText [' + this.statusText + '] error [' + res + ']');
       }
     } else if (this.readyState === 1) {
-      xhr.setRequestHeader('AjaxCall', 'true');
+      this.setRequestHeader('AjaxCall', 'true');
     }
   }
 

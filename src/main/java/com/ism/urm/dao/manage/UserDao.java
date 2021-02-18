@@ -17,22 +17,29 @@ public class UserDao extends BasicDao<User> {
         entityName = "USER";
     }
 
-    public int idCheck(Session session, String userID) {
-      Criteria crit = session.createCriteria(User.class);
-      crit.setProjection(Projections.rowCount()).add(Restrictions.eq("id", userID));
-      Object queryResult = crit.uniqueResult();
-      int rtn = Integer.parseInt(queryResult.toString());
+    public int idCheck(Session session, String id) {
+      Criteria crit = session.createCriteria(entityClass);
+      crit.setProjection(Projections.rowCount()).add(Restrictions.eq("id", id));
+      int rtn = ((Number) crit.uniqueResult()).intValue();
       return rtn;
     }
   
     @Override
     public User get(Session session, String id) throws Exception {
-        User rtn = (User) session.get("USER", id);
+        User rtn = (User) session.get(entityName, id);
         return rtn;
     }
 
     @Override
     public void delete(Session session, String id) throws Exception {
-        // TODO Auto-generated method stub
+        session.createQuery("delete from " + entityName + " a where a.id = :id")
+               .setString("id", id).executeUpdate();
+    }
+
+    public int getInfluence(Session session, String id) throws Exception {
+        String hql = "select count(*) from REQUEST a"
+                + " where a.sendAdminId = :userId or a.rcvAdminId = :userId";
+        int res = ((Number) session.createQuery(hql).setString("userId", id).uniqueResult()).intValue();
+        return res;
     }
 }

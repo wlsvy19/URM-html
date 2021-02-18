@@ -6,11 +6,28 @@
   text-align: center;
 }
 
-input {
-  &[type=text]:read-only, &[type=text][readonly],
-  &[type=text][readonly="readonly"] {
-    background-color: #f8f8f8;
-  }
+input[type=text]:-moz-read-only { /* For Firefox */
+  background-color: #f8f8f8;
+}
+
+input[type=text][readonly] { /* For IE */
+  background-color: #f8f8f8;
+}
+
+input[type=text]:read-only {
+  background-color: #f8f8f8;
+}
+
+textarea:-moz-read-only { /* For Firefox */
+  background-color: #f8f8f8;
+}
+
+textarea[readonly] { /* For IE */
+  background-color: #f8f8f8;
+}
+
+textarea:read-only {
+  background-color: #f8f8f8;
 }
 
 /* flex */
@@ -59,15 +76,17 @@ table > .ant-table-tbody > tr > td {
 
 span.ant-modal-close-x {
   height: 38px;
+  line-height: 45px;
 }
 
 body, .ant-menu, .ant-form label, .ant-input, .ant-select, .ant-table,
-.ant-menu-vertical .ant-menu-item, .ant-btn, .ant-form-item {
+.ant-menu-vertical .ant-menu-item, .ant-btn, .ant-form-item, .ant-time-picker-input {
   font-size: 16px;
 }
 
 .ant-input-sm, .ant-select-sm .ant-select-selection--single,
-.ant-btn-sm, .ant-btn-icon-only.ant-btn-sm {
+.ant-btn-sm, .ant-btn-icon-only.ant-btn-sm,
+.ant-time-picker-small .ant-time-picker-input {
   height: 28px;
 }
 
@@ -76,10 +95,19 @@ body, .ant-menu, .ant-form label, .ant-input, .ant-select, .ant-table,
   background-color: #fff;
 }
 
+.ant-btn-primary {
+  color: #1890ff;
+  background-color: #fff;
+}
+
+div.urm-list .ant-tabs-bar {
+  margin-bottom: 0;
+}
+
 /* urm */
 .urm-panel {
   margin: 0 30px;
-  min-width: 1280px;
+  min-width: 1300px;
 }
 
 .urm-modal .ant-modal-body {
@@ -95,17 +123,19 @@ body, .ant-menu, .ant-form label, .ant-input, .ant-select, .ant-table,
   div.urm-logo {
     display: flex;
     background-color: #fff;
-    padding: 7px;
     width: 270px;
     border-right: 1px solid #e8e8e8;
     border-bottom: 1px solid #e8e8e8;
     
-    span {
-      margin-left: 15px;
-      font-weight: bold;
-      color: #000;
-      line-height: 30px;
-      vertical-align: middle;
+    a {
+      margin: auto;
+      
+      span {
+        margin-left: 15px;
+        font-weight: bold;
+        color: #000;
+        vertical-align: middle;
+      }
     }
   }
   
@@ -123,6 +153,11 @@ body, .ant-menu, .ant-form label, .ant-input, .ant-select, .ant-table,
   }
 }
 
+.urm-header {
+  margin-top: 10px;
+  padding-left: 10px;
+  font-weight: bold;
+}
 
 /* search bar */
 .advanced-search-bar, .search-bar {
@@ -174,6 +209,15 @@ body, .ant-menu, .ant-form label, .ant-input, .ant-select, .ant-table,
     margin-top: 10px;
   }
   
+  .upper-list {
+    border: 1px solid #e8e8e8;
+    min-height: 400px;
+
+    div.ant-table-placeholder {
+      height: 356px;
+    }
+  }
+  
   .urm-paging {
     text-align: center;
     margin-top: 15px;
@@ -220,7 +264,7 @@ body, .ant-menu, .ant-form label, .ant-input, .ant-select, .ant-table,
 
   > .editor-buttons {
     text-align: right;
-    margin-top: 10px;
+    margin-top: 5px;
   }
   
   .size-id {
@@ -237,7 +281,7 @@ body, .ant-menu, .ant-form label, .ant-input, .ant-select, .ant-table,
   
   .urm-remark {
     width: 500px;
-    height: 100px;
+    height: 145px;
     resize: none;
   }
   
@@ -270,17 +314,25 @@ body, .ant-menu, .ant-form label, .ant-input, .ant-select, .ant-table,
 }
 
 .data-query {
-  margin-left: 120px;
+  margin-left: 150px;
   
   textarea.ant-input {
-    width: 830px;
-    height: 100px;
+    width: 802px;
+    height: 130px;
   }
 }
 
 
 /* datamap */
 .map-tree {
+  &.src {
+    width: 315px;
+  }
+  
+  &.tgt {
+    width: 475px;
+  }
+  
   > .ant-tree {
     border: 1px solid #e8e8e8;
     height: 555px;
@@ -347,4 +399,13 @@ body, .ant-menu, .ant-form label, .ant-input, .ant-select, .ant-table,
 /* user쪽 css 주석 달기 */
 .urm-editor .user-input {
   width: 230px;
+}
+
+/* IE9, IE10, IE10+ */
+@media screen and (min-width:0\0) {
+//, @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  /* menu */
+  .urm-menu div.urm-logo a {
+    margin-top: 12px;
+  }
 }

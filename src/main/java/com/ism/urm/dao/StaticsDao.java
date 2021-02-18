@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.Session;
-import org.hibernate.transform.Transformers;
 
 import com.ism.urm.vo.statics.RequestChangeCount;
 import com.ism.urm.vo.statics.RequestProcessCount;
-import com.ism.urm.vo.statics.Statics;
 
 public class StaticsDao {
 
@@ -80,7 +78,8 @@ public class StaticsDao {
                 "  AND IF_TYPE like DECODE(:interfaceType,    NULL,'%%', :interfaceType) " +
                 "  AND CHG_STAT <> '4' AND DEL_YN <> 'Y' " +
                 "GROUP BY TO_CHAR(CHG_DATE, 'YYYY-MM-DD')    , 100 " +
-                "ORDER BY align, chgDate" +
+//                "ORDER BY align, chgDate" +
+                "ORDER BY chgDate" +
                 ")");
             
             List<Object[]> list = session.createSQLQuery(sb.toString()).setString("startDate", map.get("startDate"))
@@ -116,7 +115,8 @@ public class StaticsDao {
                 "  AND IF_TYPE like DECODE(:interfaceType,    NULL,'%%', :interfaceType) " +
                 "  AND CHG_STAT <> '4' AND DEL_YN <> 'Y' " +
                 "GROUP BY TO_CHAR(CHG_DATE, 'YYYY-MM')    , 100 " +
-                "ORDER BY align, chgDate" +
+//                "ORDER BY align, chgDate" +
+                "ORDER BY chgDate" +
                 ")");
                     
             List<Object[]> list = session.createSQLQuery(sb.toString()).setString("startDate", map.get("startDate"))
@@ -210,62 +210,38 @@ public class StaticsDao {
                     "  GROUP BY 'TOTAL' " +
                     "UNION ALL SELECT " +
                     "    TO_CHAR(CHG_DATE, 'YYYY-MM') as chgDate, ");
-                sb.append(field);
-                sb.append("WHERE TO_CHAR(CHG_DATE, 'YYYYMM') BETWEEN :startDate and :endDate " +
-                    "GROUP BY TO_CHAR(CHG_DATE, 'YYYY-MM')    , 100 " +
-                    "ORDER BY chgDate");
-                
-                List<Object[]> list = session.createSQLQuery(sb.toString()).setString("startDate", map.get("startDate"))
-                       .setString("endDate", map.get("endDate"))
-                       .list();
-                for (Object[] o : list) {
-                    RequestChangeCount rpc = new RequestChangeCount();
-                    rpc.setChgDate((String) o[0]);
-                    rpc.setStat1(((BigDecimal)o[1]).intValue());
-                    rpc.setStat1o(((BigDecimal)o[2]).intValue());
-                    rpc.setStat1b(((BigDecimal)o[3]).intValue());
-                    rpc.setStat1d(((BigDecimal)o[4]).intValue());
-                    rpc.setStat2(((BigDecimal)o[5]).intValue());
-                    rpc.setStat2o(((BigDecimal)o[6]).intValue());
-                    rpc.setStat2b(((BigDecimal)o[7]).intValue());
-                    rpc.setStat2d(((BigDecimal)o[8]).intValue());
-                    rpc.setStat3(((BigDecimal)o[9]).intValue());
-                    rpc.setStat3o(((BigDecimal)o[10]).intValue());
-                    rpc.setStat3b(((BigDecimal)o[11]).intValue());
-                    rpc.setStat3d(((BigDecimal)o[12]).intValue());
-                    rpc.setStat4(((BigDecimal)o[13]).intValue());
-                    rpc.setStat4o(((BigDecimal)o[14]).intValue());
-                    rpc.setStat4b(((BigDecimal)o[15]).intValue());
-                    rpc.setStat4d(((BigDecimal)o[16]).intValue());
-                    rpc.setCount(((BigDecimal)o[17]).intValue());
-                    rtn.add(rpc);
-                }
+            sb.append(field);
+            sb.append("WHERE TO_CHAR(CHG_DATE, 'YYYYMM') BETWEEN :startDate and :endDate " +
+                "GROUP BY TO_CHAR(CHG_DATE, 'YYYY-MM')    , 100 " +
+                "ORDER BY chgDate");
+            
+            List<Object[]> list = session.createSQLQuery(sb.toString()).setString("startDate", map.get("startDate"))
+                   .setString("endDate", map.get("endDate"))
+                   .list();
+            for (Object[] o : list) {
+                RequestChangeCount rpc = new RequestChangeCount();
+                rpc.setChgDate((String) o[0]);
+                rpc.setStat1(((BigDecimal)o[1]).intValue());
+                rpc.setStat1o(((BigDecimal)o[2]).intValue());
+                rpc.setStat1b(((BigDecimal)o[3]).intValue());
+                rpc.setStat1d(((BigDecimal)o[4]).intValue());
+                rpc.setStat2(((BigDecimal)o[5]).intValue());
+                rpc.setStat2o(((BigDecimal)o[6]).intValue());
+                rpc.setStat2b(((BigDecimal)o[7]).intValue());
+                rpc.setStat2d(((BigDecimal)o[8]).intValue());
+                rpc.setStat3(((BigDecimal)o[9]).intValue());
+                rpc.setStat3o(((BigDecimal)o[10]).intValue());
+                rpc.setStat3b(((BigDecimal)o[11]).intValue());
+                rpc.setStat3d(((BigDecimal)o[12]).intValue());
+                rpc.setStat4(((BigDecimal)o[13]).intValue());
+                rpc.setStat4o(((BigDecimal)o[14]).intValue());
+                rpc.setStat4b(((BigDecimal)o[15]).intValue());
+                rpc.setStat4d(((BigDecimal)o[16]).intValue());
+                rpc.setCount(((BigDecimal)o[17]).intValue());
+                rtn.add(rpc);
+            }
         }
         return rtn;
     }
-
-//    public List<Statics> staticsPrcStatOfDay(Map<String, String> map) {
-//        
-//        return getSqlMapClientTemplate().queryForList("RequestStatics.prcStatOfDay", map);
-//    }
-//
-//    public List<Statics> staticsPrcStatOfMonth(Map<String, String> map) {
-//        
-//        return getSqlMapClientTemplate().queryForList("RequestStatics.prcStatOfMonth", map);
-//    }
-//
-//    public List<Statics> staticsIfTypeOfDay(Map<String, String> map) {
-//        
-//        return getSqlMapClientTemplate().queryForList("RequestStatics.ifTypeOfDay", map);
-//    }
-//
-//    public List<Statics> staticsIfTypeOfMonth(Map<String, String> map) {
-//        
-//        return getSqlMapClientTemplate().queryForList("RequestStatics.ifTypeOfMonth", map);
-//    }
-//
-//    public List<Statics> staticsJobType() {
-//        return getSqlMapClientTemplate().queryForList("RequestStatics.jobType");
-//    }
 
 }

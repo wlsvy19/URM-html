@@ -4,10 +4,10 @@
 
 <hibernate-mapping>
     <class name="com.ism.urm.vo.manage.Auth" table="TB_USR_AUTH" entity-name="AUTH">
-    <id name="id" type="string">
-        <column name="AUTH_ID" /> <!-- pk -->
-        <generator class="assigned" />
-    </id>
+        <id name="id" type="string">
+            <column name="AUTH_ID" /> <!-- pk -->
+            <generator class="assigned" />
+        </id>
         <property name="name" type="string" column="AUTH_NM" />
     </class> 
 </hibernate-mapping>

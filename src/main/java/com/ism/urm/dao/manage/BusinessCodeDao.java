@@ -34,4 +34,11 @@ public class BusinessCodeDao extends BasicDao<BusinessCode>{
         session.createQuery("delete from " + entityName + " a where a.id = :id")
                .setString("id", id).executeUpdate();
     }
+
+    public int getInfluence(Session session, String id) throws Exception {
+        String hql = "select count(*) from REQUEST a"
+                + " where a.sendJobCodeId = :bizId or a.rcvJobCodeId = :bizId";
+        int res = ((Number) session.createQuery(hql).setString("bizId", id).uniqueResult()).intValue();
+        return res;
+    }
 }

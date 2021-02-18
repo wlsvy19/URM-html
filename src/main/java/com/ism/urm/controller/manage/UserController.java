@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ism.urm.service.manage.UserService;
+import com.ism.urm.vo.JobResult;
 import com.ism.urm.vo.RelationOp;
 import com.ism.urm.vo.RelationOp.OpType;
 import com.ism.urm.vo.RelationOp.ValueType;
@@ -31,7 +32,7 @@ public class UserController {
         try{
             rtn = service.idCheck(userID);
         }catch(Exception e) {
-            
+            throw e;
         }
         return rtn;
     }
@@ -62,7 +63,7 @@ public class UserController {
         try {
             rtn = service.search(filter);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }
         return rtn;
     }
@@ -72,9 +73,6 @@ public class UserController {
         User rtn = null;
         try {
             rtn = service.get(id);
-            if (rtn.getId().equals("")) {
-
-            }
         } catch (Exception e) {
             throw e;
         }
@@ -88,6 +86,17 @@ public class UserController {
             rtn = service.save(user);
         } catch (Exception e) {
             throw e;
+        }
+        return rtn;
+    }
+
+    @PostMapping("/user/delete")
+    public JobResult delete(@RequestBody List<String> ids) {
+        JobResult rtn = null;
+        try {
+            rtn = service.delete(ids);
+        } catch (Exception e) {
+            rtn = new JobResult(99, e.getMessage());
         }
         return rtn;
     }

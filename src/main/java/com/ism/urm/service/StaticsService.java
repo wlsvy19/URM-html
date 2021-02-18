@@ -39,7 +39,7 @@ public class StaticsService {
         }
     }
     
-    public List<RequestChangeCount> getRequestChangeCount(int type, Map params) throws Exception {
+    public List<RequestChangeCount> getRequestChangeCount(int type, Map<String, String> params) throws Exception {
         Session session = null;
         try {
             session = sessionFactory.openSession();
@@ -52,69 +52,5 @@ public class StaticsService {
             if (session != null) try { session.close(); } catch (Exception ignore) { }
         }
     }
-    
-    
-//    public List<Statics> getPrcStatOfDay(Map params) throws Exception {
-//            
-//        debug.info("StaticsService.getPrcStatOfDay() call.");
-//
-//        if(params == null || params.size() == 0 ) throw new NotFoundRequestException("Exception:Argment params is null");
-//        try{
-//            return staticsDao.staticsPrcStatOfDay(params);
-//        }catch(Exception e){
-//            debug.fatal("",e);
-//            throw e;
-//        }
-//    }
-//
-//    public List<Statics> getPrcStatOfMonth(Map params) throws Exception {
-//        
-//        debug.info("StaticsService.getPrcStatOfMonth() call.");
-//
-//        if(params == null || params.size() == 0 ) throw new NotFoundRequestException("Exception:Argment params is null");
-//        try{
-//            return staticsDao.staticsPrcStatOfMonth(params);
-//        }catch(Exception e){
-//            debug.fatal("",e);
-//            throw e;
-//        }
-//    }
-//    
-//    public List<Statics> getIfTypeOfDay(Map params) throws Exception {
-//        
-//        debug.info("StaticsService.getIfTypeOfDay() call.");
-//
-//        if(params == null || params.size() == 0 ) throw new NotFoundRequestException("Exception:Argment params is null");
-//        try{
-//            return staticsDao.staticsIfTypeOfDay(params);
-//        }catch(Exception e){
-//            debug.fatal("",e);
-//            throw e;
-//        }
-//    }
-//    
-//    public List<Statics> getIfTypeOfMonth(Map params) throws Exception {
-//        
-//        debug.info("StaticsService.getIfTypeOfMonth() call.");
-//
-//        if(params == null || params.size() == 0 ) throw new NotFoundRequestException("Exception:Argment params is null");
-//        try{
-//            return staticsDao.staticsIfTypeOfMonth(params);
-//        }catch(Exception e){
-//            debug.fatal("",e);
-//            throw e;
-//        }
-//    }
-//    
-//    
-//    public List<Statics> getJobType() throws Exception {
-//        
-//        debug.info("StaticsService.getJobType() call.");
-//        try{
-//            return staticsDao.staticsJobType();
-//        }catch(Exception e){
-//            debug.fatal("",e);
-//            throw e;
-//        }
-//    }
+
 }
