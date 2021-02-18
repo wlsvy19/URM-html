@@ -356,7 +356,7 @@ class RequestList extends RuleList {
           <Table.Column title={locale['label.targetMethod']} dataIndex="rcvSystemType" width="85px" render={(val) => ( this.method.getTypeStr('sysType', val) )}/>
           <Table.Column title={locale['label.sourceSystem']} dataIndex="sendSystem.name" width="110px" ellipsis />
           <Table.Column title={locale['label.targetSystem']} dataIndex="rcvSystem.name" width="110px" ellipsis />
-          <Table.Column title={locale['label.lastChangeDate']} dataIndex="chgDate" width="150px" render={(val) => ( moment(val).format('YYYY-MM-DD HH:mm') )}/>/>
+          <Table.Column title={locale['label.lastChangeDate']} dataIndex="chgDate" width="150px" render={(val) => ( moment(val).format('YYYY-MM-DD HH:mm') )}/>
           <Table.Column className="operations" width="115px" render={(val) =>
             (<div>
               <Button icon="edit" onClick={e => { this.method.clickEdit(val.id) }} title={locale['label.modify']} />

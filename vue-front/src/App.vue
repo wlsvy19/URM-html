@@ -37,11 +37,6 @@ export default {
   margin: 0 30px;
   min-width: 1300px;
 }
-.urm-header {
-  margin-top: 10px;
-  padding-left: 10px;
-  font-weight: bold;
-}
 
 .advanced-search-bar, .search-bar {
   border: 1px solid #aab3b3;
@@ -52,19 +47,56 @@ export default {
   width: 180px;
 }
 
+.advanced-search-bar .el-form-item__label {
+  width: 135px;
+}
+.advanced-search-bar .search-id {
+  width: 140px;
+}
+.advanced-search-bar .search-check {
+  margin-left: 15px;
+}
+.advanced-search-bar .search-check .el-form-item__label {
+  width: 65px;
+}
+
 .search-bar {
   display: flex;
+  padding: 5px;
 }
 .search-bar .search-id {
   width: 135px;
+}
+.search-bar .el-form-item--small.el-form-item {
+  margin-bottom: 0;
 }
 
 .search-buttons {
   margin-left: auto;
   margin-right: 8px;
 }
+.search-buttons .el-button--small {
+  margin: 0;
+}
 
 .urm-list .table-striped {
   margin-top: 10px;
+}
+.urm-list .operations .el-button--small {
+  margin: 0;
+}
+
+.el-menu-item, .el-table--small,
+.el-form-item__label, .el-input--small, .el-button--small {
+  font-size: 16px;
+}
+
+.el-table table.el-table__body td.edit-cell {
+  padding: 0;
+}
+
+.el-table table.el-table__body td.edit-cell .cell {
+  padding-right: 1px;
+  padding-left: 1px;
 }
 </style>

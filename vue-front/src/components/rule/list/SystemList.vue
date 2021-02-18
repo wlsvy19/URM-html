@@ -54,7 +54,7 @@
 import RuleList from './RuleList'
 
 export default {
-  mixin: [RuleList],
+  mixins: [RuleList],
   data () {
     return {
       sparam: {

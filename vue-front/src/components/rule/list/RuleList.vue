@@ -12,15 +12,19 @@ export default {
         id: '',
         name: '',
       },
-      pageList: {},
+      items: [],
     }
   },
 
   methods: {
     search () {
-      /*const loading = this.$startLoading()
-      console.log('search : ' + this.pageUrl, this.sparam)
-      this.$http.get(this.pageUrl, {
+      //const loading = this.$startLoading()
+      console.log('search : ' + this.path, this.sparam)
+      this.items = [{
+        id: 'test',
+        name: 'test',
+      }]
+      /*this.$http.get(this.pageUrl, {
         params: this.sparam,
       }).then(response => {
         this.pageList = response.data
@@ -31,13 +35,18 @@ export default {
       })*/
     },
 
-    clickEdit () {
-      console.log('edit')
+    clickEdit (id) {
+      this.$emit('edit', id)
     },
 
-    clickDelete () {
-      console.log('delete')
+    clickDelete (id) {
+      console.log('delete', id)
     },
+
+    getTypeStr (key, val) {
+      console.log(key, val)
+      return val
+    }
   }, // methods
 
   mounted () {

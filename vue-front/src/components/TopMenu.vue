@@ -3,6 +3,7 @@
     <el-menu :default-active="activePage" mode="horizontal" @select="handleSelect">
       <el-menu-item index="main"><img src="@/assets/logo.gif"/></el-menu-item>
       <el-menu-item index="data">{{$t('urm.data')}}</el-menu-item>
+      <el-menu-item index="system">{{$t('urm.system')}}</el-menu-item>
     </el-menu>
   </div>
 </template>

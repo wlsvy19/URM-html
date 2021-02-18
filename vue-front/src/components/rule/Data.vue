@@ -1,6 +1,6 @@
 <template>
   <div class="urm-panel">
-    <DataList/>
+    <DataList ref="list" @edit="handleEdit"/>
   </div>
 </template>
 
@@ -9,5 +9,10 @@ import RuleMain from './RuleMain'
 
 export default {
   mixins: [RuleMain],
+  data () {
+    return {
+      path: 'data',
+    }
+  },
 }
 </script>
