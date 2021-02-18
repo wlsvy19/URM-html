@@ -1,16 +1,18 @@
 <template>
   <div id="app">
-    <Data/>
+    <System/>
   </div>
-</template>
+</template> 
 
 <script>
-import Data from './components/rule/Data'
+// import Data from './components/rule/Data'
+import System from './components/rule/System'
 
 export default {
   name: 'App',
   components: {
-    Data,
+    // Data,
+    System,
   }
 }
 </script>
