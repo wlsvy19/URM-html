@@ -25,7 +25,7 @@ class AuthContainer extends React.Component {
       let { logged, userInfo, login, logout } = this.props
       login({id: 'eai', name: 'eai', authId: '0'})
       
-      urmsc.ajax({
+      /*urmsc.ajax({
         type: 'POST',
         url: '/URM/check/login',
         contentType: 'application/json; charset=UTF-8',
@@ -51,7 +51,7 @@ class AuthContainer extends React.Component {
             }
           }
         }
-      })
+      })*/
     }
   }
 

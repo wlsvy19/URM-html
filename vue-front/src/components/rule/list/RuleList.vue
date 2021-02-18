@@ -1,6 +1,6 @@
 <script>
 export default {
-  prop: {
+  props: {
     onlySearch: {
       type: Boolean,
       default: false,
@@ -9,12 +9,39 @@ export default {
   data () {
     return {
       sparam: {
-        page: 1,
-        size: 30,
         id: '',
         name: '',
-      }
+      },
+      pageList: {},
     }
-  }
+  },
+
+  methods: {
+    search () {
+      /*const loading = this.$startLoading()
+      console.log('search : ' + this.pageUrl, this.sparam)
+      this.$http.get(this.pageUrl, {
+        params: this.sparam,
+      }).then(response => {
+        this.pageList = response.data
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })*/
+    },
+
+    clickEdit () {
+      console.log('edit')
+    },
+
+    clickDelete () {
+      console.log('delete')
+    },
+  }, // methods
+
+  mounted () {
+    this.search()
+  },
 }
 </script>

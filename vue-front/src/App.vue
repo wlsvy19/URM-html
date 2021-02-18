@@ -1,17 +1,26 @@
 <template>
   <div id="app">
-    <Data/>
+    <TopMenu/>
+    <div>
+      <keep-alive>
+        <router-view/>
+      </keep-alive>
+    </div>
   </div>
 </template>
 
 <script>
-import Data from './components/rule/Data'
+import TopMenu from '@/components/TopMenu'
 
 export default {
   name: 'App',
   components: {
-    Data,
-  }
+    TopMenu,
+  },
+
+  created () {
+    this.$reloadConfig()
+  },
 }
 </script>
 
@@ -24,7 +33,38 @@ export default {
   color: #2c3e50;
 }
 
+.urm-panel {
+  margin: 0 30px;
+  min-width: 1300px;
+}
+.urm-header {
+  margin-top: 10px;
+  padding-left: 10px;
+  font-weight: bold;
+}
+
+.advanced-search-bar, .search-bar {
+  border: 1px solid #aab3b3;
+  margin-top: 10px;
+  background-color: #e6f7ff;
+}
+.advanced-search-bar .search-name, .search-bar .search-name {
+  width: 180px;
+}
+
 .search-bar {
   display: flex;
+}
+.search-bar .search-id {
+  width: 135px;
+}
+
+.search-buttons {
+  margin-left: auto;
+  margin-right: 8px;
+}
+
+.urm-list .table-striped {
+  margin-top: 10px;
 }
 </style>

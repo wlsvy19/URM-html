@@ -1,0 +1,27 @@
+{
+  "label": {
+    "main": "EAI 요건관리",
+    "save": "저장",
+    "cancel": "취소",
+    "list": "목록",
+    "add": "등록",
+    "delete": "삭제",
+    "search": "검색",
+
+    "id": "ID",
+    "name": "이름",
+
+    "dataId": "DATA ID",
+    "dataName": "DATA 명",
+    "dataType": "DATA 타입",
+    
+    "registId": "등록자",
+    "registDate": "등록일시"
+  },
+  "message": {
+    
+  },
+  "urm": {
+    "data": "데이터 관리"
+  }
+}
