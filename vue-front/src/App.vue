@@ -86,6 +86,18 @@ export default {
   margin: 0;
 }
 
+.urm-editor > .editor-buttons {
+  text-align: right;
+  margin-top: 5px;
+}
+.urm-editor .size-id {
+  width: 175px;
+}
+.urm-editor .size-name {
+  width: 220px;
+}
+
+
 .el-menu-item, .el-table--small,
 .el-form-item__label, .el-input--small, .el-button--small {
   font-size: 16px;

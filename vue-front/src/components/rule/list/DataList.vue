@@ -22,7 +22,8 @@
       </div>
     </div>
 
-    <el-table :data="items" border class="table-striped">
+    <el-table :data="items" :height="listHeight" border class="table-striped">
+      <el-table-column type="selection" width="40"/>
       <el-table-column :label="$t('label.id')" prop="id" width="150"/>
       <el-table-column :label="$t('label.name')" prop="name"/>
       <el-table-column :label="$t('label.dataType')" width="100">

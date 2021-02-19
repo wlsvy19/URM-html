@@ -35,5 +35,11 @@ export default {
     }
     console.log('mounted TopMenu')
   }, // mounted
+
+  computed: {
+    hasAuth: function () {
+      return true
+    }
+  },
 }
 </script>

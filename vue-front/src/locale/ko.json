@@ -7,6 +7,7 @@
     "add": "등록",
     "delete": "삭제",
     "search": "검색",
+    "index": "INDEX",
 
     "id": "ID",
     "name": "이름",
@@ -14,12 +15,24 @@
     "dataId": "DATA ID",
     "dataName": "DATA 명",
     "dataType": "DATA 타입",
+    "dFormat": "날짜포멧",
+    "fieldId": "필드 ID",
+    "fieldName": "영문필드명",
+    "fieldLocalName": "한글필드명",
+    "fieldType": "필드유형",
+    "len": "길이",
+    "nullable": "널가능",
+    "isKey": "키값여부",
+    "isSQL": "SQL함수여부",
     
     "registId": "등록자",
     "registDate": "등록일시"
   },
   "message": {
-    
+    "0001": "정상적으로 저장되었습니다.",
+
+    "1003": "이름을 입력하세요.",
+    "1004": "선택된 아이템이 없습니다."
   },
   "urm": {
     "data": "데이터 관리",

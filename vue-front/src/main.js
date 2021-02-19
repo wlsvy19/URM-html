@@ -12,7 +12,6 @@ import ElementLocale from 'element-ui/lib/locale'
 
 import koMessage from './locale/ko.json'
 
-
 import App from '@/App.vue'
 import router from '@/router'
 
@@ -43,8 +42,8 @@ ElementLocale.i18n((key, value) => i18n.t(key, value))
 
 const store = new Vuex.Store({
   state: {
-    config: {
-    },
+    codes: [],
+    auths: [],
   },
 })
 
@@ -73,11 +72,6 @@ Vue.prototype.$handleHttpError = function (err) {
   }
 } // $handleHttpError
 
-Vue.prototype.$randomRowKey = function (row) {
-  row.__randomKey__ = row.__randomKey__ || Math.random()
-  return row.__randomKey__
-} // $randomRowKey
-
 Vue.prototype.$startLoading = function () {
   const loading = this.$loading({
     lock: true,
@@ -89,29 +83,26 @@ Vue.prototype.$startLoading = function () {
 } // $startLoading
 
 Vue.prototype.$reloadConfig = function () {
+  console.log('reload config')
   // set locale
   this.$i18n.locale = 'ko'
 
-  //let url = '/api/code'
+  let url = '/api/code'
   // set common
-  /*this.$http.get(url + '/common', {
+  this.$http.get(url + '/common', {
   }).then(response => {
-    let codes = response.data
-    this.$store.state.codes = codes
-    console.log('reload config')
+    this.$store.state.codes = response.data
   }).catch(error => {
     throw error
-  })*/
+  })
 
   // set auth
-  /*this.$http.get(url + '/common', {
+  this.$http.get(url + '/auth', {
   }).then(response => {
-    let auths = response.data
-    this.$store.state.auths = auths
-    console.log('reload config')
+    this.$store.state.auths = response.data
   }).catch(error => {
     throw error
-  })*/
+  })
 } // reloadConfig
 
 new Vue({
