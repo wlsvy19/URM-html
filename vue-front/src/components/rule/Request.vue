@@ -1,6 +1,6 @@
 <template>
   <div class="urm-panel">
-    <SystemList ref="list" @edit="handleEdit"/>
+    <RequestList ref="list" @edit="handleEdit"/>
   </div>
 </template> 
 
@@ -11,7 +11,7 @@ export default {
   mixins: [RuleMain],
   data () {
     return {
-      path: 'system',
+      path: 'request',
     }
   },
 }
