@@ -57,6 +57,7 @@ export default {
   data () {
     return {
       path: 'data',
+      listHeight: 'calc(100vh - 165px)',
       sparam: {
         ...this.sparam,
         type: '',

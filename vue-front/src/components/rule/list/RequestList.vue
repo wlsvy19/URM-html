@@ -1,8 +1,8 @@
 <template>
   <div class="urm-list">
-    <div class="search-bar">
-      <div style="">
-        <el-form :inline="true">
+    <div class="advanced-search-bar">
+      <el-form label-width="135px">
+        <div class="row">
           <el-form-item :label="$t('label.interfaceId')">
             <el-input v-model="sparam.id" class="search-id"/>
           </el-form-item>
@@ -18,10 +18,8 @@
           <el-form-item :label="$t('label.requestName')">
             <el-input v-model="sparam.id" class="search-id"/>
           </el-form-item>
-        </el-form>
-      </div>
-      <div style="">
-        <el-form :inline="true">
+        </div>
+        <div class="row">
           <el-form-item :label="$t('label.sourceSystem')">
             <el-input v-model="sparam.id" class="search-id"/>
           </el-form-item>
@@ -40,10 +38,8 @@
               <!--processStatus options-->
             </el-select>
           </el-form-item>
-        </el-form>
-      </div>
-      <div style="">
-        <el-form :inline="true">
+        </div>
+        <div class="row">
           <el-form-item :label="$t('label.targetSystem')">
             <el-input v-model="sparam.id" class="search-id"/>
           </el-form-item>
@@ -62,8 +58,8 @@
           <el-form-item label="수신자">
             <el-checkbox/>
           </el-form-item>
-        </el-form>
-      </div>
+        </div>
+      </el-form>
     </div>
 
     <el-table :data="items" border class="table-striped">
@@ -105,6 +101,19 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+.advanced-search-bar {
+  border: 1px solid #aab3b3;
+  margin-top: 10px;
+  background-color: #e6f7ff;
+}
+.advanced-search-bar .search-name {
+  width: 180px;
+}
+.advanced-search-bar .search-id {
+  width: 140px;
+}
+.advanced-search-bar .search-check {
+  margin-left: 15px;
+}
 </style>

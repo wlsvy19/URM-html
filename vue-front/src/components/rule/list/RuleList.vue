@@ -10,7 +10,6 @@ export default {
   },
   data () {
     return {
-      listHeight: 'calc(100vh - 270px)',
       sparam: {
         id: '',
         name: '',

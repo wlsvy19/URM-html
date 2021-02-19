@@ -33,39 +33,27 @@ export default {
   color: #2c3e50;
 }
 
+div.row {
+  display: flex;
+}
+
 .urm-panel {
   margin: 0 30px;
   min-width: 1300px;
 }
 
-.advanced-search-bar, .search-bar {
+.search-bar {
   border: 1px solid #aab3b3;
   margin-top: 10px;
   background-color: #e6f7ff;
-}
-.advanced-search-bar .search-name, .search-bar .search-name {
-  width: 180px;
-}
-
-.advanced-search-bar .el-form-item__label {
-  width: 135px;
-}
-.advanced-search-bar .search-id {
-  width: 140px;
-}
-.advanced-search-bar .search-check {
-  margin-left: 15px;
-}
-.advanced-search-bar .search-check .el-form-item__label {
-  width: 65px;
-}
-
-.search-bar {
   display: flex;
   padding: 5px;
 }
 .search-bar .search-id {
   width: 135px;
+}
+.search-bar .search-name {
+  width: 180px;
 }
 .search-bar .el-form-item--small.el-form-item {
   margin-bottom: 0;
