@@ -12,13 +12,13 @@
           <el-input v-model="sparam.name" class="search-id"/>
         </el-form-item>
         <el-form-item :label="$t('label.systemType')">
-          <el-select v-model="sparam.type">
-            <el-option value="" label="All" class="search-id"/>
+          <el-select v-model="sparam.type" class="search-id">
+            <el-option value="" label="All"/>
             <!--systemType options-->
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('label.devType')" class="search-buttons">
-          <el-select v-model="sparam.type">
+        <el-form-item :label="$t('label.devType')">
+          <el-select v-model="sparam.type" class="search-id">
             <el-option value="" label="All"/>
             <!--devType options-->
           </el-select>
@@ -31,15 +31,28 @@
       </div>
     </div>
     
-    <el-table :data="items" border class="table-striped">
-      <el-table-column :label="$t('label.systemId')" prop="id" width="130"/>
+    <el-table :data="items" :height="listHeight" border class="table-striped">
+      <el-table-column type="selection" width="40"/>
+      <el-table-column :label="$t('label.systemId')" prop="id" width="144"/>
       <el-table-column :label="$t('label.systemName')" prop="name"/>
-      <el-table-column :label="$t('label.systemType')" prop="type" width="110"/>
-      <el-table-column :label="$t('label.devType')" prop="devType" width="90"/>
+      <el-table-column :label="$t('label.systemType')" width="110">
+        <template slot-scope="scope">
+          <span>{{getTypeStr('sysType', scope.row.type)}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('label.devType')" prop="devType" width="90">
+        <template slot-scope="scope">
+          <span>{{getTypeStr('devType', scope.row.type)}}</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('label.host')" prop="hostId" width="165"/>
       <el-table-column :label="$t('label.ip')" prop="ip" width="165"/>
       <el-table-column :label="$t('label.port')" prop="port" width="85"/>
-      <el-table-column :label="$t('label.dbType')" prop="dbType" width="95"/>
+      <el-table-column :label="$t('label.dbType')" prop="dbType" width="110">
+        <template slot-scope="scope">
+          <span>{{getTypeStr('dbType', scope.row.type)}}</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('label.dbName')" prop="dbName" width="165"/>
       <el-table-column width="150" class-name="edit-cell operations">
         <template slot-scope="scope">
@@ -62,6 +75,7 @@ export default {
   data () {
     return {
       path: 'system',
+      listHeight: 'calc(100vh - 165px)',
       sparam: {
         ...this.sparam,
         type: '',
