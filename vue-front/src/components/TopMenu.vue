@@ -5,6 +5,10 @@
       <el-menu-item index="request">{{$t('urm.request')}}</el-menu-item>
       <el-menu-item index="data">{{$t('urm.data')}}</el-menu-item>
       <el-menu-item index="system">{{$t('urm.system')}}</el-menu-item>
+      <el-submenu index="Manage">
+        <template slot="title">{{$t('urm.manage')}}</template>
+        <el-menu-item index="user">{{$t('urm.user')}}</el-menu-item>
+      </el-submenu>
     </el-menu>
   </div>
 </template>

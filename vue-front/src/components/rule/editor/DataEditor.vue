@@ -26,66 +26,19 @@
           <el-button icon="el-icon-remove-outline" @click.stop="clickRemove" type="danger" plain/>
         </div>
       </div>
-      <el-table ref="fieldTable" :data="item.fields" border class="table-striped">
-        <el-table-column type="selection" width="40"/>
-        <el-table-column :label="$t('label.index')" prop="sno" width="70" align="center"/>
-        <el-table-column :label="$t('label.fieldName')" width="150" class-name="edit-cell">
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.engName"/>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('label.fieldLocalName')" width="150" class-name="edit-cell">
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.name"/>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('label.fieldType')" width="120" class-name="edit-cell">
-          <template slot-scope="scope">
-            <el-select v-model="scope.row.type">
-              <el-option value="C" label="Character"/>
-              <el-option value="N" label="Number"/>
-              <el-option value="D" label="Date"/>
-              <el-option value="B" label="Binary"/>
-            </el-select>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('label.dFormat')" class-name="edit-cell">
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.dateFormat"/>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('label.len')" width="70" class-name="edit-cell">
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.length"/>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('label.nullable')" width="75" class-name="edit-cell">
-          <template slot-scope="scope">
-            <YesNoSelect :data="scope.row.nullable"/>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('label.isKey')" width="85" class-name="edit-cell">
-          <template slot-scope="scope">
-            <YesNoSelect :data="scope.row.keyYN"/>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('label.isSQL')" width="120" class-name="edit-cell">
-          <template slot-scope="scope">
-            <YesNoSelect :data="scope.row.sqlYN"/>
-          </template>
-        </el-table-column>
-      </el-table>
+      <FieldTable ref="fieldTable" :data="item.fields"/>
     </div>
   </div>
 </template>
 <script>
 import RuleEditor from './RuleEditor'
-import YesNoSelect from './YesNoSelect'
+
+import FieldTable from './data/FieldTable'
 
 export default {
   mixins: [RuleEditor],
   components: {
-    YesNoSelect,
+    FieldTable,
   },
   data () {
     return {

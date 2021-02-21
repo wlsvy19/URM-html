@@ -13,14 +13,14 @@
         </el-form-item>
         <el-form-item :label="$t('label.systemType')">
           <el-select v-model="sparam.type" class="search-id">
-            <el-option value="" label="All"/>
-            <!--systemType options-->
+            <el-option value="" label="ALL"/>
+            <el-option v-for="type in sysTypes" :value="type.code" :label="type.name" :key="type.code"/>
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('label.devType')">
-          <el-select v-model="sparam.type" class="search-id">
-            <el-option value="" label="All"/>
-            <!--devType options-->
+          <el-select v-model="sparam.devType" class="search-id">
+            <el-option value="" label="ALL"/>
+            <el-option v-for="type in devTypes" :value="type.code" :label="type.name" :key="type.code"/>
           </el-select>
         </el-form-item>
       </el-form>
@@ -31,35 +31,34 @@
       </div>
     </div>
     
-    <el-table :data="items" :height="listHeight" border class="table-striped">
+    <el-table ref="table" :data="items" :height="listHeight" border class="table-striped">
       <el-table-column type="selection" width="40"/>
-      <el-table-column :label="$t('label.systemId')" prop="id" width="144"/>
+      <el-table-column :label="$t('label.systemId')" prop="id" width="130"/>
       <el-table-column :label="$t('label.systemName')" prop="name"/>
-      <el-table-column :label="$t('label.systemType')" width="110">
+      <el-table-column :label="$t('label.systemType')" width="100">
         <template slot-scope="scope">
           <span>{{getTypeStr('sysType', scope.row.type)}}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('label.devType')" prop="devType" width="90">
+      <el-table-column :label="$t('label.devType')" width="90">
         <template slot-scope="scope">
-          <span>{{getTypeStr('devType', scope.row.type)}}</span>
+          <span>{{getTypeStr('devType', scope.row.devType)}}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('label.host')" prop="hostId" width="165"/>
       <el-table-column :label="$t('label.ip')" prop="ip" width="165"/>
       <el-table-column :label="$t('label.port')" prop="port" width="85"/>
-      <el-table-column :label="$t('label.dbType')" prop="dbType" width="110">
+      <el-table-column :label="$t('label.dbType')" width="95">
         <template slot-scope="scope">
-          <span>{{getTypeStr('dbType', scope.row.type)}}</span>
+          <span>{{getTypeStr('dbType', scope.row.dbType)}}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('label.dbName')" prop="dbName" width="165"/>
-      <el-table-column width="150" class-name="edit-cell operations">
+      <el-table-column :label="$t('label.dbName')" prop="dbName" width="155"/>
+      <el-table-column width="100" class-name="edit-cell operations">
         <template slot-scope="scope">
           <div>
             <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
-            <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row.id)"/>
-            <el-button icon="el-icon-connection" @click.stop="clickUsed(scope.row.id)"/>
+            <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row.id)" plain/>
           </div>
         </template>
       </el-table-column>
@@ -69,6 +68,7 @@
 
 <script>
 import RuleList from './RuleList'
+import RuleUtil from '@/components/rule/RuleUtil'
 
 export default {
   mixins: [RuleList],
@@ -79,12 +79,23 @@ export default {
       sparam: {
         ...this.sparam,
         type: '',
+        devType: '',
       },
     }
   },
   methods: {
     clickUsed (id) {
       console.log('used', id)
+    },
+  },
+  computed: {
+    sysTypes: function () {
+      let kind = RuleUtil.CODEKEY.sysType
+      return this.$store.state.codes.filter(code => (code.kind === kind))
+    },
+    devTypes: function () {
+      let kind = RuleUtil.CODEKEY.devType
+      return this.$store.state.codes.filter(code => (code.kind === kind))
     },
   },
 }

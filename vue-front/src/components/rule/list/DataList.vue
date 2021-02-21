@@ -10,8 +10,8 @@
         </el-form-item>
         <el-form-item :label="$t('label.dataType')">
           <el-select v-model="sparam.type" class="search-id">
-            <el-option value="" label="All"/>
-            <!--dataType options-->
+            <el-option value="" label="ALL"/>
+            <el-option v-for="type in dataTypes" :value="type.code" :label="type.name" :key="type.code"/>
           </el-select>
         </el-form-item>
       </el-form>
@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <el-table :data="items" :height="listHeight" border class="table-striped">
+    <el-table ref="table" :data="items" :height="listHeight" border class="table-striped">
       <el-table-column type="selection" width="40"/>
       <el-table-column :label="$t('label.id')" prop="id" width="150"/>
       <el-table-column :label="$t('label.name')" prop="name"/>
@@ -41,7 +41,7 @@
         <template slot-scope="scope">
           <div>
             <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
-            <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row.id)"/>
+            <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row.id)" plain/>
             <el-button icon="el-icon-connection" @click.stop="clickUsed(scope.row.id)"/>
           </div>
         </template>
@@ -51,6 +51,7 @@
 </template>
 <script>
 import RuleList from './RuleList'
+import RuleUtil from '@/components/rule/RuleUtil'
 
 export default {
   mixins: [RuleList],
@@ -67,6 +68,12 @@ export default {
   methods: {
     clickUsed (id) {
       console.log('used', id)
+    }, // clickUsed
+  },
+  computed: {
+    dataTypes: function () {
+      let kind = RuleUtil.CODEKEY.dataType
+      return this.$store.state.codes.filter(code => (code.kind === kind))
     },
   },
 }

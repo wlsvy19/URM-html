@@ -86,9 +86,12 @@ div.row {
 }
 
 
-.el-menu-item, .el-table--small,
-.el-form-item__label, .el-input--small, .el-button--small {
+.el-menu-item {
   font-size: 16px;
+}
+.el-table--small, .el-form-item__label,
+.el-input--small, .el-button--small {
+  font-size: 15px;
 }
 
 .el-table table.el-table__body td.edit-cell {
