@@ -86,7 +86,7 @@ div.row {
 }
 
 
-.el-menu-item {
+.el-menu-item, .el-submenu__title {
   font-size: 16px;
 }
 .el-table--small, .el-form-item__label,
@@ -97,9 +97,20 @@ div.row {
 .el-table table.el-table__body td.edit-cell {
   padding: 0;
 }
-
 .el-table table.el-table__body td.edit-cell .cell {
   padding-right: 1px;
   padding-left: 1px;
+}
+
+.el-pagination {
+  user-select: none;
+  text-align: center;
+}
+div.el-pagination {
+  margin-top: 12px;
+}
+
+button.el-button {
+  padding: 8px 10px;
 }
 </style>

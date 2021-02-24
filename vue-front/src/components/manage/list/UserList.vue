@@ -15,14 +15,14 @@
       <div class="search-buttons">
         <el-button @click="search">{{$t('label.search')}}</el-button>
         <el-button @click="clickEdit()" v-if="!onlySearch">{{$t('label.add')}}</el-button>
-        <el-button @click="clickDelete('selected')" v-if="!onlySearch">{{$t('label.delete')}}</el-button>
+        <el-button @click="clickDelete('selected')" type="danger" v-if="!onlySearch" plain>{{$t('label.delete')}}</el-button>
       </div>
     </div>
 
-    <el-table ref="table" :data="items" :height="listHeight" border class="table-striped">
+    <el-table ref="table" :data="items" @row-dblclick="handleRowDblclick" :height="listHeight" border class="table-striped">
       <el-table-column type="selection" width="40"/>
       <el-table-column :label="$t('label.id')" prop="id" width="145"/>
-      <el-table-column :label="$t('label.name')" prop="name"/>
+      <el-table-column :label="$t('label.name')" prop="name" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.dept')" prop="deptName"/>
       <el-table-column :label="$t('label.position')" prop="positionName"/>
       <el-table-column :label="$t('label.grade')" prop="gradeName"/>
@@ -33,7 +33,7 @@
           <span>{{getAuthStr(scope.row.authId)}}</span>
         </template>
       </el-table-column>
-      <el-table-column width="100" class-name="edit-cell operations">
+      <el-table-column width="85" class-name="edit-cell operations">
         <template slot-scope="scope">
           <div>
             <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
@@ -125,6 +125,10 @@ export default {
         })
       }).catch(() => {})
     }, // clickDelete
+
+    handleRowDblclick (row) {
+      this.$emit('row-dblclick', row)
+    }, // handleRowDblclick
 
     getAuthStr (key) {
       let auths = this.$store.state.auths

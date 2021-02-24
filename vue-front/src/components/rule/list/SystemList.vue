@@ -27,14 +27,14 @@
       <div class="search-buttons">
         <el-button @click="search">{{$t('label.search')}}</el-button>
         <el-button @click="clickEdit()" v-if="!onlySearch">{{$t('label.add')}}</el-button>
-        <el-button @click="clickDelete('selected')" v-if="!onlySearch">{{$t('label.delete')}}</el-button>
+        <el-button @click="clickDelete('selected')" type="danger" v-if="!onlySearch" plain>{{$t('label.delete')}}</el-button>
       </div>
     </div>
     
-    <el-table ref="table" :data="items" :height="listHeight" border class="table-striped">
+    <el-table ref="table" :data="items" @row-dblclick="handleRowDblclick" :height="listHeight" border class="table-striped">
       <el-table-column type="selection" width="40"/>
       <el-table-column :label="$t('label.systemId')" prop="id" width="130"/>
-      <el-table-column :label="$t('label.systemName')" prop="name"/>
+      <el-table-column :label="$t('label.systemName')" prop="name" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.systemType')" width="100">
         <template slot-scope="scope">
           <span>{{getTypeStr('sysType', scope.row.type)}}</span>
@@ -45,16 +45,16 @@
           <span>{{getTypeStr('devType', scope.row.devType)}}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('label.host')" prop="hostId" width="165"/>
-      <el-table-column :label="$t('label.ip')" prop="ip" width="165"/>
+      <el-table-column :label="$t('label.host')" prop="hostId" width="165" :show-overflow-tooltip="true"/>
+      <el-table-column :label="$t('label.ip')" prop="ip" width="165" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.port')" prop="port" width="85"/>
       <el-table-column :label="$t('label.dbType')" width="95">
         <template slot-scope="scope">
           <span>{{getTypeStr('dbType', scope.row.dbType)}}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('label.dbName')" prop="dbName" width="155"/>
-      <el-table-column width="100" class-name="edit-cell operations">
+      <el-table-column :label="$t('label.dbName')" prop="dbName" width="155" :show-overflow-tooltip="true"/>
+      <el-table-column width="85" class-name="edit-cell operations">
         <template slot-scope="scope">
           <div>
             <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
@@ -84,9 +84,6 @@ export default {
     }
   },
   methods: {
-    clickUsed (id) {
-      console.log('used', id)
-    },
   },
   computed: {
     sysTypes: function () {
