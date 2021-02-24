@@ -1,35 +1,19 @@
+<template>
+  <div class="urm-panel">
+    <BizList ref="list" @edit="handleEdit"/>
+  </div>
+</template>
+
 <script>
-import Vue from 'vue'
-
-import DataList from './list/DataList'
-import SystemList from './list/SystemList'
-import RequestList from './list/RequestList'
-
-
-import DataEditor from './editor/DataEditor'
-import SystemEditor from './editor/SystemEditor'
-import RequestEditor from './editor/RequestEditor'
-import UserEditor from '../manage/editor/UserEditor'
-
-
-
-Vue.component('DataList', DataList)
-Vue.component('SystemList', SystemList)
-Vue.component('RequestList', RequestList)
-
-
-Vue.component('DataEditor', DataEditor)
-Vue.component('SystemEditor', SystemEditor)
-Vue.component('RequestEditor', RequestEditor)
-Vue.component('UserEditor', UserEditor)
-
-
+import BizList from './list/BizCodeList'
 
 export default {
+  components: {
+    BizList,
+  },
   data () {
     return {
-      editorShow: false,
-      editorItem: null,
+      path: 'biz',
     }
   },
   methods: {
@@ -39,11 +23,10 @@ export default {
         this.$http.get('/api/' + this.path + '/' + id, {
         }).then(response => {
           this.editorItem = response.data
-          this.initData(this.editorItem)
           this.editorShow = true
         })
       } else {
-        this.editorItem = this.getNewItem()
+        this.editorItem = {}
         this.editorShow = true
       }
     }, // handleEdit
@@ -60,13 +43,16 @@ export default {
         item.id = data.id
         this.updatedItem(item)
       }).catch(error => {
-        this.$handleHttpError(error)
+        this.$message({
+          message: this.$t('message.1001') + '[' + error.response.statusText + ']',
+          type: 'warning',
+        })
       })
     }, // handleSave
 
     updatedItem () {
       this.$refs.list.search()
     }, // updatedItem
-  }
+  },
 }
 </script>
