@@ -1,3 +1,7 @@
 <template>
-  <h1>StaticsDayList</h1>
+  <div class="urm-list">
+    <el-table ref="table" :height="listHeight" border class="table-striped">
+      <el-table-column label="처리날짜 ID" prop="processDate"/>
+    </el-table>
+  </div>
 </template>
