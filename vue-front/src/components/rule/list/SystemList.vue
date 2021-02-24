@@ -9,7 +9,7 @@
           <el-input v-model="sparam.name" class="search-name"/>
         </el-form-item>
         <el-form-item :label="$t('label.host')">
-          <el-input v-model="sparam.name" class="search-id"/>
+          <el-input v-model="sparam.hostId" class="search-id"/>
         </el-form-item>
         <el-form-item :label="$t('label.systemType')">
           <el-select v-model="sparam.type" class="search-id">

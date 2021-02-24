@@ -38,6 +38,10 @@
               <el-option v-for="stat in chgStats" :value="stat.code" :label="stat.name" :key="stat.code"/>
             </el-select>
           </el-form-item>
+          <div class="search-buttons">
+            <el-button @click="clickEdit()" v-if="!onlySearch">{{$t('label.add')}}</el-button>
+            <el-button @click="clickDelete('selected')" v-if="!onlySearch">{{$t('label.delete')}}</el-button>
+          </div>
         </div>
         <div class="row">
           <el-form-item :label="$t('label.targetSystem')">
@@ -58,6 +62,9 @@
           <el-form-item label="수신자">
             <el-checkbox/>
           </el-form-item>
+          <div class="search-buttons">
+            <el-button @click="search">{{$t('label.search')}}</el-button>
+          </div>
         </div>
       </el-form>
     </div>
