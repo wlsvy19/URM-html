@@ -108,7 +108,7 @@
       <el-table-column :label="$t('label.sourceSystem')" prop="sendSystem.name" width="110" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.targetSystem')" prop="rcvSystem.name" width="110" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.lastChangeDate')" prop="chgDate" width="150"/>
-      <el-table-column width="115" class-name="edit-cell operations">
+      <el-table-column width="125" class-name="edit-cell operations">
         <template slot-scope="scope">
           <div>
             <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>

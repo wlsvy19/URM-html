@@ -37,7 +37,7 @@
           <span>{{scope.row.regDate}}</span>
         </template>
       </el-table-column>
-      <el-table-column width="115" class-name="edit-cell operations">
+      <el-table-column width="125" class-name="edit-cell operations">
         <template slot-scope="scope">
           <div>
             <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
