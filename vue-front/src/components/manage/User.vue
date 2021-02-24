@@ -2,7 +2,7 @@
   <div class="urm-panel">
     <UserList ref="list" @edit="handleEdit"/>
 
-    <el-dialog title="Editor" :visible.sync="editorShow" width="1080px">
+    <el-dialog :visible.sync="editorShow" width="875px">
       <UserEditor ref="editor" :item="editorItem" @save="handleSave"/>
     </el-dialog>
   </div>
@@ -19,20 +19,29 @@ export default {
   },
   data () {
     return {
-      path: 'user',
+      editorShow: false,
+      editorItem: null,
     }
   },
   methods: {
+    getNewItem () {
+      return {
+        id: '',
+        authId: '0',
+      }
+    }, // getNewItem
+
     handleEdit (id) {
       console.log('edit', id)
       if (id) {
-        this.$http.get('/api/' + this.path + '/' + id, {
+        this.$http.get('/api/user/' + id, {
         }).then(response => {
           this.editorItem = response.data
+          this.editorItem.password = ''
           this.editorShow = true
         })
       } else {
-        this.editorItem = {}
+        this.editorItem = this.getNewItem()
         this.editorShow = true
       }
     }, // handleEdit
@@ -41,7 +50,7 @@ export default {
       console.log('save', item)
       this.$http({
         method : 'POST',
-        url: '/api/' + this.path,
+        url: '/api/user',
         data: item,
       }).then(response => {
         let data = response.data

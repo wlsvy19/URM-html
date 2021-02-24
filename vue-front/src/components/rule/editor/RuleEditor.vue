@@ -10,13 +10,16 @@ export default {
   },
   methods: {
     clickSave () {
+      if (!this.validator()) {
+        return
+      }
       this.$emit('save', this.item)
     }, // clickSave
 
     validator () {
       let item = this.item
       if (!item.name || item.name.trim().length === 0) {
-        this.$message({type: 'error', message: this.$t('message.1003')})
+        this.$message({message: this.$t('message.1003'), type: 'warning'})
         return false
       }
       if (this.customValidator && !this.customValidator()) {

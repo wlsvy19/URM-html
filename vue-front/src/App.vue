@@ -76,7 +76,8 @@ div.row {
 
 .urm-editor > .editor-buttons {
   text-align: right;
-  margin-top: 5px;
+  margin-top: 10px;
+  margin-right: 20px;
 }
 .urm-editor .size-id {
   width: 175px;
@@ -107,10 +108,26 @@ div.row {
   text-align: center;
 }
 div.el-pagination {
-  margin-top: 12px;
+  margin-top: 15px;
 }
 
 button.el-button {
   padding: 8px 10px;
+}
+
+.el-input .el-input__inner {
+  padding: 0 8px;
+}
+.el-textarea .el-textarea__inner {
+  padding: 5px 8px;
+}
+
+.el-input.is-disabled .el-input__inner {
+    color: #737373;
+    cursor: text !important;
+}
+
+.el-dialog__body {
+  padding-top: 0;
 }
 </style>

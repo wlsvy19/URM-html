@@ -1,7 +1,7 @@
 <template>
   <el-form :inline="true">
     <el-form-item :label="$t('label.fileName')">
-      <el-input v-model="sparam.fileName" class="size-id" readonly/>
+      <input type="file" ref="excelFile" class="size-id" readonly/>
     </el-form-item>
     <el-form-item :label="$t('label.fileSelect')">
       <el-input v-model="sparam.sheetName" class="size-name" readonly/>
@@ -15,15 +15,17 @@
 export default {
   data () {
     return {
-      sparam: {
-        fileName: '',
-        sheetName: '',
-      }
+      sheetName: '',
     }
   },
   methods: {
     getFields () {
-      this.$emit('get', this.sparam)
+      let files = this.$refs.excelFile.files
+      let formData = new FormData()
+      formData.append('sheetName', encodeURIComponent(this.sheetName))
+      formData.append('file', files[0], files[0].name)
+
+      this.$emit('get', formData)
     }, // getFields
   },
 }

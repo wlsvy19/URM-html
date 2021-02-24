@@ -2,7 +2,7 @@
   <div class="urm-panel">
     <DataList ref="list" @edit="handleEdit"/>
 
-    <el-dialog title="Editor" :visible.sync="editorShow" width="1080px">
+    <el-dialog :visible.sync="editorShow" width="1080px">
       <DataEditor ref="editor" :item="editorItem" @save="handleSave"/>
     </el-dialog>
   </div>
@@ -22,7 +22,6 @@ export default {
     getNewItem () {
       return {
         id: '',
-        name: '',
         fields: [],
       }
     }, // getNewItem
@@ -31,7 +30,7 @@ export default {
       if (!item.fields) {
         item.fields = newItem.fields
       }
-    }
+    }, // initData
   },
 }
 </script>

@@ -24,10 +24,14 @@
         </div>
         <div class="row">
           <el-form-item :label="$t('label.sourceSystem')">
-            <el-input v-model="sparam.sendSystemId" class="search-id"/>
+            <el-input v-model="sparam.sendSystemId" class="search-id" @click.native.prevent="showSystemList('send')" readonly>
+              <i slot="suffix" class="el-input__icon el-icon-close" @click.stop="handleClear('sendSys')"/>
+            </el-input>
           </el-form-item>
           <el-form-item :label="$t('label.sndJobCode')">
-            <el-input v-model="sparam.sendJobCodeId" class="search-id"/>
+            <el-input v-model="sparam.sendJobCodeId" class="search-id" readonly>
+              <i slot="suffix" class="el-input__icon el-icon-close" @click.stop="handleClear('sendBiz')"/>
+            </el-input>
           </el-form-item>
           <el-form-item :label="$t('label.changeStatus')">
             <el-select v-model="sparam.chgStat" class="search-id">
@@ -48,26 +52,28 @@
         </div>
         <div class="row">
           <el-form-item :label="$t('label.targetSystem')">
-            <el-input v-model="sparam.rcvSystemId" class="search-id"/>
+            <el-input v-model="sparam.rcvSystemId" class="search-id" @click.native.prevent="showSystemList('rcv')" readonly>
+              <i slot="suffix" class="el-input__icon el-icon-close" @click.stop="handleClear('sendSys')"/>
+            </el-input>
           </el-form-item>
           <el-form-item :label="$t('label.rcvJobCode')">
-            <el-input v-model="sparam.rcvJobCodeId" class="search-id"/>
+            <el-input v-model="sparam.rcvJobCodeId" class="search-id" readonly>
+              <i slot="suffix" class="el-input__icon el-icon-close" @click.stop="handleClear('sendSys')"/>
+            </el-input>
           </el-form-item>
           <el-form-item :label="$t('label.lastChangeDate')">
             <el-date-picker v-model="sparam.chgDate" type="daterange"
               start-placeholder="Start Date" end-placeholder="End Date" style="width: 220px;"/>
           </el-form-item>
-          <div class="row">
-            <el-form-item label="등록자" label-width="65px">
-              <el-checkbox v-model="sparam.cRegId"/>
-            </el-form-item>
-            <el-form-item label="송신자" label-width="65px">
-              <el-checkbox v-model="sparam.cSendAdminId"/>
-            </el-form-item>
-            <el-form-item label="수신자" label-width="65px">
-              <el-checkbox v-model="sparam.cRcvAdminId"/>
-            </el-form-item>
-          </div>
+          <el-form-item label="등록자" label-width="65px" class="search-check">
+            <el-checkbox v-model="sparam.cRegId"/>
+          </el-form-item>
+          <el-form-item label="송신자" label-width="65px" class="search-check">
+            <el-checkbox v-model="sparam.cSendAdminId"/>
+          </el-form-item>
+          <el-form-item label="수신자" label-width="65px" class="search-check">
+            <el-checkbox v-model="sparam.cRcvAdminId"/>
+          </el-form-item>
           <div class="search-buttons">
             <el-button @click.stop="search">{{$t('label.search')}}</el-button>
           </div>
@@ -125,7 +131,7 @@
       @size-change="handlePageSizeChange" @current-change="handlePageCurrentChange">
     </el-pagination>
 
-    <el-dialog title="System List" :visible.sync="systemListShow" width="95%" top="8vh" append-to-body :close-on-click-modal="false">
+    <el-dialog :visible.sync="systemListShow" width="1300px" top="8vh" append-to-body :close-on-click-modal="false">
       <SystemList :onlySearch="true" @row-dblclick="cbSystemRowClick"/>
     </el-dialog>
   </div>
@@ -133,10 +139,29 @@
 
 <script>
 import RuleList from './RuleList'
-import RuleUtil from '@/components/rule/RuleUtil'
 
 export default {
   mixins: [RuleList],
+  props: {
+    infTypes: {
+      type: Array,
+      default: function () {
+        return []
+      },
+    },
+    chgStats: {
+      type: Array,
+      default: function () {
+        return []
+      },
+    },
+    procStats: {
+      type: Array,
+      default: function () {
+        return []
+      },
+    },
+  },
   data () {
     return {
       path: 'request',
@@ -156,6 +181,7 @@ export default {
       },
       pageSizes: [15, 30, 50, 100],
       systemListShow: false,
+      sysType: '',
     }
   },
   methods: {
@@ -196,8 +222,35 @@ export default {
       console.log('view history', id)
     }, // viewHistory
 
-    cbSystemRowClick (row) {
+    handleClear (type) {
+      switch (type) {
+        case 'sendSys':
+          this.sparam.sendSystemId = ''
+          break
+        case 'sendBiz':
+          this.sparam.sendJobCodeId = ''
+          break
+        case 'rcvSys':
+          this.sparam.rcvSystemId = ''
+          break
+        case 'rcvBiz':
+          this.sparam.rcvJobCodeId = ''
+          break
+      }
+    }, // handleClear
 
+    showSystemList (type) {
+      this.sysType =  type
+      this.systemListShow = true
+    }, // showSystemList
+
+    cbSystemRowClick (row) {
+      if (this.sysType === 'send') {
+        this.sparam.sendSystemId = row.id
+      } else if (this.sysType === 'rcv') {
+        this.sparam.rcvSystemId = row.id
+      }
+      this.systemListShow = false
     }, // cbSystemRowClick
 
     chgStatStyle (val) {
@@ -214,20 +267,6 @@ export default {
       return style
     }, // chgStatStyle
   },
-  computed: {
-    infTypes: function () {
-      let kind = RuleUtil.CODEKEY.infType
-      return this.$store.state.codes.filter(code => (code.kind === kind))
-    },
-    chgStats: function () {
-      let kind = RuleUtil.CODEKEY.chgStat
-      return this.$store.state.codes.filter(code => (code.kind === kind))
-    },
-    procStats: function () {
-      let kind = RuleUtil.CODEKEY.procStat
-      return this.$store.state.codes.filter(code => (code.kind === kind))
-    },
-  },
 }
 </script>
 
@@ -236,6 +275,9 @@ export default {
   border: 1px solid #aab3b3;
   margin-top: 10px;
   background-color: #e6f7ff;
+}
+.advanced-search-bar div.row:last-child .el-form-item--small.el-form-item {
+  margin-bottom: 10px;
 }
 .advanced-search-bar .search-name {
   width: 180px;

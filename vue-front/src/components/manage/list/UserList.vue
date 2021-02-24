@@ -20,7 +20,7 @@
     </div>
 
     <el-table ref="table" :data="items" @row-dblclick="handleRowDblclick" :height="listHeight" border class="table-striped">
-      <el-table-column type="selection" width="40"/>
+      <el-table-column type="selection" width="40" v-if="!onlySearch"/>
       <el-table-column :label="$t('label.id')" prop="id" width="145"/>
       <el-table-column :label="$t('label.name')" prop="name" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.dept')" prop="deptName"/>
@@ -54,7 +54,6 @@ export default {
   },
   data () {
     return {
-      path: 'user',
       listHeight: 'calc(100vh - 165px)',
       sparam: {
         id: '',
@@ -67,8 +66,9 @@ export default {
   methods: {
     search () {
       const loading = this.$startLoading()
-      console.log('search : ' + this.path, this.sparam)
-      this.$http.get('/api/' + this.path, {
+      let url = '/api/user'
+      console.log('search : ' + url, this.sparam)
+      this.$http.get(url, {
         params: this.sparam,
       }).then(response => {
         this.items = response.data
@@ -103,7 +103,7 @@ export default {
       }
       this.$confirm('정말 삭제 하시겠습니까?', confirmProp).then(() => {
         const loading = this.$startLoading()
-        let url = '/api/' + this.path + '/delete'
+        let url = '/api/user/delete'
         this.$http({
           method : 'POST',
           url: url,
@@ -111,7 +111,7 @@ export default {
         }).then(response => {
           let res = response.data
           if (res.code === 0) {
-            this.$message({message: 'delete ' + this.path.toUpperCase() + ' [ ' + res.obj + ' ]', type: 'success'})
+            this.$message({message: 'delete user [ ' + res.obj + ' ]', type: 'success'})
             this.search()
           } else if (res.code === 1) {
             this.$message({message: '삭제 실패하였습니다. - ' + res.message + ' \n 영향도를 확인하여 주세요.', type: 'warning'})

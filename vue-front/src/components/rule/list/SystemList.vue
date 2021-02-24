@@ -32,7 +32,7 @@
     </div>
     
     <el-table ref="table" :data="items" @row-dblclick="handleRowDblclick" :height="listHeight" border class="table-striped">
-      <el-table-column type="selection" width="40"/>
+      <el-table-column type="selection" width="40" v-if="!onlySearch"/>
       <el-table-column :label="$t('label.systemId')" prop="id" width="130"/>
       <el-table-column :label="$t('label.systemName')" prop="name" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.systemType')" width="100">
@@ -72,6 +72,22 @@ import RuleUtil from '@/components/rule/RuleUtil'
 
 export default {
   mixins: [RuleList],
+  props: {
+    sysTypes: {
+      type: Array,
+      default: function () {
+        return []
+      }
+    },
+    devTypes: {
+      type: Array,
+      default: function () {
+        console.log('set default devTypes')
+        let kind = RuleUtil.CODEKEY.devType
+        return this.$store.state.codes.filter(code => (code.kind === kind))
+      }
+    },
+  },
   data () {
     return {
       path: 'system',
@@ -84,16 +100,6 @@ export default {
     }
   },
   methods: {
-  },
-  computed: {
-    sysTypes: function () {
-      let kind = RuleUtil.CODEKEY.sysType
-      return this.$store.state.codes.filter(code => (code.kind === kind))
-    },
-    devTypes: function () {
-      let kind = RuleUtil.CODEKEY.devType
-      return this.$store.state.codes.filter(code => (code.kind === kind))
-    },
   },
 }
 </script>

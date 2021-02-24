@@ -13,14 +13,13 @@ export default {
   },
   data () {
     return {
-      path: 'biz',
     }
   },
   methods: {
     handleEdit (id) {
       console.log('edit', id)
       if (id) {
-        this.$http.get('/api/' + this.path + '/' + id, {
+        this.$http.get('/api/code/business/' + id, {
         }).then(response => {
           this.editorItem = response.data
           this.editorShow = true
@@ -35,7 +34,7 @@ export default {
       console.log('save', item)
       this.$http({
         method : 'POST',
-        url: '/api/' + this.path,
+        url: '/api/code/business',
         data: item,
       }).then(response => {
         let data = response.data

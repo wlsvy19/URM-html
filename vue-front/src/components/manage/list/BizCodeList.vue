@@ -60,7 +60,6 @@ export default {
   },
   data () {
     return {
-      path: 'biz',
       listHeight: 'calc(100vh - 165px)',
       sparam: {
         id: '',
@@ -72,8 +71,9 @@ export default {
   methods: {
     search () {
       const loading = this.$startLoading()
-      console.log('search : ' + this.path, this.sparam)
-      this.$http.get('/api/' + this.path, {
+      let url = '/api/code/business'
+      console.log('search : ' + url, this.sparam)
+      this.$http.get(url, {
         params: this.sparam,
       }).then(response => {
         this.items = response.data
@@ -108,7 +108,7 @@ export default {
       }
       this.$confirm('정말 삭제 하시겠습니까?', confirmProp).then(() => {
         const loading = this.$startLoading()
-        let url = '/api/' + this.path + '/delete'
+        let url = '/api/code/business/delete'
         this.$http({
           method : 'POST',
           url: url,
