@@ -91,7 +91,7 @@ div.row {
   font-size: 16px;
 }
 .el-table--small, .el-form-item__label,
-.el-input--small, .el-button--small {
+.el-input--small, .el-button--small, .el-menu-item-group__title {
   font-size: 15px;
 }
 
