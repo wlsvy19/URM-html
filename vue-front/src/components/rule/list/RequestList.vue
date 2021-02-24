@@ -197,6 +197,7 @@ export default {
     }, // viewHistory
 
     cbSystemRowClick (row) {
+      console.log(row)
 
     }, // cbSystemRowClick
 
