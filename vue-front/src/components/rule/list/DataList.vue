@@ -18,26 +18,26 @@
       <div class="search-buttons">
         <el-button @click="search">{{$t('label.search')}}</el-button>
         <el-button @click="clickEdit()" v-if="!onlySearch">{{$t('label.add')}}</el-button>
-        <el-button @click="clickDelete('selected')" v-if="!onlySearch">{{$t('label.delete')}}</el-button>
+        <el-button @click="clickDelete('selected')" type="danger" v-if="!onlySearch" plain>{{$t('label.delete')}}</el-button>
       </div>
     </div>
 
-    <el-table ref="table" :data="items" :height="listHeight" border class="table-striped">
+    <el-table ref="table" :data="items" @row-dblclick="handleRowDblclick" :height="listHeight" border class="table-striped">
       <el-table-column type="selection" width="40"/>
       <el-table-column :label="$t('label.id')" prop="id" width="150"/>
-      <el-table-column :label="$t('label.name')" prop="name"/>
+      <el-table-column :label="$t('label.name')" prop="name" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.dataType')" width="100">
         <template slot-scope="scope">
           <span>{{getTypeStr('dataType', scope.row.type)}}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('label.registId')" prop="regId" width="200"/>
+      <el-table-column :label="$t('label.registId')" prop="regId" width="200" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.registDate')" width="200">
         <template slot-scope="scope">
           <span>{{scope.row.regDate}}</span>
         </template>
       </el-table-column>
-      <el-table-column width="150" class-name="edit-cell operations">
+      <el-table-column width="115" class-name="edit-cell operations">
         <template slot-scope="scope">
           <div>
             <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>

@@ -1,25 +1,31 @@
 <template>
-  <el-form>
-    <div class="row">
-      <el-form-item label="시스템">
-        <el-input v-model="sparam.systemId" class="size-id" readonly/>
-      </el-form-item>
-      <el-form-item label="Type">
-        <el-select v-model="sparam.type" class="size-id">
-          <el-option :value="0" label="Table"/>
-          <el-option :value="1" label="Query"/>
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button @click.stop="getStructure">구조 가져오기</el-button>
-      </el-form-item>
-    </div>
-    <div class="row">
-      <el-form-item label="시스템">
-        <el-input type="textarea" v-model="sparam.query" class="data-query"/>
-      </el-form-item>
-    </div>
-  </el-form>
+  <div>
+    <el-form>
+      <div class="row">
+        <el-form-item label="시스템">
+          <el-input v-model="sparam.systemId" class="size-id" readonly/>
+        </el-form-item>
+        <el-form-item label="Type">
+          <el-select v-model="sparam.type" class="size-id">
+            <el-option :value="0" label="Table"/>
+            <el-option :value="1" label="Query"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button @click.stop="getStructure">구조 가져오기</el-button>
+        </el-form-item>
+      </div>
+      <div class="row">
+        <el-form-item label="시스템">
+          <el-input type="textarea" v-model="sparam.query" class="data-query"/>
+        </el-form-item>
+      </div>
+    </el-form>
+
+    <el-dialog title="System List" :visible.sync="systemListShow" width="95%" top="8vh" append-to-body :close-on-click-modal="false">
+      <SystemList :onlySearch="true" @row-dblclick="cbSystemRowClick"/>
+    </el-dialog>
+  </div>
 </template>
 <script>
 export default {
@@ -29,7 +35,8 @@ export default {
         systemId: '',
         type: 0,
         query: '',
-      }
+      },
+      systemListShow: false,
     }
   },
   methods: {
@@ -49,7 +56,11 @@ export default {
         return
       }
       this.$emit('get', this.sparam)
-    }
+    }, // getStructure
+
+    cbSystemRowClick (row) {
+
+    }, // cbSystemRowClick
   }
 }
 </script>

@@ -2,7 +2,7 @@
   <div class="urm-list">
     <div class="advanced-search-bar">
       <el-form label-width="135px">
-        <div class="row">
+        <div class="row" style="margin-top: 10px;">
           <el-form-item :label="$t('label.interfaceId')">
             <el-input v-model="sparam.interfaceId" class="search-id"/>
           </el-form-item>
@@ -18,6 +18,9 @@
           <el-form-item :label="$t('label.requestName')">
             <el-input v-model="sparam.name" class="search-name"/>
           </el-form-item>
+          <div class="search-buttons">
+            <el-button @click.stop="clickTransfer">이관</el-button>
+          </div>
         </div>
         <div class="row">
           <el-form-item :label="$t('label.sourceSystem')">
@@ -35,9 +38,13 @@
           <el-form-item :label="$t('label.processStatus')">
             <el-select v-model="sparam.processStat" style="width: 150px">
               <el-option value="" label="ALL"/>
-              <el-option v-for="stat in chgStats" :value="stat.code" :label="stat.name" :key="stat.code"/>
+              <el-option v-for="stat in procStats" :value="stat.code" :label="stat.name" :key="stat.code"/>
             </el-select>
           </el-form-item>
+          <div class="search-buttons">
+            <el-button @click.stop="clickEdit()">{{$t('label.add')}}</el-button>
+            <el-button @click.stop="clickDelete('selected')" type="danger" plain>{{$t('label.delete')}}</el-button>
+          </div>
         </div>
         <div class="row">
           <el-form-item :label="$t('label.targetSystem')">
@@ -47,26 +54,33 @@
             <el-input v-model="sparam.rcvJobCodeId" class="search-id"/>
           </el-form-item>
           <el-form-item :label="$t('label.lastChangeDate')">
-            <el-date-picker v-model="chgDate" type="daterange" align="right" start-placeholder="Start Date" end-placeholder="End Date" default-value="2010-10-01"/>
+            <el-date-picker v-model="sparam.chgDate" type="daterange"
+              start-placeholder="Start Date" end-placeholder="End Date" style="width: 220px;"/>
           </el-form-item>
-          <el-form-item label="등록자">
-            <el-checkbox/>
-          </el-form-item>
-          <el-form-item label="송신자">
-            <el-checkbox/>
-          </el-form-item>
-          <el-form-item label="수신자">
-            <el-checkbox/>
-          </el-form-item>
+          <div class="row">
+            <el-form-item label="등록자" label-width="65px">
+              <el-checkbox v-model="sparam.cRegId"/>
+            </el-form-item>
+            <el-form-item label="송신자" label-width="65px">
+              <el-checkbox v-model="sparam.cSendAdminId"/>
+            </el-form-item>
+            <el-form-item label="수신자" label-width="65px">
+              <el-checkbox v-model="sparam.cRcvAdminId"/>
+            </el-form-item>
+          </div>
+          <div class="search-buttons">
+            <el-button @click.stop="search">{{$t('label.search')}}</el-button>
+          </div>
         </div>
       </el-form>
     </div>
 
-    <el-table :data="items" border class="table-striped">
-      <el-table-column :label="$t('label.id')" prop="id" width="145"/>
+    <el-table :data="items" :height="listHeight" border class="table-striped">
+      <el-table-column type="selection" width="40"/>
+      <el-table-column :label="$t('label.id')" prop="id" width="150"/>
       <el-table-column :label="$t('label.changeStatus')" width="115">
         <template slot-scope="scope">
-          <span>{{getTypeStr('chgStat', scope.row.chgStat)}}</span>
+          <span :style="chgStatStyle(scope.row.chgStat)">{{getTypeStr('chgStat', scope.row.chgStat)}}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('label.processStatus')" width="130">
@@ -79,7 +93,7 @@
           <span>{{getTypeStr('infType', scope.row.interfaceType)}}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('label.name')" prop="name"/>
+      <el-table-column :label="$t('label.name')" prop="name" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.interfaceId')" prop="interfaceId" width="135"/>
       <el-table-column :label="$t('label.sourceMethod')" width="85">
         <template slot-scope="scope">
@@ -91,13 +105,15 @@
           <span>{{getTypeStr('sysType', scope.row.rcvSystemType)}}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('label.sourceSystem')" prop="sendSystem.name" width="110"/>
-      <el-table-column :label="$t('label.targetSystem')" prop="rcvSystem.name" width="110"/>
+      <el-table-column :label="$t('label.sourceSystem')" prop="sendSystem.name" width="110" :show-overflow-tooltip="true"/>
+      <el-table-column :label="$t('label.targetSystem')" prop="rcvSystem.name" width="110" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.lastChangeDate')" prop="chgDate" width="150"/>
-      <el-table-column>
+      <el-table-column width="115" class-name="edit-cell operations">
         <template slot-scope="scope">
           <div>
-            <el-button @click.stop="clickEdit(scope.row.id)"/>
+            <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
+            <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row.id)" plain/>
+            <el-button icon="el-icon-refresh-left" @click.stop="viewHistory(scope.row.id)"/>
           </div>
         </template>
       </el-table-column>
@@ -108,6 +124,10 @@
       :page-sizes="pageSizes" :page-size="sparam.size"
       @size-change="handlePageSizeChange" @current-change="handlePageCurrentChange">
     </el-pagination>
+
+    <el-dialog title="System List" :visible.sync="systemListShow" width="95%" top="8vh" append-to-body :close-on-click-modal="false">
+      <SystemList :onlySearch="true" @row-dblclick="cbSystemRowClick"/>
+    </el-dialog>
   </div>
 </template>
 
@@ -120,32 +140,79 @@ export default {
   data () {
     return {
       path: 'request',
+      listHeight: 'calc(100vh - 310px)',
       sparam: {
         ...this.sparam,
         page: 1,
         size: 30,
-        type: '',
+        interfaceType: '',
+        chgStat: '',
+        processStat: '',
+        chgDate: [],
       },
       paging: {
         curPage: 1,
         totalCount: 1,
       },
-      pageSizes: ['15', '30', '50', '100'],
-      chgDate: [],
+      pageSizes: [15, 30, 50, 100],
+      systemListShow: false,
     }
   },
   methods: {
     search () {
-      console.log('search', this.sparam)
+      const loading = this.$startLoading()
+      console.log('search : ' + this.path, this.sparam)
+      this.$http.get('/api/' + this.path, {
+        params: this.sparam,
+      }).then(response => {
+        let pageList = response.data
+        this.items = pageList.list
+        this.paging = {
+          curPage: pageList.curPage,
+          totalCount: pageList.totalCount,
+        }
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
     }, // Override search
 
-    handlePageSizeChange () {
-
+    handlePageSizeChange (val) {
+      this.sparam.size = val
+      this.search()
     }, // handlePageSizeChange
 
-    handlePageCurrentChange () {
-      
+    handlePageCurrentChange (val) {
+      this.sparam.page = val
+      this.search()
     }, // handlePageCurrentChange
+
+    clickTransfer () {
+      console.log('click transfer')
+    }, // clickTransfer
+
+    viewHistory (id) {
+      console.log('view history', id)
+    }, // viewHistory
+
+    cbSystemRowClick (row) {
+
+    }, // cbSystemRowClick
+
+    chgStatStyle (val) {
+      let style = 'color: #fff'
+      if (val === '1') {
+        style = 'color: #0000FF'
+      } else if (val === '2') {
+        style = 'color: #9900FF'
+      } else if (val === '3') {
+        style = 'color: #FF0000'
+      } else {
+        style = 'color: #990000'
+      }
+      return style
+    }, // chgStatStyle
   },
   computed: {
     infTypes: function () {

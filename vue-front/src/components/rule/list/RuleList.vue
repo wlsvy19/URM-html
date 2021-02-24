@@ -80,6 +80,10 @@ export default {
       }).catch(() => {})
     }, // clickDelete
 
+    handleRowDblclick (row) {
+      this.$emit('row-dblclick', row)
+    }, // handleRowDblclick
+
     getTypeStr (key, val) {
       let kind = RuleUtil.CODEKEY[key]
       let codes = this.$store.state.codes
