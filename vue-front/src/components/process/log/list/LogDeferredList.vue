@@ -47,6 +47,6 @@ export default {
       listHeight: 'calc(100vh - 900px)',
       log: 'first',
     }
-  }
+  },
 }
 </script>

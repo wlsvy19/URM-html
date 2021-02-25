@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2009. 8. 24 ???? 12:54:53 by Hibernate Tools 3.2.4.GA -->
+<hibernate-mapping>
+    <class name="com.ism.urm.vo.rule.data.Field" table="TB_DAT_FLD" entity-name="FIELD">
+        <composite-id>
+            <key-property name="dataId" type="string" column="DATA_ID"/>
+            <key-property name="fieldId" type="string" column="FIELD_ID"/>
+        </composite-id>
+        <property name="name" type="string" column="NM" />
+        <property name="engName" type="string" column="ID" />
+        <property name="type" type="string" column="ATTR" />
+        <property name="length" type="integer" column="LEN1" />
+        <property name="subLength" type="integer" column="LEN2" />
+        <property name="bigo" type="string" column="BIGO" />
+        <property name="dateFormat" type="string" column="D_FORMAT" />
+        <property name="sno" type="string" column="SNO" />
+        <property name="rsno" type="string" column="RSNO" />
+        <property name="nullable" type="yes_no" column="NULLABLE" />
+        <property name="keyYN" type="yes_no" column="PK_YN" />
+        <property name="sqlYN" type="yes_no" column="IS_SQL" />
+        <property name="repeatYN" type="yes_no" column="REPEAT_YN" />
+        <property name="repeatCnt" type="integer" column="REPEAT_NO" />
+        <property name="refInfo" type="string" column="REF_INFO" />
+    </class>
+</hibernate-mapping>

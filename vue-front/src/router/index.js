@@ -8,6 +8,11 @@ import Request from '@/components/rule/Request'
 import User from '@/components/manage/User'
 import Biz from '@/components/manage/BizCode'
 
+import RequestProcessDay from '@/components/statics/RequestProcessDay'
+import RequestProcessMonth from '@/components/statics/RequestProcessMonth'
+import RequestChangeDay from '@/components/statics/RequestChangeDay'
+import RequestChangeMonth from '@/components/statics/RequestChangeMonth'
+
 import ProcessStaticsDay from '@/components/process/stat/ProcessStaticsDay'
 import ProcessStaticsHour from '@/components/process/stat/ProcessStaticsHour'
 
@@ -27,11 +32,10 @@ export default new VueRouter({
     {path: '/user', component: User},
     {path: '/biz', component: Biz},
 
-    {path: '/process/day', component: ProcessStaticsDay},
-    {path: '/process/month', component: ProcessStaticsHour},
-
-    {path: '/change/day', component: ProcessStaticsDay},
-    {path: '/change/month', component: ProcessStaticsHour},
+    {path: '/process/day', component: RequestProcessDay},
+    {path: '/process/month', component: RequestProcessMonth},
+    {path: '/change/day', component: RequestChangeDay},
+    {path: '/change/month', component: RequestChangeMonth},
 
     {path: '/log/online/:server', component: LogRealtime},
     {path: '/log/batch/:server', component: LogBatch},

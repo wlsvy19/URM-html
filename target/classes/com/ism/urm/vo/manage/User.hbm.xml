@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.ism.urm.vo.manage.User" table="TB_SSO_USER" entity-name="USER">
+        <id name="id" type="string">
+            <column name="USER_ID" />
+            <generator class="assigned" />
+        </id>
+        <property name="name" type="string" column="NAME" />
+        <property name="password" type="string" column="PASSWD" />
+        <property name="dept" type="string" column="DEPT" />
+        <property name="deptName" type="string" column="DEPT_NM" />
+        <property name="position" type="string" column="POSITION" />
+        <property name="positionName" type="string" column="POSITION_NM" />
+        <property name="grade" type="string" column="GRADE" />
+        <property name="gradeName" type="string" column="GRADE_NM" />
+        <property name="officeTelNo" type="string" column="OFFICE_TEL_NO" />
+        <property name="generalTelNo" type="string" column="GENERAL_TEL_NO" />
+        <property name="celNo" type="string" column="CEL_NO" />
+        <property name="ip" type="string" column="IP" />
+        <property name="yn" type="yes_no" column="YN" />
+        <property name="ssoYn" type="yes_no" column="SSO_YN" />
+        <property name="authId" type="string" column="AUTH_ID" />
+        
+        <!-- <property name="frsEnrTs" type="string" column="FRS_ENR_TS" />
+        <property name="lstAmnTs" type="string" column="LST_AMN_TS" /> -->
+    </class>
+</hibernate-mapping>

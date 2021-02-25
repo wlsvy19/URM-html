@@ -32,7 +32,7 @@
 export default {
   data () {
     return {
-      listHeight: 'calc(100vh - 900px)',
+      listHeight: 'calc(100vh - 1100px)',
     }
   }
 }
