@@ -26,9 +26,12 @@ export default {
         params: this.sparam,
       }).then(response => {
         this.items = response.data
+        console.log(response.data)
       }).catch(error => {
+        console.log('catch')
         this.$handleHttpError(error)
       }).finally(() => {
+        console.log('finally')
         loading.close()
       })
     }, // search
@@ -36,6 +39,10 @@ export default {
     clickEdit (id) {
       this.$emit('edit', id)
     }, // clickEdit
+
+    clickTransfer(id){
+      this.$emit('transfer', id);
+    },
 
     clickDelete (key) {
       let ids = []

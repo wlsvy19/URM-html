@@ -19,7 +19,7 @@
             <el-input v-model="sparam.name" class="search-name"/>
           </el-form-item>
           <div class="search-buttons">
-            <el-button @click.stop="clickTransfer">이관</el-button>
+            <el-button @click.stop="clickTransfer()">이관</el-button>
           </div>
         </div>
         <div class="row">
@@ -75,7 +75,7 @@
             <el-checkbox v-model="sparam.cRcvAdminId"/>
           </el-form-item>
           <div class="search-buttons">
-            <el-button @click.stop="search">{{$t('label.search')}}</el-button>
+            <el-button @click="search">{{$t('label.search')}}</el-button>
           </div>
         </div>
       </el-form>

@@ -8,6 +8,7 @@
         :infTypes="infTypes" :procStats="procStats" :chgStats="chgStats"
         @save="handleSave"/>
     </el-dialog>
+
   </div>
 </template> 
 
