@@ -3,7 +3,7 @@
     <div class="search-bar">
       <el-form :inline="true">
         <el-form-item label="일자 선택">
-          <el-date-picker type="daterange" start-placeholder="Start Date" end-placeholder="End Date" style="width: 220px;"/>
+          <el-date-picker v-model="value1" type="monthrange" range-separator="~" start-placeholder="Start month" end-placeholder="End month"/>
         </el-form-item>
       </el-form>
       <div class="search-buttons">
@@ -16,6 +16,7 @@
 
 <script>
 import ChangeList from './list/RequestChangeList'
+
 export default {
   components: {
     ChangeList,

@@ -16,6 +16,7 @@
 
 <script>
 import ChangeList from './list/RequestChangeList'
+
 export default {
   components: {
     ChangeList,

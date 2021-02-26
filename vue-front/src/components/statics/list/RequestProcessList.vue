@@ -23,7 +23,7 @@
 export default {
   data () {
     return {
-      listHeight: 'calc(100vh - 1200px)',
+      listHeight: 'calc(100vh - 600px)',
     }
   }
 }

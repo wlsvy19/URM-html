@@ -8,7 +8,7 @@
             <el-option v-for="type in infTypes" :value="type.code" :label="type.name" :key="type.code"/>
           </el-select>
         </el-form-item>
-        <el-form-item label="일자 선택1">
+        <el-form-item label="일자 선택">
           <el-date-picker type="daterange" start-placeholder="Start Date" end-placeholder="End Date" style="width: 220px;"/>
         </el-form-item>
       </el-form>
@@ -20,11 +20,9 @@
   </div>
 </template>
 
-
-
 <script>
-
 import ProcessList from './list/RequestProcessList'
+
 export default {
   data () {
     return {
