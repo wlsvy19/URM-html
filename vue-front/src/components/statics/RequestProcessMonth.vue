@@ -9,7 +9,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="일자 선택">
-          <el-date-picker v-model="value1" type="monthrange" range-separator="~" start-placeholder="Start month" end-placeholder="End month" style="width: 220px"/>
+          <el-date-picker v-model="sparam.chgDate" type="monthrange" range-separator="~" start-placeholder="Start month" end-placeholder="End month" style="width: 220px"/>
         </el-form-item>
       </el-form>
       <div class="search-buttons">
@@ -28,9 +28,11 @@ import ProcessList from './list/RequestProcessList'
 export default {
   data () {
     return {
+      path: '/api/stat/change/month',
       sparam: {
         ...this.sparam,
         type: '',
+        chgDate: [],
       },
     }
   },
@@ -38,7 +40,21 @@ export default {
     ProcessList,
   },
   methods: {
-
+    search() {
+      const loading = this.$startLoading()
+      console.log(loading)
+  
+      console.log('search : ' + this.path, this.sparam)
+      this.$http.get(this.path, {
+        params: this.sparam,
+      }).then(response => {
+        console.log('response.data:' + response.data)
+      }).catch(error => {
+        this.$handleHttpError('에러로그'+error)
+      }).finally(() => {
+        loading.close()
+      })
+    }
   }
 }
 </script>

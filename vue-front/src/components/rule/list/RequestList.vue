@@ -19,7 +19,7 @@
             <el-input v-model="sparam.name" class="search-name" @change="search"/>
           </el-form-item>
           <div class="search-buttons">
-            <el-button @click.stop="clickTransfer">이관</el-button>
+            <el-button @click.stop="clickTransfer()">이관</el-button>
           </div>
         </div>
         <div class="row">
@@ -75,7 +75,7 @@
             <el-checkbox v-model="sparam.cRcvAdminId"/>
           </el-form-item>
           <div class="search-buttons">
-            <el-button @click.stop="search">{{$t('label.search')}}</el-button>
+            <el-button @click="search">{{$t('label.search')}}</el-button>
           </div>
         </div>
       </el-form>
@@ -114,7 +114,7 @@
       <el-table-column :label="$t('label.sourceSystem')" prop="sendSystem.name" width="110" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.targetSystem')" prop="rcvSystem.name" width="110" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.lastChangeDate')" prop="chgDate" width="150"/>
-      <el-table-column width="125" class-name="edit-cell operations">
+      <el-table-column width="120" class-name="edit-cell operations">
         <template slot-scope="scope">
           <div>
             <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
