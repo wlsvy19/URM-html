@@ -62,8 +62,7 @@
             </el-input>
           </el-form-item>
           <el-form-item :label="$t('label.lastChangeDate')">
-            <el-date-picker v-model="sparam.chgDate" type="daterange"
-              start-placeholder="Start Date" end-placeholder="End Date" style="width: 220px;"/>
+            <el-date-picker v-model="sparam.chgDate" type="daterange" range-separator="~" start-placeholder="Start Date" end-placeholder="End Date" style="width: 220px;"/>
           </el-form-item>
           <el-form-item label="등록자" label-width="65px" class="search-check">
             <el-checkbox v-model="sparam.cRegId"/>
@@ -115,6 +114,7 @@
       <el-table-column :label="$t('label.targetSystem')" prop="rcvSystem.name" width="110" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.lastChangeDate')" prop="chgDate" width="150"/>
       <el-table-column width="120" class-name="edit-cell operations">
+
         <template slot-scope="scope">
           <div>
             <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
