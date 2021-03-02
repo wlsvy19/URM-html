@@ -9,7 +9,7 @@
           <el-input v-model="item.id" class="size-id" readonly/>
         </el-form-item>
         <el-form-item :label="$t('label.requestName')">
-          <el-input v-model="item.name" class="size-name"/>
+          <el-input v-model="item.name" class="size-default"/>
         </el-form-item>
       </div>
 
@@ -50,16 +50,16 @@
 
       <div class="row">
         <el-form-item :label="$t('label.jobType')">
-          <el-input v-model="item.jobType" class="size-id" />
+          <el-input v-model="item.jobType" class="size-id"/>
         </el-form-item>
         <el-form-item :label="$t('label.trType')">
-          <el-radio-group v-model="item.trType">
+          <el-radio-group v-model="item.trType" class="size-id">
             <el-radio v-for="type in trTypes" :label="type.code" :key="type.code">{{type.name}}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="$t('label.testDate')">
-          <el-date-picker v-model="item.testDate" type="daterange"
-            start-placeholder="Start Date" end-placeholder="End Date" class="size-name"/>
+          <el-date-picker v-model="testDate" type="daterange" class="size-name"
+            value-format="yyyyMMdd" :clearable="false"/>
         </el-form-item>
       </div>
 
@@ -82,7 +82,7 @@
       </div>
       <hr/>
       <div class="row">
-        <div class="col-1">
+        <div>
           <div class="row">
             <el-form-item :label="$t('label.sourceMethod')">
               <el-select v-model="item.sendSystemType" class="size-id">
@@ -109,7 +109,7 @@
           </div>
           <div class="row">
             <el-form-item :label="$t('label.sndJobCode')">
-              <el-input v-model="jobCodeName.send" class="size-id" readonly/>
+              <el-input v-model="jobCodeName.send" class="size-id" @click.native="showBizList('send')" readonly/>
             </el-form-item>
             <el-form-item :label="$t('label.sourceAdmin')">
               <el-input v-model="adminName.send" class="size-id" @click.native="showUserList('send')" readonly/>
@@ -117,7 +117,7 @@
           </div>
         </div>
 
-        <div class="col-1">
+        <div>
           <div class="row">
             <el-form-item :label="$t('label.targetMethod')">
               <el-select v-model="item.rcvSystemType" class="size-id">
@@ -154,7 +154,7 @@
           </div>
           <div class="row">
             <el-form-item :label="$t('label.rcvJobCode')">
-              <el-input v-model="jobCodeName.rcv" class="size-id" readonly/>
+              <el-input v-model="jobCodeName.rcv" class="size-id" @click.native="showBizList('rcv')" readonly/>
             </el-form-item>
             <el-form-item :label="$t('label.targetAdmin')">
               <el-input v-model="adminName.rcv" class="size-id" @click.native="showUserList('rcv')" readonly/>
@@ -166,26 +166,22 @@
       <hr/>
       <div class="row">
         <el-form-item :label="$t('label.etcRequest')">
-          <el-input type="textarea" v-model="item.etcRemark"/>
+          <el-input type="textarea" v-model="item.etcRemark" class="size-default"/>
         </el-form-item>
         <el-form-item :label="$t('label.eaiRequest')">
-          <el-input type="textarea" v-model="item.eaiRemark"/>
+          <el-input type="textarea" v-model="item.eaiRemark" class="size-default"/>
         </el-form-item>
       </div>
 
       <hr/>
       <div class="row">
         <el-form-item :label="$t('label.attachmentFile')">
-          <el-input v-model="item.infFileName" @click.native="changeInfFile" readonly/>
+          <el-input v-model="item.infFileName" class="size-default" @click.native="changeInfFile" readonly/>
+          <el-button icon="el-icon-download" @click.stop="downloadInfFile"/>
           <input type="file" ref="infFile" @change="handleChangeInfFile" style="display: none;"/>
         </el-form-item>
       </div>
     </el-form>
-
-    <el-dialog :visible.sync="systemListShow" width="1300px" top="5vh" append-to-body :close-on-click-modal="false">
-      <SystemList ref="sysList" :items="systems" :onlySearch="true" :sysTypes="sysTypes"
-        @search="searchSystemList" @row-dblclick="cbSystemRowClick"/>
-    </el-dialog>
 
     <el-dialog :visible.sync="userListShow" width="1080px" top="5vh" append-to-body :close-on-click-modal="false">
       <UserList ref="usrList" :items="users" :onlySearch="true" @search="searchUserList" @row-dblclick="cbUserRowClick"/>
@@ -227,10 +223,8 @@ export default {
   data() {
     return {
       tgtType: '',
-      systems: null,
-      users: null,
-      systemListShow: false,
       userListShow: false,
+      users: null,
     }
   },
   methods: {
@@ -347,6 +341,12 @@ export default {
       })
     }, // handleChangeInfFile
 
+    downloadInfFile () {
+      let fileName = this.item.infFileName
+      if (!fileName || fileName.length === 0) return
+      window.open('/api/request/download?fileName='+fileName, '_blank')
+    }, // downloadInfFile
+
     handleClear (type) {
       switch (type) {
         case 'req':
@@ -359,43 +359,9 @@ export default {
     }, // handleClear
 
     showSystemList (type) {
-      if (!this.$refs.sysList) {
-        let sType = (type === 'send') ? this.item.sendSystemType : this.item.rcvSystemType
-        this.searchSystemList(() => {
-          this.systemListShow = true
-          this.$nextTick(() => {
-            this.$refs.sysList.sparam.type = sType
-          })
-        }, sType)
-      } else if (type !== this.$refs.sysList.sparam.type) {
-        if (type === 'send') {
-          this.$refs.sysList.sparam.type = this.item.sendSystemType
-        } else if (type === 'rcv') {
-          this.$refs.sysList.sparam.type = this.item.rcvSystemType
-        }
-        this.searchSystemList(() => {
-          this.systemListShow = true
-        })
-      } else {
-        this.systemListShow = true
-      }
-      this.sysType = type
+      this.tgtType = type
+      this.$emit('show-sys-list', this.cbSystemRowClick, type)
     }, // showSystemList
-
-    searchSystemList (cbFunc, type) {
-      let sparam = this.$refs.sysList ? this.$refs.sysList.sparam : {type: type}
-      const loading = this.$startLoading()
-      this.$http.get('/api/system', {
-        params: sparam
-      }).then(response => {
-        this.systems = response.data
-        typeof cbFunc === 'function' && cbFunc()
-      }).catch(error => {
-        this.$handleHttpError(error)
-      }).finally(() => {
-        loading.close()
-      })
-    }, // searchSystemList
 
     cbSystemRowClick (row) {
       if (this.tgtType === 'send') {
@@ -405,9 +371,25 @@ export default {
         this.item.rcvSystemId = row.id
         this.item.rcvSystem.name = row.name
       }
-      this.systemListShow = false
     }, // cbSystemRowClick
-    
+
+    showBizList (type) {
+      this.tgtType = type
+      this.$emit('show-biz-list', this.cbBizRowClick)
+    }, // showBizList
+
+    cbBizRowClick (row) {
+      if (this.tgtType === 'send') {
+        this.item.sendJobCodeId = row.id
+        this.item.sendJobCode.part2Id = row.part2Id
+        this.item.sendJobCode.part2Name = row.part2Name
+      } else if (this.tgtType === 'rcv') {
+        this.item.rcvJobCodeId = row.id
+        this.item.rcvJobCode.part2Id = row.part2Id
+        this.item.rcvJobCode.part2Name = row.part2Name
+      }
+    }, // cbUserRowClick
+
     showUserList (type) {
       this.tgtType = type
       if (!this.users) {
@@ -497,6 +479,20 @@ export default {
         rcv: this.item.rcvAdmin.name + '(' + this.item.rcvAdmin.positionName + ')',
       }
     },
+    testDate: {
+      get: function () {
+        return [this.item.testStartYMD, this.item.testEndYMD]
+      },
+      set: function (nVal) {
+        this.item.testStartYMD = nVal[0]
+        this.item.testEndYMD = nVal[1]
+      },
+    },
   },
 }
 </script>
+<style scoped>
+.size-default {
+  width: 485px;
+}
+</style>
