@@ -16,17 +16,31 @@
         <el-button @click="search">{{$t('label.search')}}</el-button>
       </div>
     </div>
-    <ProcessList ref="list" @edit="handleEdit"/>
+    <ProcessList ref="list"/>
   </div>
 </template>
 
 <script>
 import ProcessList from './list/RequestProcessList'
+import RuleUtil from '@/components/rule/RuleUtil'
 
 export default {
+  props: {
+    infTypes: {
+      type: Array,
+      default: function () {
+        return []
+      },
+    },
+  },
+  computed: {
+    infTypes: fuction () {
+      let kind = 
+    }
+  },
   data () {
     return {
-      path: '/api/stat/change/day',
+      path: '/api/stat/process/day',
       sparam: {
         ...this.sparam,
         type: '',

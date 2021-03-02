@@ -16,7 +16,7 @@
         <el-button @click="search">{{$t('label.search')}}</el-button>
       </div>
     </div>
-    <ProcessList ref="list" @edit="handleEdit"/>
+    <ProcessList ref="list"/>
   </div>
 </template>
 
@@ -28,7 +28,7 @@ import ProcessList from './list/RequestProcessList'
 export default {
   data () {
     return {
-      path: '/api/stat/change/month',
+      path: '/api/stat/process/month',
       sparam: {
         ...this.sparam,
         type: '',
