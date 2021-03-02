@@ -3,13 +3,13 @@
     <div class="search-bar">
       <el-form :inline="true">
         <el-form-item :label="$t('label.id')">
-          <el-input v-model="sparam.id" class="search-id"/>
+          <el-input v-model="sparam.id" class="search-id" @change="search"/>
         </el-form-item>
         <el-form-item :label="$t('label.name')">
-          <el-input v-model="sparam.name" class="search-name"/>
+          <el-input v-model="sparam.name" class="search-name" @change="search"/>
         </el-form-item>
         <el-form-item :label="$t('label.dept')">
-          <el-input v-model="sparam.dept" class="search-id" readonly/>
+          <el-input v-model="sparam.deptName" class="search-id" @change="search"/>
         </el-form-item>
       </el-form>
       <div class="search-buttons">
@@ -33,7 +33,7 @@
           <span>{{getAuthStr(scope.row.authId)}}</span>
         </template>
       </el-table-column>
-      <el-table-column width="85" class-name="edit-cell operations">
+      <el-table-column width="85" class-name="edit-cell operations" v-if="!onlySearch">
         <template slot-scope="scope">
           <div>
             <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
@@ -51,32 +51,27 @@ export default {
       type: Boolean,
       default: false,
     },
+    items: {
+      type: Array,
+      default: function () {
+        return []
+      },
+    },
   },
   data () {
     return {
       listHeight: 'calc(100vh - 165px)',
+      path: 'user',
       sparam: {
         id: '',
         name: '',
         dept: '',
       },
-      items: [],
     }
   },
   methods: {
     search () {
-      const loading = this.$startLoading()
-      let url = '/api/user'
-      console.log('search : ' + url, this.sparam)
-      this.$http.get(url, {
-        params: this.sparam,
-      }).then(response => {
-        this.items = response.data
-      }).catch(error => {
-        this.$handleHttpError(error)
-      }).finally(() => {
-        loading.close()
-      })
+      this.$emit('search', this.sparam)
     }, // search
 
     clickEdit (id) {
@@ -86,8 +81,8 @@ export default {
     clickDelete (key) {
       let ids = []
       if (key === 'selected') {
-        let checkedList = this.$refs.table.selection
-        if (checkedList.length <= 0) {
+        ids = this.$refs.table.selection.map((it) => it.id)
+        if (ids.length <= 0) {
           this.$message({message: this.$t('message.1004'), type: 'warning'})
           return
         }
@@ -103,10 +98,9 @@ export default {
       }
       this.$confirm('정말 삭제 하시겠습니까?', confirmProp).then(() => {
         const loading = this.$startLoading()
-        let url = '/api/user/delete'
         this.$http({
           method : 'POST',
-          url: url,
+          url: '/api/' + this.path + '/delete',
           data: ids,
         }).then(response => {
           let res = response.data
@@ -143,7 +137,9 @@ export default {
     }, // getAuthStr
   },
   mounted () {
-    this.search()
+    if (!this.items) {
+      this.search()
+    }
   }
 }
 </script>

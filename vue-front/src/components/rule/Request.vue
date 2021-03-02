@@ -1,12 +1,11 @@
 <template>
   <div class="urm-panel">
-    <RequestList ref="list" :infTypes="infTypes" :procStats="procStats" :chgStats="chgStats"
-      @edit="handleEdit"/>
+    <RequestList ref="list" :items="listItem" :infTypes="infTypes"
+      :procStats="procStats" :chgStats="chgStats" @search="handleSearch" @edit="handleEdit"/>
 
     <el-dialog :visible.sync="editorShow" width="1355px">
-      <RequestEditor ref="editor" :item="editorItem"
-        :infTypes="infTypes" :procStats="procStats" :chgStats="chgStats"
-        @save="handleSave"/>
+      <RequestEditor :item="editorItem" :infTypes="infTypes"
+        :procStats="procStats" :chgStats="chgStats" @save="handleSave"/>
     </el-dialog>
 
   </div>
@@ -24,6 +23,25 @@ export default {
     }
   },
   methods: {
+    handleSearch (sparam) { // Override
+      const loading = this.$startLoading()
+      console.log('search : ' + this.path, sparam)
+      this.$http.get('/api/' + this.path, {
+        params: sparam,
+      }).then(response => {
+        let pageList = response.data
+        this.listItem = pageList.list
+        this.$refs.list.paging = {
+          curPage: pageList.curPage,
+          totalCount: pageList.totalCount,
+        }
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
+    }, // handleSearch
+
     getNewItem () {
       return {
         id: '',
@@ -63,6 +81,7 @@ export default {
         },
       }
     }, // getNewItem
+
     initData (item) {
       let newItem = this.getNewItem()
       if (!item.sendSystem) {

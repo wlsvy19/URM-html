@@ -67,16 +67,18 @@
         <el-form-item :label="$t('label.isMapping')">
           <el-checkbox v-model="item.dataMapYN"/>
         </el-form-item>
-        <el-form-item label="Request" v-if="item.dataMapYN">
-          <el-input v-model="item.reqDataMappingId" class="size-id" readonly>
-            <i slot="suffix" class="el-input__icon el-icon-close"></i>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="Response" v-if="item.dataMapYN">
-          <el-input v-model="item.resDataMappingId" class="size-id" readonly>
-            <i slot="suffix" class="el-input__icon el-icon-close"></i>
-          </el-input>
-        </el-form-item>
+        <div class="row" v-show="item.dataMapYN">
+          <el-form-item label="Request">
+            <el-input v-model="item.reqDataMappingId" class="size-id" readonly>
+              <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('req')"/>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="Response">
+            <el-input v-model="item.resDataMappingId" class="size-id" readonly>
+              <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('res')"/>
+            </el-input>
+          </el-form-item>
+        </div>
       </div>
       <hr/>
       <div class="row">
@@ -100,7 +102,7 @@
             </el-form-item>
           </div>
           <!-- DB -->
-          <div class="row" v-if="item.sendSystemType === '2'">
+          <div class="row" v-show="item.sendSystemType === '2'">
             <el-form-item :label="$t('label.sourceQuery')">
               <el-input v-model="item.sqlPlain" style="width: 390px;" readonly/>
             </el-form-item>
@@ -174,18 +176,19 @@
       <hr/>
       <div class="row">
         <el-form-item :label="$t('label.attachmentFile')">
-          <el-input v-model="item.infFileName" @click.native="changeInfFile"/>
+          <el-input v-model="item.infFileName" @click.native="changeInfFile" readonly/>
           <input type="file" ref="infFile" @change="handleChangeInfFile" style="display: none;"/>
         </el-form-item>
       </div>
     </el-form>
 
-    <el-dialog :visible.sync="systemListShow" width="1300px" top="8vh" append-to-body :close-on-click-modal="false">
-      <SystemList ref="sysList" :onlySearch="true" :sysTypes="sysTypes" @row-dblclick="cbSystemRowClick"/>
+    <el-dialog :visible.sync="systemListShow" width="1300px" top="5vh" append-to-body :close-on-click-modal="false">
+      <SystemList ref="sysList" :items="systems" :onlySearch="true" :sysTypes="sysTypes"
+        @search="searchSystemList" @row-dblclick="cbSystemRowClick"/>
     </el-dialog>
 
-    <el-dialog :visible.sync="userListShow" width="1080px" top="8vh" append-to-body :close-on-click-modal="false">
-      <UserList ref="usrList" :onlySearch="true" @row-dblclick="cbUserRowClick"/>
+    <el-dialog :visible.sync="userListShow" width="1080px" top="5vh" append-to-body :close-on-click-modal="false">
+      <UserList ref="usrList" :items="users" :onlySearch="true" @search="searchUserList" @row-dblclick="cbUserRowClick"/>
     </el-dialog>
   </div>
 </template>
@@ -193,6 +196,7 @@
 <script>
 import RuleEditor from './RuleEditor'
 import RuleUtil from '@/components/rule/RuleUtil'
+
 import UserList from '@/components/manage/list/UserList'
 
 export default {
@@ -223,6 +227,8 @@ export default {
   data() {
     return {
       tgtType: '',
+      systems: null,
+      users: null,
       systemListShow: false,
       userListShow: false,
     }
@@ -254,6 +260,10 @@ export default {
         //item.rcvAdminId = this.props.userInfo.id
       }
 
+      if (!item.dataMapYN) {
+        item.reqDataMappingId = null
+        item.resDataMappingId = null
+      }
       if (item.sendSystemType !== '2') {
         item.sqlPlain = null
         item.sql = null
@@ -317,21 +327,19 @@ export default {
     }, // changeInfFile
 
     handleChangeInfFile (e) {
-      const loading = this.$startLoading()
       let file = e.target.files[0]
 
       let formData = new FormData()
       formData.append('file', file, file.name)
 
-      let url = '/api/request/upload'
+      const loading = this.$startLoading()
       this.$http({
         method : 'POST',
-        url: url,
+        url: '/api/request/upload',
         data: formData,
       }).then(response => {
-        let res = response.data
-        this.$message({message: this.$t('message.0007') + ' - ' + res, type: 'success'})
-        this.item.infFileName = e.target.file.name
+        this.$message({message: this.$t('message.0007') + ' - ' + response.data, type: 'success'})
+        this.item.infFileName = file.name
       }).catch(error => {
         this.$handleHttpError(error)
       }).finally(() => {
@@ -339,10 +347,55 @@ export default {
       })
     }, // handleChangeInfFile
 
+    handleClear (type) {
+      switch (type) {
+        case 'req':
+          this.item.reqDataMappingId = null
+          break
+        case 'res':
+          this.item.resDataMappingId = null
+          break
+      }
+    }, // handleClear
+
     showSystemList (type) {
-      this.tgtType = type
-      this.systemListShow = true
+      if (!this.$refs.sysList) {
+        let sType = (type === 'send') ? this.item.sendSystemType : this.item.rcvSystemType
+        this.searchSystemList(() => {
+          this.systemListShow = true
+          this.$nextTick(() => {
+            this.$refs.sysList.sparam.type = sType
+          })
+        }, sType)
+      } else if (type !== this.$refs.sysList.sparam.type) {
+        if (type === 'send') {
+          this.$refs.sysList.sparam.type = this.item.sendSystemType
+        } else if (type === 'rcv') {
+          this.$refs.sysList.sparam.type = this.item.rcvSystemType
+        }
+        this.searchSystemList(() => {
+          this.systemListShow = true
+        })
+      } else {
+        this.systemListShow = true
+      }
+      this.sysType = type
     }, // showSystemList
+
+    searchSystemList (cbFunc, type) {
+      let sparam = this.$refs.sysList ? this.$refs.sysList.sparam : {type: type}
+      const loading = this.$startLoading()
+      this.$http.get('/api/system', {
+        params: sparam
+      }).then(response => {
+        this.systems = response.data
+        typeof cbFunc === 'function' && cbFunc()
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
+    }, // searchSystemList
 
     cbSystemRowClick (row) {
       if (this.tgtType === 'send') {
@@ -357,8 +410,29 @@ export default {
     
     showUserList (type) {
       this.tgtType = type
-      this.userListShow = true
+      if (!this.users) {
+        this.searchUserList(() => {
+          this.userListShow = true
+        })
+      } else {
+        this.userListShow = true
+      }
     }, // showUserList
+
+    searchUserList (cbFunc) {
+      let sparam = this.$refs.usrList ? this.$refs.usrList.sparam : {}
+      const loading = this.$startLoading()
+      this.$http.get('/api/user', {
+        params: sparam
+      }).then(response => {
+        this.users = response.data
+        typeof cbFunc === 'function' && cbFunc()
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
+    }, // searchUserList
 
     cbUserRowClick (row) {
       if (this.tgtType === 'send') {

@@ -1,7 +1,7 @@
 <template>
   <div class="urm-editor">
     <div class="editor-buttons">
-      <el-button @click="downloadExcel" plain>Excel 내려받기</el-button>
+      <el-button @click="downloadExcel" :disabled="isNew" plain>Excel 내려받기</el-button>
       <el-button @click="clickSave" plain>{{$t('label.save')}}</el-button>
     </div>
     <el-form label-width="135px" :inline="true">
@@ -28,34 +28,51 @@
       </div>
       <FieldTable ref="fieldTable" :data="item.fields"/>
     </div>
+
+    <el-dialog :visible.sync="excelDataShow" width="1000px" top="8vh"
+      append-to-body :close-on-click-modal="false" :destroy-on-close="true">
+      <ExcelData @confirm="handleConfirm"/>
+    </el-dialog>
+
+    <el-dialog :visible.sync="queryDataShow" width="1000px" top="8vh"
+      append-to-body :close-on-click-modal="false" :destroy-on-close="true">
+      <QueryData @confirm="handleConfirm"/>
+    </el-dialog>
   </div>
 </template>
 <script>
 import RuleEditor from './RuleEditor'
 
 import FieldTable from './data/FieldTable'
+import ExcelData from './data/ExcelData'
+import QueryData from './data/QueryData'
 
 export default {
   mixins: [RuleEditor],
   components: {
     FieldTable,
+    ExcelData,
+    QueryData,
   },
   data () {
     return {
+      excelDataShow: false,
+      queryDataShow: false,
+      fields: [],
     }
   },
 
   methods: {
     downloadExcel () {
-      console.log('download')
+      window.open('api/data/excel/download?dataId=' + this.item.id, '_blank')
     }, // downloadExcel
 
     addByExcel () {
-      console.log('add by excel')
+      this.excelDataShow = true
     }, // addByExcel
     
     addByQuery () {
-      console.log('add by query')
+      this.queryDataShow = true
     },
 
     copyData () {
@@ -63,7 +80,6 @@ export default {
     },
 
     clickAppend () {
-      console.log('append', this.item)
       let fields = this.item.fields
       fields.push({
         sno: (fields.length + 1),
@@ -77,10 +93,7 @@ export default {
     clickRemove () {
       let checkedList = this.$refs.fieldTable.selection
       if (checkedList.length <= 0) {
-        this.$message({
-          message: 'Please select an item to remove.',
-          type: 'warning',
-        })
+        this.$message.warning(this.$t('message.1005'))
         return
       }
       let fields = this.item.fields
@@ -102,6 +115,12 @@ export default {
       })
     }, // refreshIndex
 
+    handleConfirm (fields) {
+      console.log(fields)
+      this.excelDataShow = false
+      this.queryDataShow = false
+    }, // handleConfirm
+
     customValidator () {
       let item = this.item
       if (!item.fields || item.fields.length === 0) {
@@ -113,9 +132,12 @@ export default {
   }, // methods
 
   computed: {
+    isNew: function () {
+      return !this.item.id || this.item.id.length === 0
+    },
     existField: function () {
       return this.item.fields && this.item.fields.length > 0
-    }
+    },
   }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
   <el-table ref="map" :data="data" border class="table-striped">
-    <el-table-column type="selection" width="40"/>
+    <el-table-column type="selection" width="40" v-if="!isTemplate"/>
     <el-table-column :label="$t('label.index')" prop="sno" width="70" align="center"/>
     <el-table-column :label="$t('label.fieldName')" width="150" class-name="edit-cell">
         <template slot-scope="scope">
@@ -59,7 +59,11 @@ export default {
       default: function () {
         return []
       }
-    }
+    },
+    isTemplate: {
+      type: Boolean,
+      default: false,
+    },
   },
   components: {
     YesNoSelect,

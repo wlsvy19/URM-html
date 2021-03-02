@@ -7,48 +7,37 @@ export default {
       type: Boolean,
       default: false,
     },
+    items: {
+      type: Array,
+      default: function () {
+        return []
+      },
+    },
   },
   data () {
     return {
+      listHeight: 'calc(100vh - 165px)',
       sparam: {
         id: '',
         name: '',
       },
-      items: [],
     }
   },
 
   methods: {
     search () {
-      const loading = this.$startLoading()
-      console.log('search : ' + this.path, this.sparam)
-      this.$http.get('/api/' + this.path, {
-        params: this.sparam,
-      }).then(response => {
-        this.items = response.data
-        console.log(response.data)
-      }).catch(error => {
-        console.log('catch')
-        this.$handleHttpError(error)
-      }).finally(() => {
-        console.log('finally')
-        loading.close()
-      })
-    }, // search
+      this.$emit('search', this.sparam)
+    }, // handleSearch
 
     clickEdit (id) {
       this.$emit('edit', id)
     }, // clickEdit
 
-    clickTransfer(id){
-      this.$emit('transfer', id);
-    },
-
     clickDelete (key) {
       let ids = []
       if (key === 'selected') {
-        let checkedList = this.$refs.table.selection
-        if (checkedList.length <= 0) {
+        ids = this.$refs.table.selection.map((it) => it.id)
+        if (ids.length <= 0) {
           this.$message({message: this.$t('message.1004'), type: 'warning'})
           return
         }
@@ -64,10 +53,9 @@ export default {
       }
       this.$confirm('정말 삭제 하시겠습니까?', confirmProp).then(() => {
         const loading = this.$startLoading()
-        let url = '/api/' + this.path + '/delete'
         this.$http({
           method : 'POST',
-          url: url,
+          url: '/api/' + this.path + '/delete',
           data: ids,
         }).then(response => {
           let res = response.data
@@ -106,7 +94,9 @@ export default {
   }, // methods
 
   mounted () {
-    this.search()
+    if (!this.items) {
+      this.search()
+    }
   },
 }
 </script>

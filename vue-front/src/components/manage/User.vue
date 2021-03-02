@@ -1,9 +1,9 @@
 <template>
   <div class="urm-panel">
-    <UserList ref="list" @edit="handleEdit"/>
+    <UserList ref="list" :items="listItem" @search="handleSearch" @edit="handleEdit"/>
 
     <el-dialog :visible.sync="editorShow" width="875px">
-      <UserEditor ref="editor" :item="editorItem" @save="handleSave"/>
+      <UserEditor :item="editorItem" @save="handleSave"/>
     </el-dialog>
   </div>
 </template>
@@ -19,22 +19,31 @@ export default {
   },
   data () {
     return {
+      path: 'user',
+      listItem: null,
       editorShow: false,
       editorItem: null,
     }
   },
   methods: {
-    getNewItem () {
-      return {
-        id: '',
-        authId: '0',
-      }
-    }, // getNewItem
+    handleSearch (sparam) {
+      const loading = this.$startLoading()
+      console.log('search : ' + this.path, sparam)
+      this.$http.get('/api/' + this.path, {
+        params: sparam,
+      }).then(response => {
+        this.listItem = response.data
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
+    }, // handleSearch
 
     handleEdit (id) {
-      console.log('edit', id)
       if (id) {
-        this.$http.get('/api/user/' + id, {
+        console.log('edit : ' + id)
+        this.$http.get('/api/' + this.path + '/' + id, {
         }).then(response => {
           this.editorItem = response.data
           this.editorItem.password = ''
@@ -50,24 +59,27 @@ export default {
       console.log('save', item)
       this.$http({
         method : 'POST',
-        url: '/api/user',
+        url: '/api/' + this.path,
         data: item,
       }).then(response => {
-        let data = response.data
-        this.$message({message: this.$t('message.0001'), type: 'success'})
-        item.id = data.id
-        this.updatedItem(item)
+        this.$message.success(this.$t('message.0001'))
+        item.id = response.data.id
+        this.updatedItem()
       }).catch(error => {
-        this.$message({
-          message: this.$t('message.1001') + '[' + error.response.statusText + ']',
-          type: 'warning',
-        })
+        this.$message.warning(this.$t('message.1001') + '[' + error.response.statusText + ']')
       })
     }, // handleSave
 
     updatedItem () {
       this.$refs.list.search()
     }, // updatedItem
+
+    getNewItem () {
+      return {
+        id: '',
+        authId: '0',
+      }
+    }, // getNewItem
   },
 }
 </script>

@@ -3,22 +3,22 @@
     <div class="search-bar">
       <el-form :inline="true">
         <el-form-item :label="$t('label.systemId')">
-          <el-input v-model="sparam.id" class="search-id"/>
+          <el-input v-model="sparam.id" class="search-id" @change="search"/>
         </el-form-item>
         <el-form-item :label="$t('label.systemName')">
-          <el-input v-model="sparam.name" class="search-name"/>
+          <el-input v-model="sparam.name" class="search-name" @change="search"/>
         </el-form-item>
         <el-form-item :label="$t('label.host')">
-          <el-input v-model="sparam.hostId" class="search-id"/>
+          <el-input v-model="sparam.hostId" class="search-id" @change="search"/>
         </el-form-item>
         <el-form-item :label="$t('label.systemType')">
-          <el-select v-model="sparam.type" class="search-id">
+          <el-select v-model="sparam.type" class="search-id" @change="search">
             <el-option value="" label="ALL"/>
             <el-option v-for="type in sysTypes" :value="type.code" :label="type.name" :key="type.code"/>
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('label.devType')">
-          <el-select v-model="sparam.devType" class="search-id">
+          <el-select v-model="sparam.devType" class="search-id" @change="search">
             <el-option value="" label="ALL"/>
             <el-option v-for="type in devTypes" :value="type.code" :label="type.name" :key="type.code"/>
           </el-select>
@@ -54,7 +54,7 @@
         </template>
       </el-table-column>
       <el-table-column :label="$t('label.dbName')" prop="dbName" width="155" :show-overflow-tooltip="true"/>
-      <el-table-column width="85" class-name="edit-cell operations">
+      <el-table-column width="85" class-name="edit-cell operations" v-if="!onlySearch">
         <template slot-scope="scope">
           <div>
             <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
@@ -76,7 +76,9 @@ export default {
     sysTypes: {
       type: Array,
       default: function () {
-        return []
+        console.log('set default sysTypes')
+        let kind = RuleUtil.CODEKEY.sysType
+        return this.$store.state.codes.filter(code => (code.kind === kind))
       }
     },
     devTypes: {
@@ -91,7 +93,6 @@ export default {
   data () {
     return {
       path: 'system',
-      listHeight: 'calc(100vh - 165px)',
       sparam: {
         ...this.sparam,
         type: '',

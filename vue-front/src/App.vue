@@ -37,6 +37,10 @@ div.row {
   display: flex;
 }
 
+.pointer {
+  cursor: pointer;
+}
+
 .urm-panel {
   margin: 0 30px;
   min-width: 1300px;
