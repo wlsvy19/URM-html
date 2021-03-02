@@ -36,8 +36,6 @@ import com.ism.urm.vo.PagingResult;
 import com.ism.urm.vo.RelationOp;
 import com.ism.urm.vo.RelationOp.OpType;
 import com.ism.urm.vo.RelationOp.ValueType;
-import com.ism.urm.vo.rule.data.Data;
-import com.ism.urm.vo.rule.data.Field;
 import com.ism.urm.vo.rule.request.Request;
 import com.ism.urm.vo.rule.request.RequestHistory;
 

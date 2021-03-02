@@ -1,9 +1,11 @@
 <template>
   <div class="urm-panel">
-    <SystemList ref="list" :sysTypes="sysTypes" :devTypes="devTypes" @edit="handleEdit"/>
+    <SystemList ref="list" :items="listItem"
+      :sysTypes="sysTypes" :devTypes="devTypes" @search="handleSearch" @edit="handleEdit"/>
    
     <el-dialog :visible.sync="editorShow" width="1068px">
-      <SystemEditor ref="editor" :item="editorItem" :sysTypes="sysTypes" :devTypes="devTypes" @save="handleSave"/>
+      <SystemEditor :item="editorItem"
+        :sysTypes="sysTypes" :devTypes="devTypes" @save="handleSave"/>
     </el-dialog>
   </div>
 </template> 
@@ -31,10 +33,11 @@ export default {
     }, // getNewItem
     initData (item) {
       let newItem = this.getNewItem()
+      item.userPasswd = ''
       if (!item.fields) {
         item.fields = newItem.fields
       }
-    }
+    }, // initData
   },
   computed: {
     sysTypes: function () {

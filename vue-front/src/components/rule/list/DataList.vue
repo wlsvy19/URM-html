@@ -3,13 +3,13 @@
     <div class="search-bar">
       <el-form :inline="true">
         <el-form-item :label="$t('label.dataId')">
-          <el-input v-model="sparam.id" class="search-id"/>
+          <el-input v-model="sparam.id" class="search-id" @change="search"/>
         </el-form-item>
         <el-form-item :label="$t('label.dataName')">
-          <el-input v-model="sparam.name" class="search-name"/>
+          <el-input v-model="sparam.name" class="search-name" @change="search"/>
         </el-form-item>
         <el-form-item :label="$t('label.dataType')">
-          <el-select v-model="sparam.type" class="search-id">
+          <el-select v-model="sparam.type" class="search-id" @change="search">
             <el-option value="" label="ALL"/>
             <el-option v-for="type in dataTypes" :value="type.code" :label="type.name" :key="type.code"/>
           </el-select>
@@ -37,7 +37,7 @@
           <span>{{scope.row.regDate}}</span>
         </template>
       </el-table-column>
-      <el-table-column width="115" class-name="edit-cell operations">
+      <el-table-column width="115" class-name="edit-cell operations" v-if="!onlySearch">
         <template slot-scope="scope">
           <div>
             <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
@@ -58,7 +58,6 @@ export default {
   data () {
     return {
       path: 'data',
-      listHeight: 'calc(100vh - 165px)',
       sparam: {
         ...this.sparam,
         type: '',

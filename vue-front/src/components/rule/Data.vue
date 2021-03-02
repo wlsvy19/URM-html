@@ -1,9 +1,9 @@
 <template>
   <div class="urm-panel">
-    <DataList ref="list" @edit="handleEdit"/>
+    <DataList ref="list" :items="listItem" @search="handleSearch" @edit="handleEdit"/>
 
     <el-dialog :visible.sync="editorShow" width="1080px">
-      <DataEditor ref="editor" :item="editorItem" @save="handleSave"/>
+      <DataEditor :item="editorItem" @save="handleSave"/>
     </el-dialog>
   </div>
 </template>

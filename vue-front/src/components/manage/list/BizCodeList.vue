@@ -3,19 +3,19 @@
     <div class="search-bar">
       <el-form :inline="true">
         <el-form-item :label="$t('label.bizNm')">
-          <el-input v-model="sparam.name" class="search-id" prop="part1Name"/>
+          <el-input v-model="sparam.name" class="search-id" @change="search"/>
         </el-form-item>
         <el-form-item :label="$t('label.biz.level1.code')">
-          <el-input v-model="sparam.part1Id" class="search-name"/>
+          <el-input v-model="sparam.part1Id" class="search-id" @change="search"/>
         </el-form-item>
         <el-form-item :label="$t('label.biz.level1.name')">
-          <el-input v-model="sparam.part1Name" class="search-id" readonly/>
+          <el-input v-model="sparam.part1Name" class="search-id" @change="search"/>
         </el-form-item>
         <el-form-item :label="$t('label.biz.level2.code')">
-          <el-input v-model="sparam.part2Id" class="search-id" readonly/>
+          <el-input v-model="sparam.part2Id" class="search-id" @change="search"/>
         </el-form-item>
         <el-form-item :label="$t('label.biz.level2.name')">
-          <el-input v-model="sparam.part2Name" class="search-id" readonly/>
+          <el-input v-model="sparam.part2Name" class="search-id" @change="search"/>
         </el-form-item>
       </el-form>
       <div class="search-buttons">
@@ -25,24 +25,49 @@
       </div>
     </div>
 
-    <el-table ref="table" :data="items" :height="listHeight" border class="table-striped">
-      <el-table-column type="selection" width="40"/>
-      <el-table-column :label="$t('label.bizId')" prop="id" width="145"/>
-      <el-table-column :label="$t('label.bizNm')" prop="name"/>
-      <el-table-column :label="$t('label.biz.level1.code')" prop="part1Id"/>
-      <el-table-column :label="$t('label.biz.level1.name')" prop="part1Name"/>
-      <el-table-column :label="$t('label.biz.level2.code')" prop="part2Id"/>
-      <el-table-column :label="$t('label.biz.level2.name')" prop="part2Name"/>
-      <el-table-column :label="$t('label.auth')" width="170">
+    <el-table ref="table" :data="items" @row-dblclick="handleRowDblclick" :height="listHeight"
+        border class="table-striped" :row-key="$randomRowKey" :cell-class-name="cellClass">
+      <el-table-column type="selection" width="40" v-if="!onlySearch"/>
+      <el-table-column :label="$t('label.bizId')" prop="id" width="130"/>
+      <el-table-column :label="$t('label.bizNm')" width="200">
         <template slot-scope="scope">
-          <span>{{getAuthStr(scope.row.authId)}}</span>
+          <span v-if="!scope.row.editable">{{scope.row.name}}</span>
+          <el-input v-model="scope.row.name" v-if="scope.row.editable"/>
         </template>
       </el-table-column>
-      <el-table-column width="100" class-name="edit-cell operations">
+      <el-table-column :label="$t('label.biz.level1.code')">
         <template slot-scope="scope">
-          <div>
-            <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
-            <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row.id)" plain/>
+          <span v-if="!scope.row.editable">{{scope.row.part1Id}}</span>
+          <el-input v-model="scope.row.part1Id" v-if="scope.row.editable"/>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('label.biz.level1.name')">
+        <template slot-scope="scope">
+          <span v-if="!scope.row.editable">{{scope.row.part1Name}}</span>
+          <el-input v-model="scope.row.part1Name" v-if="scope.row.editable"/>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('label.biz.level2.code')">
+        <template slot-scope="scope">
+          <span v-if="!scope.row.editable">{{scope.row.part2Id}}</span>
+          <el-input v-model="scope.row.part2Id" v-if="scope.row.editable"/>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('label.biz.level2.name')">
+        <template slot-scope="scope">
+          <span v-if="!scope.row.editable">{{scope.row.part2Name}}</span>
+          <el-input v-model="scope.row.part2Name" v-if="scope.row.editable"/>
+        </template>
+      </el-table-column>
+      <el-table-column width="85" class-name="edit-cell operations" v-if="!onlySearch">
+        <template slot-scope="scope">
+          <div v-if="!scope.row.editable">
+            <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row)"/>
+            <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row)" plain/>
+          </div>
+          <div v-if="scope.row.editable">
+            <el-button icon="el-icon-receiving" @click.stop="clickSave(scope.row)"/>
+            <el-button icon="el-icon-circle-close" @click.stop="clickCancel(scope.row)"/>
           </div>
         </template>
       </el-table-column>
@@ -57,35 +82,44 @@ export default {
       type: Boolean,
       default: false,
     },
+    items: {
+      type: Array,
+      default: function () {
+        return []
+      },
+    },
   },
   data () {
     return {
       listHeight: 'calc(100vh - 165px)',
       sparam: {
-        id: '',
         name: '',
+        part1Id: '',
+        part1Name: '',
+        part2Id: '',
+        part2Name: '',
       },
-      items: [],
     }
   },
   methods: {
     search () {
-      const loading = this.$startLoading()
-      let url = '/api/code/business'
-      console.log('search : ' + url, this.sparam)
-      this.$http.get(url, {
-        params: this.sparam,
-      }).then(response => {
-        this.items = response.data
-      }).catch(error => {
-        this.$handleHttpError(error)
-      }).finally(() => {
-        loading.close()
-      })
+      this.$emit('search', this.sparam)
     }, // search
 
-    clickEdit (id) {
-      this.$emit('edit', id)
+    clickEdit (row) {
+      if (row) {
+        console.log('edit', row)
+        row.editable ? (row.editable = true) : this.$set(row, 'editable', true)
+      } else {
+        this.items.push({
+          editable: true,
+          name: '',
+          part1Id: '',
+          part1Name: '',
+          part2Id: '',
+          part2Name: '',
+        })
+      }
     }, // clickEdit
 
     clickDelete (key) {
@@ -96,8 +130,17 @@ export default {
           this.$message({message: this.$t('message.1004'), type: 'warning'})
           return
         }
+        // TODO handle added item
+      } else if (key.id) {
+        ids.push(key.id)
       } else {
-        ids.push(key)
+        this.items.some((it, idx) => {
+          if (it.__randomKey__ == key.__randomKey__) {
+            this.items.splice(idx, 1)
+            return true
+          }
+        })
+        return
       }
       let confirmProp = {
         confirmButtonText: 'YES',
@@ -108,10 +151,9 @@ export default {
       }
       this.$confirm('정말 삭제 하시겠습니까?', confirmProp).then(() => {
         const loading = this.$startLoading()
-        let url = '/api/code/business/delete'
         this.$http({
           method : 'POST',
-          url: url,
+          url: '/api/code/business/delete',
           data: ids,
         }).then(response => {
           let res = response.data
@@ -131,20 +173,50 @@ export default {
       }).catch(() => {})
     }, // clickDelete
 
-    getAuthStr (key) {
-      let auths = this.$store.state.auths
-      let obj = {}
-      auths.some((auth) => {
-        if (auth.id === key) {
-          obj = auth
-          return auth
-        }
+    clickSave (row) {
+      if (!row.part2Id || row.part2Id.trim().length === 0) {
+        this.$message.warning('Level2 ID 를 입력하세요.')
+        return false
+      }
+      if (!row.part2Name || row.part2Name.trim().length === 0) {
+        this.$message.warning('Level2 명 을 입력하세요.')
+        return false
+      }
+
+      console.log('save', row)
+      const loading = this.$startLoading()
+      this.$http({
+        method : 'POST',
+        url: '/api/code/business',
+        data: row,
+      }).then(() => {
+        this.$message.success('저장 되었습니다.')
+        this.search()
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
       })
-      return obj.name
-    }, // getAuthStr
+    }, // clickSave
+
+    clickCancel (row) {
+      row.editable = false
+    }, // clickCancel
+
+    handleRowDblclick (row) {
+      this.$emit('row-dblclick', row)
+    }, // handleRowDblclick
+
+    cellClass (scope) {
+      if (scope.row.editable && 1 < scope.columnIndex && scope.columnIndex < 7) {
+        return 'edit-cell'
+      }
+    }, // cellClass
   },
   mounted () {
-    this.search()
-  }
+    if (!this.onlySearch) {
+      this.search()
+    }
+  },
 }
 </script>

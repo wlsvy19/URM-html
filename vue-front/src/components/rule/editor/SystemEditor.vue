@@ -46,28 +46,30 @@
           <el-input v-model="item.userPasswd" class="size-id"/>
         </el-form-item>
       </div>
-      <div class="row" v-if="item.type === '2'">
-        <el-form-item :label="$t('label.dbType')">
-          <el-select v-model="item.dbType" class="size-id">
-            <el-option v-for="type in dbTypes" :value="type.code" :label="type.name" :key="type.code"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('label.jdbcType')">
-          <el-select v-model="item.jdbcType" class="size-id">
-            <el-option value="1" label="1"/>
-            <el-option value="2" label="2"/>
-            <el-option value="3" label="3"/>
-            <el-option value="4" label="4"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('label.dbName')">
-          <el-input v-model="item.dbName" class="size-name"/>
-        </el-form-item>
-      </div>
-      <div class="row" v-if="item.type === '2'">
-        <el-form-item :label="$t('label.connectParam')">
-          <el-input type="textarea" v-model="item.dbParams"/>
-        </el-form-item>
+      <div v-show="item.type === '2'">
+        <div class="row">
+          <el-form-item :label="$t('label.dbType')">
+            <el-select v-model="item.dbType" class="size-id">
+              <el-option v-for="type in dbTypes" :value="type.code" :label="type.name" :key="type.code"/>
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('label.jdbcType')">
+            <el-select v-model="item.jdbcType" class="size-id">
+              <el-option value="1" label="1"/>
+              <el-option value="2" label="2"/>
+              <el-option value="3" label="3"/>
+              <el-option value="4" label="4"/>
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('label.dbName')">
+            <el-input v-model="item.dbName" class="size-name"/>
+          </el-form-item>
+        </div>
+        <div class="row">
+          <el-form-item :label="$t('label.connectParam')">
+            <el-input type="textarea" v-model="item.dbParams"/>
+          </el-form-item>
+        </div>
       </div>
       <div class="row">
         <el-form-item :label="$t('label.etcRemark')">

@@ -88,7 +88,9 @@ export default {
   methods: {
     handleSelect (key, keyPath) {
       console.log(key, keyPath)
-      this.$router.push(key)
+      if (this.$router.currentRoute.path !== key) {
+        this.$router.push(key)
+      }
     }, // handleSelect
   }, // methods
 
@@ -96,7 +98,7 @@ export default {
     let routePath = this.$route.path
     console.log('TopMenu mounted', routePath)
     if (routePath && routePath.length > 0) {
-      this.activePage = routePath.substring(1)
+      this.activePage = routePath //routePath.substring(1)
       if (this.activePage === '')  {
         this.activePage = 'main'
       }

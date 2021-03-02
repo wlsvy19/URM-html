@@ -1,9 +1,12 @@
 <template>
-  <div>
-    <el-form>
+  <div class="urm-editor">
+    <div class="editor-buttons">
+      <el-button @click="clickConfirm">{{$t('label.confirm')}}</el-button>
+    </div>
+    <el-form :inline="true">
       <div class="row">
         <el-form-item label="시스템">
-          <el-input v-model="sparam.systemId" class="size-id" readonly/>
+          <el-input v-model="sparam.systemId" class="size-id" @click.native="showSystemList" readonly/>
         </el-form-item>
         <el-form-item label="Type">
           <el-select v-model="sparam.type" class="size-id">
@@ -21,14 +24,20 @@
         </el-form-item>
       </div>
     </el-form>
+    <FieldTable :data="fields" :isTemplate="true"/>
 
-    <el-dialog title="System List" :visible.sync="systemListShow" width="95%" top="8vh" append-to-body :close-on-click-modal="false">
-      <SystemList :onlySearch="true" @row-dblclick="cbSystemRowClick"/>
+    <el-dialog :visible.sync="systemListShow" width="1300px" top="8vh" append-to-body :close-on-click-modal="false">
+      <SystemList ref="sysList" :items="systems" :onlySearch="true" @search="searchSystemList" @row-dblclick="cbSystemRowClick"/>
     </el-dialog>
   </div>
 </template>
 <script>
+import FieldTable from './FieldTable'
+
 export default {
+  components: {
+    FieldTable,
+  },
   data () {
     return {
       sparam: {
@@ -36,10 +45,16 @@ export default {
         type: 0,
         query: '',
       },
+      fields: [],
+      systems: null,
       systemListShow: false,
     }
   },
   methods: {
+    clickConfirm () {
+      this.$emit('confirm', this.fields)
+    },
+
     getStructure () {
       let systemId = this.sparam.systemId
       if(!systemId || systemId.trim().length === 0) {
@@ -48,18 +63,54 @@ export default {
       }
       let query = this.sparam.query
       if(!query || query.trim().length === 0) {
-        if(type === 0) {
+        if(this.sparam.type === 0) {
           this.$message({message: "테이블 명을 넣어주세요.", type: 'warning'})
         } else {
           this.$message({message: "SELECT 문을 넣어주세요.", type: 'warning'})
         }
         return
       }
-      this.$emit('get', this.sparam)
+
+      const loading = this.$startLoading()
+      this.$http.get('/api/data/field/query', {
+        params: this.sparam,
+      }).then(response => {
+        this.fields = response.data
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
     }, // getStructure
 
-    cbSystemRowClick (row) {
+    showSystemList () {
+      if (!this.systems) {
+        this.searchSystemList(() => {
+          this.systemListShow = true
+        })
+      } else {
+        this.systemListShow = true
+      }
+    }, // showSystemList
 
+    searchSystemList (cbFunc) {
+      let sparam = this.$refs.sysList ? this.$refs.sysList.sparam : {}
+      const loading = this.$startLoading()
+      this.$http.get('/api/system', {
+        params: sparam
+      }).then(response => {
+        this.systems = response.data
+        typeof cbFunc === 'function' && cbFunc()
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
+    }, // searchSystemList
+
+    cbSystemRowClick (row) {
+      this.sparam.systemId = row.id
+      this.systemListShow = false
     }, // cbSystemRowClick
   }
 }

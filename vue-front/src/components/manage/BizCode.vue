@@ -1,6 +1,6 @@
 <template>
   <div class="urm-panel">
-    <BizList ref="list" @edit="handleEdit"/>
+    <BizList :items="listItem" @search="handleSearch"/>
   </div>
 </template>
 
@@ -13,45 +13,23 @@ export default {
   },
   data () {
     return {
+      listItem: [],
     }
   },
   methods: {
-    handleEdit (id) {
-      console.log('edit', id)
-      if (id) {
-        this.$http.get('/api/code/business/' + id, {
-        }).then(response => {
-          this.editorItem = response.data
-          this.editorShow = true
-        })
-      } else {
-        this.editorItem = {}
-        this.editorShow = true
-      }
-    }, // handleEdit
-
-    handleSave (item) {
-      console.log('save', item)
-      this.$http({
-        method : 'POST',
-        url: '/api/code/business',
-        data: item,
+    handleSearch (sparam) {
+      const loading = this.$startLoading()
+      console.log('search : bisuness code', sparam)
+      this.$http.get('/api/code/business', {
+        params: sparam,
       }).then(response => {
-        let data = response.data
-        this.$message({message: this.$t('message.0001'), type: 'success'})
-        item.id = data.id
-        this.updatedItem(item)
+        this.listItem = response.data
       }).catch(error => {
-        this.$message({
-          message: this.$t('message.1001') + '[' + error.response.statusText + ']',
-          type: 'warning',
-        })
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
       })
-    }, // handleSave
-
-    updatedItem () {
-      this.$refs.list.search()
-    }, // updatedItem
+    }
   },
 }
 </script>

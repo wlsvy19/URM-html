@@ -4,19 +4,19 @@
       <el-form label-width="135px">
         <div class="row" style="margin-top: 10px;">
           <el-form-item :label="$t('label.interfaceId')">
-            <el-input v-model="sparam.interfaceId" class="search-id"/>
+            <el-input v-model="sparam.interfaceId" class="search-id" @change="search"/>
           </el-form-item>
           <el-form-item :label="$t('label.interfaceType')">
-            <el-select v-model="sparam.interfaceType" class="search-id">
+            <el-select v-model="sparam.interfaceType" class="search-id" @change="search">
               <el-option value="" label="ALL"/>
               <el-option v-for="type in infTypes" :value="type.code" :label="type.name" :key="type.code"/>
             </el-select>
           </el-form-item>
           <el-form-item :label="$t('label.requestId')">
-            <el-input v-model="sparam.id" class="search-id"/>
+            <el-input v-model="sparam.id" class="search-id" @change="search"/>
           </el-form-item>
           <el-form-item :label="$t('label.requestName')">
-            <el-input v-model="sparam.name" class="search-name"/>
+            <el-input v-model="sparam.name" class="search-name" @change="search"/>
           </el-form-item>
           <div class="search-buttons">
             <el-button @click.stop="clickTransfer">이관</el-button>
@@ -25,22 +25,22 @@
         <div class="row">
           <el-form-item :label="$t('label.sourceSystem')">
             <el-input v-model="sparam.sendSystemId" class="search-id" @click.native.prevent="showSystemList('send')" readonly>
-              <i slot="suffix" class="el-input__icon el-icon-close" @click.stop="handleClear('sendSys')"/>
+              <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('sendSys')"/>
             </el-input>
           </el-form-item>
           <el-form-item :label="$t('label.sndJobCode')">
             <el-input v-model="sparam.sendJobCodeId" class="search-id" readonly>
-              <i slot="suffix" class="el-input__icon el-icon-close" @click.stop="handleClear('sendBiz')"/>
+              <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('sendBiz')"/>
             </el-input>
           </el-form-item>
           <el-form-item :label="$t('label.changeStatus')">
-            <el-select v-model="sparam.chgStat" class="search-id">
+            <el-select v-model="sparam.chgStat" class="search-id" @change="search">
               <el-option value="" label="ALL"/>
               <el-option v-for="stat in chgStats" :value="stat.code" :label="stat.name" :key="stat.code"/>
             </el-select>
           </el-form-item>
           <el-form-item :label="$t('label.processStatus')">
-            <el-select v-model="sparam.processStat" style="width: 150px">
+            <el-select v-model="sparam.processStat" style="width: 150px" @change="search">
               <el-option value="" label="ALL"/>
               <el-option v-for="stat in procStats" :value="stat.code" :label="stat.name" :key="stat.code"/>
             </el-select>
@@ -53,12 +53,12 @@
         <div class="row">
           <el-form-item :label="$t('label.targetSystem')">
             <el-input v-model="sparam.rcvSystemId" class="search-id" @click.native.prevent="showSystemList('rcv')" readonly>
-              <i slot="suffix" class="el-input__icon el-icon-close" @click.stop="handleClear('sendSys')"/>
+              <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('sendSys')"/>
             </el-input>
           </el-form-item>
           <el-form-item :label="$t('label.rcvJobCode')">
             <el-input v-model="sparam.rcvJobCodeId" class="search-id" readonly>
-              <i slot="suffix" class="el-input__icon el-icon-close" @click.stop="handleClear('sendSys')"/>
+              <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('sendSys')"/>
             </el-input>
           </el-form-item>
           <el-form-item :label="$t('label.lastChangeDate')">
@@ -81,7 +81,7 @@
       </el-form>
     </div>
 
-    <el-table :data="items" :height="listHeight" border class="table-striped">
+    <el-table ref="table" :data="items" :height="listHeight" border class="table-striped">
       <el-table-column type="selection" width="40"/>
       <el-table-column :label="$t('label.id')" prop="id" width="150"/>
       <el-table-column :label="$t('label.changeStatus')" width="115">
@@ -131,8 +131,8 @@
       @size-change="handlePageSizeChange" @current-change="handlePageCurrentChange">
     </el-pagination>
 
-    <el-dialog :visible.sync="systemListShow" width="1300px" top="8vh" append-to-body :close-on-click-modal="false">
-      <SystemList :onlySearch="true" @row-dblclick="cbSystemRowClick"/>
+    <el-dialog :visible.sync="systemListShow" width="1300px" top="5vh" append-to-body :close-on-click-modal="false">
+      <SystemList ref="sysList" :items="systems" :onlySearch="true" @search="searchSystemList" @row-dblclick="cbSystemRowClick"/>
     </el-dialog>
   </div>
 </template>
@@ -181,29 +181,11 @@ export default {
       },
       pageSizes: [15, 30, 50, 100],
       systemListShow: false,
+      systems: null,
       sysType: '',
     }
   },
   methods: {
-    search () {
-      const loading = this.$startLoading()
-      console.log('search : ' + this.path, this.sparam)
-      this.$http.get('/api/' + this.path, {
-        params: this.sparam,
-      }).then(response => {
-        let pageList = response.data
-        this.items = pageList.list
-        this.paging = {
-          curPage: pageList.curPage,
-          totalCount: pageList.totalCount,
-        }
-      }).catch(error => {
-        this.$handleHttpError(error)
-      }).finally(() => {
-        loading.close()
-      })
-    }, // Override search
-
     handlePageSizeChange (val) {
       this.sparam.size = val
       this.search()
@@ -240,9 +222,30 @@ export default {
     }, // handleClear
 
     showSystemList (type) {
-      this.sysType =  type
-      this.systemListShow = true
+      this.sysType = type
+      if (!this.systems) {
+        this.searchSystemList(() => {
+          this.systemListShow = true
+        })
+      } else {
+        this.systemListShow = true
+      }
     }, // showSystemList
+
+    searchSystemList (cbFunc) {
+      let sparam = this.$refs.sysList ? this.$refs.sysList.sparam : {}
+      const loading = this.$startLoading()
+      this.$http.get('/api/system', {
+        params: sparam
+      }).then(response => {
+        this.systems = response.data
+        typeof cbFunc === 'function' && cbFunc()
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
+    }, // searchSystemList
 
     cbSystemRowClick (row) {
       if (this.sysType === 'send') {

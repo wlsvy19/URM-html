@@ -72,6 +72,11 @@ Vue.prototype.$handleHttpError = function (err) {
   }
 } // $handleHttpError
 
+Vue.prototype.$randomRowKey = function (row) {
+  row.__randomKey__ = row.__randomKey__ || Math.random()
+  return row.__randomKey__
+} // $randomRowKey
+
 Vue.prototype.$startLoading = function () {
   const loading = this.$loading({
     lock: true,
