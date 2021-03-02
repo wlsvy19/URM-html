@@ -25,24 +25,16 @@ import ProcessList from './list/RequestProcessList'
 import RuleUtil from '@/components/rule/RuleUtil'
 
 export default {
-  props: {
-    infTypes: {
-      type: Array,
-      default: function () {
-        return []
-      },
-    },
-  },
   computed: {
-    infTypes: fuction () {
-      let kind = 
+    infTypes: function () {
+      let kind = RuleUtil.CODEKEY.infType
+      return this.$store.state.codes.filter(code => (code.kind === kind))
     }
   },
   data () {
     return {
       path: '/api/stat/process/day',
       sparam: {
-        ...this.sparam,
         type: '',
         chgDate: [],
       },

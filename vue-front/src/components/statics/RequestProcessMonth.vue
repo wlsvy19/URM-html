@@ -24,8 +24,15 @@
 
 <script>
 import ProcessList from './list/RequestProcessList'
+import RuleUtil from '@/components/rule/RuleUtil'
 
 export default {
+  computed: {
+    infTypes: function () {
+      let kind = RuleUtil.CODEKEY.infType
+      return this.$store.state.codes.filter(code => (code.kind === kind))
+    }
+  },
   data () {
     return {
       path: '/api/stat/process/month',
