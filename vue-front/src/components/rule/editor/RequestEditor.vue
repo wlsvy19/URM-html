@@ -71,11 +71,13 @@
           <el-form-item label="Request">
             <el-input v-model="item.reqDataMappingId" class="size-id" readonly>
               <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('req')"/>
+              <el-button slot="append" icon="el-icon-search" @click.native="showDataMapList()"/>
             </el-input>
           </el-form-item>
           <el-form-item label="Response">
             <el-input v-model="item.resDataMappingId" class="size-id" readonly>
               <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('res')"/>
+              <el-button slot="append" icon="el-icon-search" @click.native="showDataMapList()"/>
             </el-input>
           </el-form-item>
         </div>
@@ -186,6 +188,10 @@
     <el-dialog :visible.sync="userListShow" width="1080px" top="5vh" append-to-body :close-on-click-modal="false">
       <UserList ref="usrList" :items="users" :onlySearch="true" @search="searchUserList" @row-dblclick="cbUserRowClick"/>
     </el-dialog>
+
+    <el-dialog :visible.sync="dataMapShow" top="7vh" width="1140px" append-to-body :close-on-click-modal="false">
+      <DataMapList ref="dataMapList" :items="dataMap"/>
+    </el-dialog>
   </div>
 </template>
 
@@ -194,6 +200,7 @@ import RuleEditor from './RuleEditor'
 import RuleUtil from '@/components/rule/RuleUtil'
 
 import UserList from '@/components/manage/list/UserList'
+import DataMapList from '@/components/rule/list/DataMapList'
 
 export default {
   mixins: [RuleEditor],
@@ -219,12 +226,15 @@ export default {
   },
   components: {
     UserList,
+    DataMapList,
   },
   data() {
     return {
       tgtType: '',
       userListShow: false,
       users: null,
+      dataMapShow: false,
+      dataMap: null,
     }
   },
   methods: {
@@ -415,6 +425,19 @@ export default {
         loading.close()
       })
     }, // searchUserList
+
+    showDataMapList () {
+      this.dataMapShow = true
+      const loading = this.$startLoading()
+      this.$http.get('/api/datamap', {
+      }).then(response => {
+        this.dataMap = response.data
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
+    },
 
     cbUserRowClick (row) {
       if (this.tgtType === 'send') {
