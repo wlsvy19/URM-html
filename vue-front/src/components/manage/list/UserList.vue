@@ -130,7 +130,7 @@ export default {
       auths.some((auth) => {
         if (auth.id === key) {
           obj = auth
-          return auth
+          return true
         }
       })
       return obj.name

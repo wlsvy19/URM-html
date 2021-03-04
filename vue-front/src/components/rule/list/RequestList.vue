@@ -62,7 +62,8 @@
             </el-input>
           </el-form-item>
           <el-form-item :label="$t('label.lastChangeDate')">
-            <el-date-picker v-model="sparam.chgDate" type="daterange" range-separator="~" start-placeholder="Start Date" end-placeholder="End Date" style="width: 220px;"/>
+            <el-date-picker v-model="sparam.chgDate" type="daterange" range-separator="~"
+              start-placeholder="Start Date" end-placeholder="End Date" style="width: 220px;"/>
           </el-form-item>
           <el-form-item label="등록자" label-width="65px" class="search-check">
             <el-checkbox v-model="sparam.cRegId"/>
@@ -88,12 +89,12 @@
           <span :style="chgStatStyle(scope.row.chgStat)">{{getTypeStr('chgStat', scope.row.chgStat)}}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('label.processStatus')" width="130">
+      <el-table-column :label="$t('label.processStatus')" min-width="85">
         <template slot-scope="scope">
           <span>{{getTypeStr('procStat', scope.row.processStat)}}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('label.interfaceType')" width="80">
+      <el-table-column :label="$t('label.interfaceType')" min-width="70" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           <span>{{getTypeStr('infType', scope.row.interfaceType)}}</span>
         </template>
@@ -112,9 +113,12 @@
       </el-table-column>
       <el-table-column :label="$t('label.sourceSystem')" prop="sendSystem.name" width="110" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.targetSystem')" prop="rcvSystem.name" width="110" :show-overflow-tooltip="true"/>
-      <el-table-column :label="$t('label.lastChangeDate')" prop="chgDate" width="150"/>
+      <el-table-column :label="$t('label.lastChangeDate')" width="145">
+        <template slot-scope="scope">
+          <span>{{getDateStr(scope.row.chgDate, 'yyyy-MM-dd HH:mm')}}</span>
+        </template>
+      </el-table-column>
       <el-table-column width="120" class-name="edit-cell operations">
-
         <template slot-scope="scope">
           <div>
             <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
@@ -131,9 +135,14 @@
       @size-change="handlePageSizeChange" @current-change="handlePageCurrentChange">
     </el-pagination>
 
-    <el-dialog :visible.sync="transferShow" width="900px" top="8vh"
+    <el-dialog :visible.sync="transferShow" width="1200px" top="8vh"
       append-to-body :close-on-click-modal="false" :destroy-on-close="true">
-      <RequestTransfer @confirm="handleConfirm"/>
+      <RequestTransfer ref="transfer" @confirm="handleConfirm" @show-usr-list="showUserList"/>
+    </el-dialog>
+
+    <el-dialog :visible.sync="historyShow" width="1300px" top="8vh"
+      append-to-body :close-on-click-modal="false" :destroy-on-close="true">
+      <RequestHistory :data="history"/>
     </el-dialog>
   </div>
 </template>
@@ -141,7 +150,8 @@
 <script>
 import RuleList from './RuleList'
 
-import RequestTransfer from './sub/RequestTransfer'
+import RequestHistory from './request/RequestHistory'
+import RequestTransfer from './request/RequestTransfer'
 
 export default {
   mixins: [RuleList],
@@ -166,6 +176,7 @@ export default {
     },
   },
   components: {
+    RequestHistory,
     RequestTransfer,
   },
   data () {
@@ -190,6 +201,8 @@ export default {
       pageSizes: [15, 30, 50, 100],
       tgtType: '',
       transferShow: false,
+      historyShow: false,
+      history: null,
     }
   },
   methods: {
@@ -207,28 +220,47 @@ export default {
       this.transferShow = true
     }, // clickTransfer
 
-    handleConfirm () {
-      this.transferShow = false
+    handleConfirm (list) {
+      const loading = this.$startLoading()
+      this.$http({
+        method : 'POST',
+        url: '/api/request/transfer',
+        data: list,
+      }).then(response => {
+        let res = response.data
+        this.$message.success(res + ' 의 요건이 성공적으로 이관되었습니다.')
+        this.$refs.transfer.getRequests()
+        this.search()
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
     }, // handleConfirm
 
     viewHistory (id) {
-      console.log('view history', id)
+      const loading = this.$startLoading()
+      this.$http.get('/api/request/history', {
+        params: {id: id},
+      }).then(response => {
+        this.history = response.data
+        this.historyShow = true
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
     }, // viewHistory
 
     handleClear (type) {
-      switch (type) {
-        case 'sendSys':
-          this.sparam.sendSystemId = ''
-          break
-        case 'sendBiz':
-          this.sparam.sendJobCodeId = ''
-          break
-        case 'rcvSys':
-          this.sparam.rcvSystemId = ''
-          break
-        case 'rcvBiz':
-          this.sparam.rcvJobCodeId = ''
-          break
+      if (type === 'sendSys') {
+        this.sparam.sendSystemId = ''
+      } else if (type === 'sendBiz') {
+        this.sparam.sendJobCodeId = ''
+      } else if (type === 'rcvSys') {
+        this.sparam.rcvSystemId = ''
+      } else if (type === 'rcvBiz') {
+        this.sparam.rcvJobCodeId = ''
       }
     }, // handleClear
 
@@ -258,18 +290,22 @@ export default {
       }
     }, // cbBizRowClick
 
-    chgStatStyle (val) {
-      let style = 'color: #fff'
-      if (val === '1') {
-        style = 'color: #0000FF'
-      } else if (val === '2') {
-        style = 'color: #9900FF'
-      } else if (val === '3') {
-        style = 'color: #FF0000'
-      } else {
-        style = 'color: #990000'
+    showUserList (param) {
+      if (typeof param === 'function') {
+        this.$emit('show-usr-list', param)
       }
-      return style
+    }, // showUserList
+
+    chgStatStyle (val) {
+      if (val === '1') {
+        return 'color: #0000FF'
+      } else if (val === '2') {
+        return 'color: #9900FF'
+      } else if (val === '3') {
+        return 'color: #FF0000'
+      } else {
+        return 'color: #990000'
+      }
     }, // chgStatStyle
   },
 }

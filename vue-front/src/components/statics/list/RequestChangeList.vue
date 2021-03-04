@@ -1,7 +1,8 @@
 <template>
   <div class="urm-list">
-    <el-table ref="table" :data="items" :height="listHeight" border class="table-striped">
-      <el-table-column label="변경일자" v-model="chgDate" prop="chgDate" width="150"/>
+    <el-table ref="table" :data="items" :height="listHeight" border
+        class="table-striped" :row-key="$randomRowKey">
+      <el-table-column label="변경일자" prop="chgDate" width="150"/>
       <el-table-column label="변경요청" align="center">
         <el-table-column label="온라인" prop="stat1o" />
         <el-table-column label="배치" prop="stat1b" />
@@ -32,11 +33,18 @@
 
 <script>
 export default {
-  data () {
-    return {
-      listHeight: 'calc(100vh - 600px)',
+  props: {
+    items: {
+      type: Array,
+      default: function () {
+        return []
+      }
     }
   },
-  props: ['items']
+  data () {
+    return {
+      listHeight: 'calc(100vh - 165px)',
+    }
+  },
 }
 </script>

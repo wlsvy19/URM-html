@@ -66,15 +66,11 @@ export default {
       }).then(response => {
         this.$message({message: this.$t('message.0001'), type: 'success'})
         item.id = response.data.id
-        this.updatedItem()
+        this.handleSearch(this.$refs.list.sparam)
       }).catch(error => {
         this.$handleHttpError(error)
       })
     }, // handleSave
-
-    updatedItem () {
-      this.handleSearch(this.$refs.list.sparam)
-    }, // updatedItem
   }
 }
 </script>

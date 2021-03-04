@@ -9,64 +9,42 @@
           </el-select>
         </el-form-item>
         <el-form-item label="일자 선택">
-          <el-date-picker v-model="procDate" type="daterange" value-format="yyyyMMdd" range-separator="~" style="width: 220px;"/>
+          <el-date-picker v-model="dateRange" type="daterange" value-format="yyyyMMdd" range-separator="~" style="width: 220px;"/>
         </el-form-item>
       </el-form>
       <div class="search-buttons">
         <el-button @click="search">{{$t('label.search')}}</el-button>
       </div>
     </div>
-    <ProcessList ref="list" :items="listItem"/>
+    <RequestProcessList :items="listItem"/>
   </div>
 </template>
 
 <script>
-import ProcessList from './list/RequestProcessList'
+import StaticsMain from './StaticsMain'
+import RequestProcessList from './list/RequestProcessList'
+
 import RuleUtil from '@/components/rule/RuleUtil'
 
 export default {
+  mixins: [StaticsMain],
+  components: {
+    RequestProcessList,
+  },
+  data () {
+    return {
+      sparam: {
+        ...this.sparam,
+        type: '',
+      },
+      pageUrl: '/api/stat/process/day',
+    }
+  },
   computed: {
     infTypes: function () {
       let kind = RuleUtil.CODEKEY.infType
       return this.$store.state.codes.filter(code => (code.kind === kind))
     },
-    procDate: {
-      get: function () {
-        return [this.sparam.startDate, this.sparam.endDate]
-      },
-      set: function (nVal) {
-        this.sparam.startDate = nVal[0]
-        this.sparam.endDate = nVal[1]
-      },
-    },
   },
-  components: {
-    ProcessList,
-  },
-  data () {
-    return {
-      path: '/api/stat/process/day',
-      listItem: null,
-      sparam: {
-        type: '',
-        startDate: '',
-        endDate: '',
-      },
-    }
-  },
-  methods: {
-    search() {
-      const loading = this.$startLoading()
-      this.$http.get(this.path, {
-        params: this.sparam,
-      }).then(response => {
-        this.listItem = response.data
-      }).catch(error => {
-        this.$handleHttpError(error)
-      }).finally(() => {
-        loading.close()
-      })
-    },
-  }
 }
 </script>

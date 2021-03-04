@@ -86,11 +86,15 @@ export default {
       codes.some((code) => {
         if (code.kind === kind && code.code === val) {
           obj = code
-          return code
+          return true
         }
       })
       return obj.name
     }, // getTypeStr
+
+    getDateStr(val, format) {
+      return this.$convertDateFormat(format, new Date(val))
+    }, // getDateStr
   }, // methods
 
   mounted () {

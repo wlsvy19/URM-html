@@ -17,7 +17,7 @@
 <script>
 import RuleMain from './RuleMain'
 
-import UsedData from './list/sub/UsedData'
+import UsedData from './list/data/UsedData'
 
 export default {
   mixins: [RuleMain],

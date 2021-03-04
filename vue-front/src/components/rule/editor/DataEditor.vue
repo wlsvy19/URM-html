@@ -19,7 +19,7 @@
         <div>
           <el-button icon="el-icon-document" @click.stop="addByExcel" :disabled="existField" plain/>
           <el-button icon="el-icon-coin" @click.stop="addByQuery" :disabled="existField" plain/>
-          <el-button icon="el-icon-document-copy" @click.stop="copyData" :disabled="existField" plain/>
+          <el-button icon="el-icon-copy-document" @click.stop="copyData" :disabled="existField" plain/>
         </div>
         <div class="data-row-buttons">
           <el-button icon="el-icon-circle-plus-outline" @click.stop="clickAppend" plain/>

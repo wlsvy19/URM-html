@@ -176,24 +176,19 @@
       <hr/>
       <div class="row">
         <el-form-item :label="$t('label.attachmentFile')">
-          <el-input v-model="item.infFileName" class="size-default" @click.native="changeInfFile" readonly/>
-          <el-button icon="el-icon-download" @click.stop="downloadInfFile"/>
+          <el-input v-model="item.infFileName" class="size-default" @click.native="changeInfFile" readonly>
+            <i slot="suffix" class="el-input__icon el-icon-download pointer" @click.stop="downloadInfFile"/>
+          </el-input>
           <input type="file" ref="infFile" @change="handleChangeInfFile" style="display: none;"/>
         </el-form-item>
       </div>
     </el-form>
-
-    <el-dialog :visible.sync="userListShow" width="1080px" top="5vh" append-to-body :close-on-click-modal="false">
-      <UserList ref="usrList" :items="users" :onlySearch="true" @search="searchUserList" @row-dblclick="cbUserRowClick"/>
-    </el-dialog>
   </div>
 </template>
 
 <script>
 import RuleEditor from './RuleEditor'
 import RuleUtil from '@/components/rule/RuleUtil'
-
-import UserList from '@/components/manage/list/UserList'
 
 export default {
   mixins: [RuleEditor],
@@ -217,9 +212,6 @@ export default {
       },
     },
   },
-  components: {
-    UserList,
-  },
   data() {
     return {
       tgtType: '',
@@ -230,27 +222,27 @@ export default {
   methods: {
     customValidator () {
       let item = this.item
-      if (!item.sendSystemId || item.sendSystemId.trim().length === 0) {
+      if (!item.sendSystemId || item.sendSystemId.length === 0) {
         this.$message({message: this.$t('message.1008'), type: 'warning'})
         return false
       }
-      if (!item.rcvSystemId || item.rcvSystemId.trim().length === 0) {
+      if (!item.rcvSystemId || item.rcvSystemId.length === 0) {
         this.$message({message: this.$t('message.1009'), type: 'warning'})
         return false
       }
-      if (!item.sendJobCodeId || item.sendJobCodeId.trim().length === 0) {
+      if (!item.sendJobCodeId || item.sendJobCodeId.length === 0) {
         this.$message({message: this.$t('message.1019'), type: 'warning'})
         return false
       }
-      if (!item.rcvJobCodeId || item.rcvJobCodeId.trim().length === 0) {
+      if (!item.rcvJobCodeId || item.rcvJobCodeId.length === 0) {
         this.$message({message: this.$t('message.1019'), type: 'warning'})
         return false
       }
 
-      if (!item.sendAdminId || item.sendAdminId.trim().length === 0) {
+      if (!item.sendAdminId || item.sendAdminId.length === 0) {
         //item.sendAdminId = this.props.userInfo.id
       }
-      if (!item.rcvAdminId || item.rcvAdminId.trim().length === 0) {
+      if (!item.rcvAdminId || item.rcvAdminId.length === 0) {
         //item.rcvAdminId = this.props.userInfo.id
       }
 
@@ -392,29 +384,8 @@ export default {
 
     showUserList (type) {
       this.tgtType = type
-      if (!this.users) {
-        this.searchUserList(() => {
-          this.userListShow = true
-        })
-      } else {
-        this.userListShow = true
-      }
+      this.$emit('show-usr-list', this.cbUserRowClick)
     }, // showUserList
-
-    searchUserList (cbFunc) {
-      let sparam = this.$refs.usrList ? this.$refs.usrList.sparam : {}
-      const loading = this.$startLoading()
-      this.$http.get('/api/user', {
-        params: sparam
-      }).then(response => {
-        this.users = response.data
-        typeof cbFunc === 'function' && cbFunc()
-      }).catch(error => {
-        this.$handleHttpError(error)
-      }).finally(() => {
-        loading.close()
-      })
-    }, // searchUserList
 
     cbUserRowClick (row) {
       if (this.tgtType === 'send') {
@@ -426,7 +397,6 @@ export default {
         this.item.rcvAdmin.name = row.name
         this.item.rcvAdmin.positionName = (row.positionName ? row.positionName : '--')
       }
-      this.userListShow = false
     }, // cbUserRowClick
   },
   computed: {

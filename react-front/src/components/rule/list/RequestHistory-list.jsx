@@ -39,7 +39,7 @@ export default class HistoryList extends RuleList {
           <Table.Column title="수신담당자" dataIndex="rcvAdminId" width="100px" />
           <Table.Column title="등록자" dataIndex="regId" width="75px" />
           <Table.Column title={locale['label.changeId']} dataIndex="chgId" width="75px" />
-          <Table.Column title={locale['label.changeDate']} dataIndex="chgDate" width="150px" render={(val) => ( moment(val).format('YYYY-MM-DD HH:mm') )}/>/>
+          <Table.Column title={locale['label.changeDate']} dataIndex="chgDate" width="150px" render={(val) => ( moment(val).format('YYYY-MM-DD HH:mm') )}/>
           <Table.Column title="쿼리" dataIndex="sqlPlain" width="85px" render={(val) => (
             <Popover placement="topRight" title="쿼리" trigger="click" content={<div className="history-popover">{val}</div>}>
               <Button>쿼리</Button>

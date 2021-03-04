@@ -34,7 +34,7 @@
       <el-table-column :label="$t('label.registId')" prop="regId" width="200" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.registDate')" width="200">
         <template slot-scope="scope">
-          <span>{{scope.row.regDate}}</span>
+          <span>{{getDateStr(scope.row.regDate, 'yyyy-MM-dd HH:mm:ss')}}</span>
         </template>
       </el-table-column>
       <el-table-column width="120" class-name="edit-cell operations" v-if="!onlySearch">

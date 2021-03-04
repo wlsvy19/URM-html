@@ -36,17 +36,17 @@
       </el-table-column>
       <el-table-column width="45" class-name="edit-cell operations">
         <template slot-scope="scope">
-          <el-button icon="el-icon-edit" @click.stop="viewFields(scope.row.id)"/>
+          <el-button icon="el-icon-view" @click.stop="viewFields(scope.row.id)"/>
         </template>
       </el-table-column>
     </el-table>
 
     <hr/>
-    <el-table :data="fields">
+    <el-table :data="fields" height="300" border class="table-striped">
       <el-table-column :label="$t('label.index')" prop="sno" width="70" align="center"/>
       <el-table-column :label="$t('label.fieldName')" prop="engName" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.fieldLocalName')" prop="name" :show-overflow-tooltip="true"/>
-      <el-table-column :label="$t('label.fieldType')" width="85">
+      <el-table-column :label="$t('label.fieldType')" width="90">
         <template slot-scope="scope">
           <span>{{getTypeStr(scope.row.type)}}</span>
         </template>
@@ -133,7 +133,7 @@ export default {
 
     getYNStr (val) {
       return val ? 'Yes' : 'No'
-    }, // getTypeStr
+    }, // getYNStr
   },
   mounted () {
     this.search()
