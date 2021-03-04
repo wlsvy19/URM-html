@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <el-table :data="items" @row-dblclick="handleRowDblclick" height="300" border class="table-striped">
+    <el-table :data="items" @row-dblclick="handleRowDblclick" height="300" border stripe>
       <el-table-column :label="$t('label.id')" prop="id" width="150"/>
       <el-table-column :label="$t('label.name')" prop="name" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.dataType')" width="100">
@@ -42,7 +42,7 @@
     </el-table>
 
     <hr/>
-    <el-table :data="fields" height="300" border class="table-striped">
+    <el-table :data="fields" height="300" border stripe>
       <el-table-column :label="$t('label.index')" prop="sno" width="70" align="center"/>
       <el-table-column :label="$t('label.fieldName')" prop="engName" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.fieldLocalName')" prop="name" :show-overflow-tooltip="true"/>

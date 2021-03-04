@@ -8,7 +8,6 @@ import RequestList from './list/RequestList'
 import DataEditor from './editor/DataEditor'
 import SystemEditor from './editor/SystemEditor'
 import RequestEditor from './editor/RequestEditor'
-import UserEditor from '../manage/editor/UserEditor'
 
 Vue.component('DataList', DataList)
 Vue.component('SystemList', SystemList)
@@ -17,7 +16,6 @@ Vue.component('RequestList', RequestList)
 Vue.component('DataEditor', DataEditor)
 Vue.component('SystemEditor', SystemEditor)
 Vue.component('RequestEditor', RequestEditor)
-Vue.component('UserEditor', UserEditor)
 
 export default {
   data () {

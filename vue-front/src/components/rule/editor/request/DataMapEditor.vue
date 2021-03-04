@@ -171,6 +171,7 @@ export default {
       }).then(response => {
         this.$message({message: this.$t('message.0001'), type: 'success'})
         data.id = response.data.id
+        this.updateItem(data)
       }).catch(error => {
         this.$handleHttpError(error)
       })

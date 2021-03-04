@@ -31,7 +31,7 @@
       </div>
     </div>
     
-    <el-table ref="table" :data="items" @row-dblclick="handleRowDblclick" :height="listHeight" border class="table-striped">
+    <el-table ref="table" :data="items" @row-dblclick="handleRowDblclick" :height="listHeight" border stripe>
       <el-table-column type="selection" width="40" v-if="!onlySearch"/>
       <el-table-column :label="$t('label.systemId')" prop="id" width="130"/>
       <el-table-column :label="$t('label.systemName')" prop="name" :show-overflow-tooltip="true"/>

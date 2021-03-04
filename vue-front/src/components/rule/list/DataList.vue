@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <el-table ref="table" :data="items" @row-dblclick="handleRowDblclick" :height="listHeight" border class="table-striped">
+    <el-table ref="table" :data="items" @row-dblclick="handleRowDblclick" :height="listHeight" border stripe>
       <el-table-column type="selection" width="40" v-if="!onlySearch"/>
       <el-table-column :label="$t('label.id')" prop="id" width="150"/>
       <el-table-column :label="$t('label.name')" prop="name" :show-overflow-tooltip="true"/>

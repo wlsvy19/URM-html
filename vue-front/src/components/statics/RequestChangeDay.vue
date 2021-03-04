@@ -1,9 +1,9 @@
 <template>
-  <div class="urm-pannel">
+  <div class="urm-panel">
     <div class="search-bar">
       <el-form :inline="true">
         <el-form-item label="일자 선택">
-          <el-date-picker v-model="dateRange" type="daterange" value-format="yyyyMMdd" range-separator="~" style="width: 220px;"/>
+          <el-date-picker v-model="dateRange" type="daterange" value-format="yyyyMMdd" :clearable="false"/>
         </el-form-item>
       </el-form>
       <div class="search-buttons">
@@ -17,17 +17,18 @@
 
 <script>
 import StaticsMain from './StaticsMain'
-import RequestChangeList from './list/RequestChangeList'
 
 export default {
   mixins: [StaticsMain],
-  components: {
-    RequestChangeList,
-  },
   data () {
     return {
-      pageUrl: '/api/stat/change/day',
+      pageUrl: '/change/day',
     }
+  },
+  mounted () {
+    let today = this.$convertDateFormat('yyyyMMdd', new Date())
+    this.sparam.startDate = today
+    this.sparam.endDate = today
   },
 }
 </script>

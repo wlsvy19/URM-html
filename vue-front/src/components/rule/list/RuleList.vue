@@ -27,7 +27,7 @@ export default {
   methods: {
     search () {
       this.$emit('search', this.sparam)
-    }, // handleSearch
+    }, // search
 
     clickEdit (id) {
       this.$emit('edit', id)

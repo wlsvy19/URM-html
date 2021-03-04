@@ -58,8 +58,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="$t('label.testDate')">
-          <el-date-picker v-model="testDate" type="daterange" class="size-name"
-            value-format="yyyyMMdd" :clearable="false"/>
+          <el-date-picker v-model="testDate" type="daterange" class="size-name" value-format="yyyyMMdd" :clearable="false"/>
         </el-form-item>
       </div>
 
@@ -71,13 +70,13 @@
           <el-form-item label="Request">
             <el-input v-model="item.reqDataMappingId" class="size-id" @click.native.prevent="showMapEditor('req')" readonly>
               <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('req')"/>
-              <el-button slot="append" icon="el-icon-search" @click.stop="showDataMapList()"/>
+              <el-button slot="append" icon="el-icon-search" @click.stop="showMapList('req')"/>
             </el-input>
           </el-form-item>
           <el-form-item label="Response">
             <el-input v-model="item.resDataMappingId" class="size-id" @click.native.prevent="showMapEditor('res')" readonly>
               <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('res')"/>
-              <el-button slot="append" icon="el-icon-search" @click.stop="showDataMapList()"/>
+              <el-button slot="append" icon="el-icon-search" @click.stop="showMapList('res')"/>
             </el-input>
           </el-form-item>
         </div>
@@ -186,12 +185,12 @@
       </div>
     </el-form>
 
-    <el-dialog :visible.sync="dataMapShow" top="7vh" width="1140px" append-to-body :close-on-click-modal="false">
-      <DataMapList ref="dataMapList" :items="dataMap"/>
+    <el-dialog :visible.sync="mapListShow" top="7vh" width="1140px" append-to-body :close-on-click-modal="false">
+      <DataMapList :items="dataMaps" @search="searchMapList" @row-dblclick="cbMapRowClick"/>
     </el-dialog>
 
     <el-dialog :visible.sync="mapEditorShow" top="8vh" width="1040px" append-to-body :close-on-click-modal="false">
-      <DataMapEditor :item="map" @save="saveMap"/>
+      <DataMapEditor :item="dataMap" @save="saveMap"/>
     </el-dialog>
   </div>
 </template>
@@ -200,8 +199,8 @@
 import RuleEditor from './RuleEditor'
 import RuleUtil from '@/components/rule/RuleUtil'
 
-import DataMapList from '@/components/rule/list/DataMapList'
 import DataMapEditor from './request/DataMapEditor'
+import DataMapList from './request/DataMapList'
 
 export default {
   mixins: [RuleEditor],
@@ -226,16 +225,16 @@ export default {
     },
   },
   components: {
-    DataMapList,
     DataMapEditor,
+    DataMapList,
   },
   data() {
     return {
       tgtType: '',
-      dataMapShow: false,
-      dataMap: null,
+      mapListShow: false,
+      dataMaps: null,
       mapEditorShow: false,
-      map: null,
+      dataMap: null,
     }
   },
   methods: {
@@ -418,17 +417,31 @@ export default {
       }
     }, // cbUserRowClick
 
-    showDataMapList () {
-      this.searchMapList(() => {
-        this.dataMapShow = true
-      })
-    }, // showDataMapList
+    showMapList (type) {
+      this.tgtType = type
+      if (!this.dataMaps) {
+        this.searchMapList(() => {
+          this.mapListShow = true
+        })
+      } else {
+        this.mapListShow = true
+      }
+    }, // showMapList
+
+    cbMapRowClick (row) {
+      if (this.tgtType === 'req') {
+        this.item.reqDataMappingId = row.id
+      } else if (this.tgtType === 'res') {
+        this.item.resDataMappingId = row.id
+      }
+      this.mapListShow = false
+    }, // cbMapRowClick
 
     searchMapList (cbFunc) {
       const loading = this.$startLoading()
       this.$http.get('/api/datamap', {
       }).then(response => {
-        this.dataMap = response.data
+        this.dataMaps = response.data
         typeof cbFunc === 'function' && cbFunc()
       }).catch(error => {
         this.$handleHttpError(error)
@@ -452,8 +465,8 @@ export default {
         const loading = this.$startLoading()
         this.$http.get('/api/datamap/' + id, {
         }).then(response => {
-          this.map = response.data
-          this.initMap(this.map)
+          this.dataMap = response.data
+          this.initMap(this.dataMap)
           this.mapEditorShow = true
         }).catch(error => {
           this.$handleHttpError(error)
@@ -461,7 +474,7 @@ export default {
           loading.close()
         })
       } else {
-        this.map = this.getNewMap()
+        this.dataMap = this.getNewMap()
         this.mapEditorShow = true
       }
     }, // editMap
@@ -475,11 +488,21 @@ export default {
       }).then(response => {
         this.$message({message: this.$t('message.0001'), type: 'success'})
         map.id = response.data.id
-        this.searchMapList()
       }).catch(error => {
         this.$handleHttpError(error)
       })
     }, // saveMap
+
+    updateItem (item) {
+      let org = this.item
+      let type = this.tgtType
+      if (type === 'req' && (!org.reqDataMappingId || org.reqDataMappingId.length === 0)) {
+        org.reqDataMappingId = item.id
+      } else if (type === 'res' && (!org.resDataMappingId || org.resDataMappingId.length === 0)) {
+        org.resDataMappingId = item.id
+      }
+      this.mapListShow && this.searchMapList()
+    }, // updateItem
 
     getNewMap () {
       return {

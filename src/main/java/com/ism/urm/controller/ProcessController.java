@@ -138,7 +138,7 @@ public class ProcessController {
         return rtn;
     }
 
-    @GetMapping("/process/log/online")
+    @GetMapping("/process/log/realtime")
     public List<LogRealtime> getLogRealtime(
             @RequestParam int type,
             @RequestParam Map<String, String> params) throws Exception {
@@ -151,7 +151,7 @@ public class ProcessController {
         return rtn;
     }
 
-    @GetMapping("/process/log/online/detail")
+    @GetMapping("/process/log/realtime/detail")
     public List<LogRealtimeDetail> getLogRealtimeDetail(
             @RequestParam int type,
             @RequestParam Map<String, String> params) throws Exception {
@@ -164,7 +164,7 @@ public class ProcessController {
         return rtn;
     }
 
-    @GetMapping("/process/log/online/message")
+    @GetMapping("/process/log/realtime/message")
     public List<MessageField> getMessage(
             @RequestParam int type,
             @RequestParam String processDate,

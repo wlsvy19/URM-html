@@ -1,7 +1,6 @@
 <template>
   <div class="urm-list">
-    <el-table ref="table" :data="items" :height="listHeight" border
-        class="table-striped" :row-key="$randomRowKey">
+    <el-table :data="items" :height="listHeight" border stripe :row-key="$randomRowKey">
       <el-table-column label="변경일자" prop="chgDate" width="150"/>
       <el-table-column label="변경요청" align="center">
         <el-table-column label="온라인" prop="stat1o" />

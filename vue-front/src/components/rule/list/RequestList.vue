@@ -62,8 +62,7 @@
             </el-input>
           </el-form-item>
           <el-form-item :label="$t('label.lastChangeDate')">
-            <el-date-picker v-model="sparam.chgDate" type="daterange" range-separator="~"
-              start-placeholder="Start Date" end-placeholder="End Date" style="width: 220px;"/>
+            <el-date-picker v-model="sparam.chgDate" type="daterange" value-format="timestamp" style="width: 220px;"/>
           </el-form-item>
           <el-form-item label="등록자" label-width="65px" class="search-check">
             <el-checkbox v-model="sparam.cRegId"/>
@@ -81,7 +80,7 @@
       </el-form>
     </div>
 
-    <el-table ref="table" :data="items" :height="listHeight" border class="table-striped">
+    <el-table ref="table" :data="items" :height="listHeight" border stripe>
       <el-table-column type="selection" width="40"/>
       <el-table-column :label="$t('label.id')" prop="id" width="150"/>
       <el-table-column :label="$t('label.changeStatus')" width="115">
@@ -190,7 +189,7 @@ export default {
         interfaceType: '',
         chgStat: '',
         processStat: '',
-        chgDate: [],
+        chgDate: [new Date('2010/01/01').getTime(), new Date().getTime()],
         sendSystemId: '',
         rcvSystemId: '',
         sendJobCodeId: '',
@@ -298,14 +297,13 @@ export default {
 
     chgStatStyle (val) {
       if (val === '1') {
-        return 'color: #0000FF'
+        return 'color: #0000FF;'
       } else if (val === '2') {
-        return 'color: #9900FF'
+        return 'color: #9900FF;'
       } else if (val === '3') {
-        return 'color: #FF0000'
-      } else {
-        return 'color: #990000'
+        return 'color: #FF0000;'
       }
+      return 'color: #990000;'
     }, // chgStatStyle
   },
 }

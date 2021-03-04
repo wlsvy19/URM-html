@@ -1,6 +1,6 @@
 <template>
   <div class="urm-list">
-    <el-table :data="data" height="500" border class="table-striped">
+    <el-table :data="data" height="500" border stripe>
       <el-table-column :label="$t('label.interfaceId')" prop="interfaceId" width="120"/>
       <el-table-column :label="$t('label.interfaceType')" prop="interfaceType" min-width="80">
         <template slot-scope="scope">

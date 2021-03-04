@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <el-table ref="reqList" :data="items" height="500" border class="table-striped">
+    <el-table ref="reqList" :data="items" height="500" border stripe>
       <el-table-column type="selection" width="40"/>
       <el-table-column :label="$t('label.requestId')" prop="id" width="145"/>
       <el-table-column :label="$t('label.requestName')" prop="name"/>
