@@ -8,7 +8,7 @@
       <el-submenu index="Manage">
         <template slot="title">{{$t('urm.manage')}}</template>
         <el-menu-item index="/user">{{$t('urm.user')}}</el-menu-item>
-        <el-menu-item index="/biz">{{$t('urm.biz')}}</el-menu-item>     
+        <el-menu-item index="/bizcode">{{$t('urm.biz')}}</el-menu-item>     
       </el-submenu>
       <el-submenu index="Statics">
         <template slot="title">{{$t('urm.stat')}}</template>

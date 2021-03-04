@@ -1,13 +1,22 @@
 <template>
   <div class="urm-panel">
     <RequestList ref="list" :items="listItem" :infTypes="infTypes"
-      :procStats="procStats" :chgStats="chgStats" @search="handleSearch" @edit="handleEdit"/>
+      :procStats="procStats" :chgStats="chgStats" @search="handleSearch" @edit="handleEdit"
+      @show-sys-list="showSystemList" @show-biz-list="showBizList"/>
 
     <el-dialog :visible.sync="editorShow" width="1355px">
       <RequestEditor :item="editorItem" :infTypes="infTypes"
-        :procStats="procStats" :chgStats="chgStats" @save="handleSave"/>
+        :procStats="procStats" :chgStats="chgStats" @save="handleSave"
+        @show-sys-list="showSystemList" @show-biz-list="showBizList"/>
     </el-dialog>
 
+    <el-dialog :visible.sync="systemListShow" width="1300px" top="5vh" append-to-body :close-on-click-modal="false">
+      <SystemList ref="sysList" :items="systems" :onlySearch="true" @search="searchSystemList" @row-dblclick="cbSystemRowClick"/>
+    </el-dialog>
+
+    <el-dialog :visible.sync="bizListShow" width="1300px" top="5vh" append-to-body :close-on-click-modal="false">
+      <BizCodeList ref="bizList" :items="bizCodes" :onlySearch="true" @search="searchBizList" @row-dblclick="cbBizRowClick"/>
+    </el-dialog>
   </div>
 </template> 
 
@@ -15,11 +24,21 @@
 import RuleMain from './RuleMain'
 import RuleUtil from '@/components/rule/RuleUtil'
 
+import BizCodeList from '@/components/manage/list/BizCodeList'
+
 export default {
   mixins: [RuleMain],
+  components: {
+    BizCodeList,
+  },
   data () {
     return {
       path: 'request',
+      systemListShow: false,
+      systems: null,
+      bizListShow: false,
+      bizCodes: null,
+      cbRowFunc: () => {},
     }
   },
   methods: {
@@ -31,10 +50,8 @@ export default {
       }).then(response => {
         let pageList = response.data
         this.listItem = pageList.list
-        this.$refs.list.paging = {
-          curPage: pageList.curPage,
-          totalCount: pageList.totalCount,
-        }
+        this.$refs.list.curPage = pageList.curPage
+        this.$refs.list.totalCount = pageList.totalCount
       }).catch(error => {
         this.$handleHttpError(error)
       }).finally(() => {
@@ -43,6 +60,9 @@ export default {
     }, // handleSearch
 
     getNewItem () {
+      let today = new Date()
+      let week = new Date()
+      week.setDate(week.getDate() + 7)
       return {
         id: '',
         interfaceType: '1',
@@ -56,6 +76,10 @@ export default {
         dbCrudType: '1',
         fileCrudType: '1',
         infFileName: '',
+        reqDataMappingId: '',
+        resDataMappingId: '',
+        testStartYMD: today,
+        testEndYMD: week,
 
         sendSystem: {
           name: '',
@@ -103,6 +127,86 @@ export default {
         item.rcvAdmin = newItem.rcvAdmin
       }
     }, // initData
+
+    showSystemList (cbRowFunc, type) {
+      this.cbRowFunc = cbRowFunc
+      let item = this.editorItem
+      if (type && !this.$refs.sysList) {
+        let sType = (type === 'send') ? item.sendSystemType : item.rcvSystemType
+        this.searchSystemList(() => {
+          this.systemListShow = true
+          this.$nextTick(() => {
+            this.$refs.sysList.sparam.type = sType
+          })
+        }, sType)
+      } else if (type && type !== this.$refs.sysList.sparam.type) {
+        if (type === 'send') {
+          this.$refs.sysList.sparam.type = item.sendSystemType
+        } else if (type === 'rcv') {
+          this.$refs.sysList.sparam.type = item.rcvSystemType
+        }
+        this.searchSystemList(() => {
+          this.systemListShow = true
+        })
+      } else if (!type && !this.systems) {
+        this.searchSystemList(() => {
+          this.systemListShow = true
+        })
+      } else {
+        this.systemListShow = true
+      }
+    }, // showSystemList
+
+    searchSystemList (cbFunc, type) {
+      let sparam = this.$refs.sysList ? this.$refs.sysList.sparam : {type: type}
+      const loading = this.$startLoading()
+      this.$http.get('/api/system', {
+        params: sparam
+      }).then(response => {
+        this.systems = response.data
+        typeof cbFunc === 'function' && cbFunc()
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
+    }, // searchSystemList
+
+    cbSystemRowClick (row) {
+      this.cbRowFunc(row)
+      this.systemListShow = false
+    }, // cbSystemRowClick
+
+    showBizList (cbRowFunc) {
+      this.cbRowFunc = cbRowFunc
+      if (!this.bizCodes) {
+        this.searchBizList(() => {
+          this.bizListShow = true
+        })
+      } else {
+        this.bizListShow = true
+      }
+    }, // showBizList
+
+    searchBizList (cbFunc) {
+      let sparam = this.$refs.bizList ? this.$refs.bizList.sparam : {}
+      const loading = this.$startLoading()
+      this.$http.get('/api/code/business', {
+        params: sparam
+      }).then(response => {
+        this.bizCodes = response.data
+        typeof cbFunc === 'function' && cbFunc()
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
+    }, // searchBizList
+
+    cbBizRowClick (row) {
+      this.cbRowFunc(row)
+      this.bizListShow = false
+    }, // cbBizRowClick
   },
   computed: {
     infTypes: function () {

@@ -30,7 +30,7 @@ export default new VueRouter({
     {path: '/request', component: Request},
 
     {path: '/user', component: User},
-    {path: '/biz', component: Biz},
+    {path: '/bizcode', component: Biz},
 
     {path: '/process/day', component: RequestProcessDay},
     {path: '/process/month', component: RequestProcessMonth},

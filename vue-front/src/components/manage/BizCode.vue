@@ -1,15 +1,15 @@
 <template>
   <div class="urm-panel">
-    <BizList :items="listItem" @search="handleSearch"/>
+    <BizCodeList :items="listItem" @search="handleSearch"/>
   </div>
 </template>
 
 <script>
-import BizList from './list/BizCodeList'
+import BizCodeList from './list/BizCodeList'
 
 export default {
   components: {
-    BizList,
+    BizCodeList,
   },
   data () {
     return {

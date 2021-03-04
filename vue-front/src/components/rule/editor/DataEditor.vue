@@ -38,6 +38,11 @@
       append-to-body :close-on-click-modal="false" :destroy-on-close="true">
       <QueryData @confirm="handleConfirm"/>
     </el-dialog>
+
+    <el-dialog :visible.sync="copyDataShow" width="1000px" top="8vh"
+      append-to-body :close-on-click-modal="false" :destroy-on-close="true">
+      <CopyData @confirm="handleConfirm"/>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -46,6 +51,7 @@ import RuleEditor from './RuleEditor'
 import FieldTable from './data/FieldTable'
 import ExcelData from './data/ExcelData'
 import QueryData from './data/QueryData'
+import CopyData from './data/CopyData'
 
 export default {
   mixins: [RuleEditor],
@@ -53,12 +59,13 @@ export default {
     FieldTable,
     ExcelData,
     QueryData,
+    CopyData,
   },
   data () {
     return {
       excelDataShow: false,
       queryDataShow: false,
-      fields: [],
+      copyDataShow: false,
     }
   },
 
@@ -76,7 +83,7 @@ export default {
     },
 
     copyData () {
-      console.log('copy data')
+      this.copyDataShow = true
     },
 
     clickAppend () {
@@ -117,14 +124,20 @@ export default {
 
     handleConfirm (fields) {
       console.log(fields)
+      this.item.fields = fields
       this.excelDataShow = false
       this.queryDataShow = false
+      this.copyDataShow = false
     }, // handleConfirm
 
     customValidator () {
       let item = this.item
       if (!item.fields || item.fields.length === 0) {
         this.$message({type: 'error', message: 'please add fields'})
+        return false
+      }
+      if (!this.isNew) {
+        this.$emit('show-used', item.id, true)
         return false
       }
       return true

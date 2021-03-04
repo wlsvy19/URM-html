@@ -26,7 +26,7 @@
     </el-form>
     <FieldTable :data="fields" :isTemplate="true"/>
 
-    <el-dialog :visible.sync="systemListShow" width="1300px" top="8vh" append-to-body :close-on-click-modal="false">
+    <el-dialog :visible.sync="systemListShow" width="1300px" top="5vh" append-to-body :close-on-click-modal="false">
       <SystemList ref="sysList" :items="systems" :onlySearch="true" @search="searchSystemList" @row-dblclick="cbSystemRowClick"/>
     </el-dialog>
   </div>

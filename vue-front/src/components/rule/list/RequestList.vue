@@ -29,7 +29,7 @@
             </el-input>
           </el-form-item>
           <el-form-item :label="$t('label.sndJobCode')">
-            <el-input v-model="sparam.sendJobCodeId" class="search-id" readonly>
+            <el-input v-model="sparam.sendJobCodeId" class="search-id" @click.native.prevent="showBizList('send')" readonly>
               <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('sendBiz')"/>
             </el-input>
           </el-form-item>
@@ -53,12 +53,12 @@
         <div class="row">
           <el-form-item :label="$t('label.targetSystem')">
             <el-input v-model="sparam.rcvSystemId" class="search-id" @click.native.prevent="showSystemList('rcv')" readonly>
-              <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('sendSys')"/>
+              <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('rcvSys')"/>
             </el-input>
           </el-form-item>
           <el-form-item :label="$t('label.rcvJobCode')">
-            <el-input v-model="sparam.rcvJobCodeId" class="search-id" readonly>
-              <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('sendSys')"/>
+            <el-input v-model="sparam.rcvJobCodeId" class="search-id" @click.native.prevent="showBizList('rcv')" readonly>
+              <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('rcvBiz')"/>
             </el-input>
           </el-form-item>
           <el-form-item :label="$t('label.lastChangeDate')">
@@ -126,19 +126,22 @@
     </el-table>
 
     <el-pagination background layout="sizes, prev, pager, next, ->, total"
-      :total="paging.totalCount" :current-page="paging.curPage"
+      :total="totalCount" :current-page="curPage"
       :page-sizes="pageSizes" :page-size="sparam.size"
       @size-change="handlePageSizeChange" @current-change="handlePageCurrentChange">
     </el-pagination>
 
-    <el-dialog :visible.sync="systemListShow" width="1300px" top="5vh" append-to-body :close-on-click-modal="false">
-      <SystemList ref="sysList" :items="systems" :onlySearch="true" @search="searchSystemList" @row-dblclick="cbSystemRowClick"/>
+    <el-dialog :visible.sync="transferShow" width="900px" top="8vh"
+      append-to-body :close-on-click-modal="false" :destroy-on-close="true">
+      <RequestTransfer @confirm="handleConfirm"/>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import RuleList from './RuleList'
+
+import RequestTransfer from './sub/RequestTransfer'
 
 export default {
   mixins: [RuleList],
@@ -162,6 +165,9 @@ export default {
       },
     },
   },
+  components: {
+    RequestTransfer,
+  },
   data () {
     return {
       path: 'request',
@@ -174,15 +180,16 @@ export default {
         chgStat: '',
         processStat: '',
         chgDate: [],
+        sendSystemId: '',
+        rcvSystemId: '',
+        sendJobCodeId: '',
+        rcvJobCodeId: '',
       },
-      paging: {
-        curPage: 1,
-        totalCount: 1,
-      },
+      curPage: 1,
+      totalCount: 1,
       pageSizes: [15, 30, 50, 100],
-      systemListShow: false,
-      systems: null,
-      sysType: '',
+      tgtType: '',
+      transferShow: false,
     }
   },
   methods: {
@@ -197,8 +204,12 @@ export default {
     }, // handlePageCurrentChange
 
     clickTransfer () {
-      console.log('click transfer')
+      this.transferShow = true
     }, // clickTransfer
+
+    handleConfirm () {
+      this.transferShow = false
+    }, // handleConfirm
 
     viewHistory (id) {
       console.log('view history', id)
@@ -222,39 +233,30 @@ export default {
     }, // handleClear
 
     showSystemList (type) {
-      this.sysType = type
-      if (!this.systems) {
-        this.searchSystemList(() => {
-          this.systemListShow = true
-        })
-      } else {
-        this.systemListShow = true
-      }
+      this.tgtType = type
+      this.$emit('show-sys-list', this.cbSystemRowClick)
     }, // showSystemList
 
-    searchSystemList (cbFunc) {
-      let sparam = this.$refs.sysList ? this.$refs.sysList.sparam : {}
-      const loading = this.$startLoading()
-      this.$http.get('/api/system', {
-        params: sparam
-      }).then(response => {
-        this.systems = response.data
-        typeof cbFunc === 'function' && cbFunc()
-      }).catch(error => {
-        this.$handleHttpError(error)
-      }).finally(() => {
-        loading.close()
-      })
-    }, // searchSystemList
-
     cbSystemRowClick (row) {
-      if (this.sysType === 'send') {
+      if (this.tgtType === 'send') {
         this.sparam.sendSystemId = row.id
-      } else if (this.sysType === 'rcv') {
+      } else if (this.tgtType === 'rcv') {
         this.sparam.rcvSystemId = row.id
       }
-      this.systemListShow = false
     }, // cbSystemRowClick
+
+    showBizList (type) {
+      this.tgtType = type
+      this.$emit('show-biz-list', this.cbBizRowClick)
+    }, // showBizList
+
+    cbBizRowClick (row) {
+      if (this.tgtType === 'send') {
+        this.sparam.sendJobCodeId = row.id
+      } else if (this.tgtType === 'rcv') {
+        this.sparam.rcvJobCodeId = row.id
+      }
+    }, // cbBizRowClick
 
     chgStatStyle (val) {
       let style = 'color: #fff'

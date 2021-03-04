@@ -67,7 +67,7 @@
           </div>
           <div v-if="scope.row.editable">
             <el-button icon="el-icon-receiving" @click.stop="clickSave(scope.row)"/>
-            <el-button icon="el-icon-circle-close" @click.stop="clickCancel(scope.row)"/>
+            <el-button icon="el-icon-close" @click.stop="clickCancel(scope.row)"/>
           </div>
         </template>
       </el-table-column>
@@ -91,7 +91,7 @@ export default {
   },
   data () {
     return {
-      listHeight: 'calc(100vh - 165px)',
+      listHeight: 'calc(100vh - 175px)',
       sparam: {
         name: '',
         part1Id: '',

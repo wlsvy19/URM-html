@@ -73,7 +73,7 @@ export default {
     }, // handleSave
 
     updatedItem () {
-      this.search(this.$refs.list.sparam)
+      this.handleSearch(this.$refs.list.sparam)
     }, // updatedItem
   }
 }

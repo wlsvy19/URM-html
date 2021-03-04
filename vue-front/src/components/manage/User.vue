@@ -71,7 +71,7 @@ export default {
     }, // handleSave
 
     updatedItem () {
-      this.$refs.list.search()
+      this.$refs.list.handleSearch(this.$refs.list.sparam)
     }, // updatedItem
 
     getNewItem () {

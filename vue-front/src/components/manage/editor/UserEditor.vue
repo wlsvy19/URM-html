@@ -110,33 +110,49 @@ export default {
       if (this.item.id) {
         return
       }
-      const $el = this.$createElement
       let confirmProp = {
         confirmButtonText: this.$t('label.idUse'),
         cancelButtonText: 'NO',
         closeOnClickModal: false,
         type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action !== 'confirm' || this.usableId) {
+            done()
+          }
+        },
       }
+
+      const $el = this.$createElement
       let $vue = this
+      let $input = $el('el-input', {
+        style: { width: '220px' },
+        model: {
+          callback: function (e) {
+            $vue.checkedId = e
+          },
+        },
+        nativeOn: {
+          input: function (e) {
+            e.target.value = $vue.checkedId
+          },
+        },
+      }, null)
+
       let content = $el('div', {
         style: { textAlign: 'center' }
       }, [
-        $el('el-input', {
-          style: { width: '220px' },
-          domProps: { value: this.checkedId },
-          nativeOn: {
-            input: function (e) {
-              $vue.checkedId += e.data
-            }
-          }
-        }, null),
+        $input,
         $el('el-button', {
           on: { click: this.checkId }
         }, this.$t('label.idConfirm'))
       ])
+
       this.$confirm(content, this.$t('label.modifyUserInfo'), confirmProp).then(() => {
         this.item.id = this.checkedId
-      }).catch(() => {})
+      }).catch(() => {}).finally(() => {
+        this.usableId = false
+        $input.elm.querySelector('input').value = ''
+      })
     }, // showIdCheckConfirm
 
     checkId () {
@@ -158,6 +174,7 @@ export default {
           this.$message({message: this.$t('message.2002'), type: 'warning'})
         } else {
           this.$message({message: this.$t('message.2001'), type: 'success'})
+          this.usableId = true
         }
       }).catch(error => {
         this.$handleHttpError(error)

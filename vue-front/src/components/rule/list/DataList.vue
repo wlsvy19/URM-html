@@ -66,7 +66,7 @@ export default {
   },
   methods: {
     clickUsed (id) {
-      console.log('used', id)
+      this.$emit('show-used', id, false)
     }, // clickUsed
   },
   computed: {
