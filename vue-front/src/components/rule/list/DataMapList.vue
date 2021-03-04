@@ -1,10 +1,10 @@
 <template>
   <div class="urm-list" >
     <div class="search-bar">
-      <div class="search-buttons">
-        <el-button @click="clickSearch('selected')">다시읽기</el-button>
-        <el-button @click="clickDelete('selected')" type="danger" plain>{{$t('label.delete')}}</el-button>
-      </div>
+        <div class="search-buttons">
+          <el-button @click="clickSearch">다시읽기</el-button>
+          <el-button @click="clickDelete" type="danger" plain>{{$t('label.delete')}}</el-button>
+        </div>
     </div>
     <el-table ref="table" :data="items" border class="table-striped">
       <el-table-column type="selection" width="40"/>
@@ -22,43 +22,34 @@
 <script>
 export default {
   props: ['items'],
-	
-	data () {
-		return {
-			path: '/api/datamap',
-
-			sparam: {
-				id: '',
-			}
-		}
-	},
-
+  data () {
+    return {
+      path: '/api/datamap',
+      sparam: {
+        id: '',
+      },
+    }
+  },
 	methods: {
-		clickSearch () {
-			const loading = this.$startLoading()
-			this.$http.get(this.path, {
-			}).then(response => {
-				this.items = response.data
-			}).catch(error => {
-				this.$handleHttpError(error)
-			}).finally(() =>{
-				loading.close()
-			})
-		},
-
-    clickDelete (key) {
-      let ids = []
-      if (key === 'selected') {
-        ids = this.$refs.table.selection.map((it) => it.id)
-        if (ids.length <= 0) {
-          this.$message({message: this.$t('message.1004'), type: 'warning'})
-          return
-        }
-      } else {
-        ids.push(key)
+    clickSearch () {
+      console.log('click refresh')
+      const loading = this.$startLoading()
+      this.$http.get(this.path, {
+      }).then(response => {
+        this.items = response.data
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() =>{
+        loading.close()
+      })
+    }, // clickSearch
+    clickDelete () {
+      let ids = this.$refs.table.selection.map((it) => it.id)
+      console.log('select: ' , ids)
+      if (ids.length <= 0) {
+        this.$message({message: this.$t('message.1004'), type: 'warning'})
+        return
       }
-			console.log(ids)
-
       let confirmProp = {
         confirmButtonText: 'YES',
         cancelButtonText: 'NO',
@@ -76,7 +67,7 @@ export default {
           let res = response.data
           if (res.code === 0) {
             this.$message({message: 'delete ' + this.path.toUpperCase() + ' [ ' + res.obj + ' ]', type: 'success'})
-            this.search()
+            this.clickSearch()
           } else if (res.code === 1) {
             this.$message({message: '삭제 실패하였습니다. - '})
           } else {
@@ -88,9 +79,7 @@ export default {
           loading.close()
         })
       }).catch(() => {})
-			
     }, // clickDelete
-		
 	}
 }
 </script>
