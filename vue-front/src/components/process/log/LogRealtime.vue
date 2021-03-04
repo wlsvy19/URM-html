@@ -1,7 +1,7 @@
 <template>
   <div class="urm-pannel">
     <p>온라인 거래처리로그</p>
-    <div class="search-bar">
+    <div class="search-bar" :style="proLogStyle(this.$route.params)">
       <el-form :inline="true">
         <el-form-item label="처리날짜">
           <el-date-picker type="daterange" start-placeholder="Start Date" end-placeholder="End Date" style="width: 220px;"/>
@@ -30,6 +30,20 @@ import LogRealtimeList from './list/LogRealtimeList'
 export default {
   components: {
     LogRealtimeList,
+  },
+  methods: {
+    proLogStyle (val) {
+      let type = val.server
+      let style= ''
+      if(type === 'dev') {
+        style = 'backgroundColor: #8888ff'
+      }else if(val.server === 'test') {
+        style = 'backgroundColor: #88ff88'
+      } else if(val.server === 'prod') {
+        style = 'backgroundColor: #ff8888'
+      }
+      return style
+      } // proLogStyle
   }
 }
 </script>

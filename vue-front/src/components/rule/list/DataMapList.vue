@@ -43,7 +43,6 @@ export default {
         loading.close()
       })
     }, // clickSearch
-
     clickDelete () {
       let ids = this.$refs.table.selection.map((it) => it.id)
       console.log('select: ' , ids)
@@ -80,9 +79,7 @@ export default {
           loading.close()
         })
       }).catch(() => {})
-			
     }, // clickDelete
-		
 	}
 }
 </script>
