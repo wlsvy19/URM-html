@@ -37,8 +37,8 @@ export default {
         style = 'backgroundColor: #ff8888'
       }
       return style
-      }, // proLogStyle
-      getInfType () {
+    }, // proLogStyle
+    getInfType () {
         let infType = ''
         let type = this.$route.params.type
         if(type === 'online') {
@@ -49,7 +49,7 @@ export default {
             infType = '디퍼드'
         }
         return infType
-      }, // getInfType
+    }, // getInfType
   }
 }
 </script>
