@@ -55,12 +55,16 @@ export default {
     }, // getRequests
 
     clickConfirm () {
-      let checkedList = this.$refs.reqList.selection.map((it) => {
-        it.regId = this.transferor
-        it.sendAdminId = this.transferor
-        it.rcvAdminId = this.transferor
-        return it
-      })
+      if (!this.manager || this.manager.length === 0) {
+        this.$message.warning('담당자가 선택되지 않았습니다.')
+        return false
+      }
+      if (!this.transferor || this.transferor.length === 0) {
+        this.$message.warning('이관자가 선택되지 않았습니다.')
+        return false
+      }
+
+      let checkedList = this.$refs.reqList.selection
       if (checkedList.length <= 0) {
         this.$message.warning('선택된 요건이 없습니다.')
         return
@@ -73,6 +77,11 @@ export default {
         type: 'error',
       }
       this.$confirm(checkedList.length + ' 의 요건이 선택되었습니다. 이관하시겠습니까?', confirmProp).then(() => {
+        checkedList.forEach((req) => {
+          req.regId = this.transferor
+          req.sendAdminId = this.transferor
+          req.rcvAdminId = this.transferor
+        })
         this.$emit('confirm', checkedList)
       }).catch(() => {
         this.$message.info('취소되었습니다.')

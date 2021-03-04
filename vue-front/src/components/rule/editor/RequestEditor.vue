@@ -69,13 +69,15 @@
         </el-form-item>
         <div class="row" v-show="item.dataMapYN">
           <el-form-item label="Request">
-            <el-input v-model="item.reqDataMappingId" class="size-id" readonly>
+            <el-input v-model="item.reqDataMappingId" class="size-id" @click.native.prevent="showMapEditor('req')" readonly>
               <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('req')"/>
+              <el-button slot="append" icon="el-icon-search" @click.stop="showDataMapList()"/>
             </el-input>
           </el-form-item>
           <el-form-item label="Response">
-            <el-input v-model="item.resDataMappingId" class="size-id" readonly>
+            <el-input v-model="item.resDataMappingId" class="size-id" @click.native.prevent="showMapEditor('res')" readonly>
               <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('res')"/>
+              <el-button slot="append" icon="el-icon-search" @click.stop="showDataMapList()"/>
             </el-input>
           </el-form-item>
         </div>
@@ -183,12 +185,23 @@
         </el-form-item>
       </div>
     </el-form>
+
+    <el-dialog :visible.sync="dataMapShow" top="7vh" width="1140px" append-to-body :close-on-click-modal="false">
+      <DataMapList ref="dataMapList" :items="dataMap"/>
+    </el-dialog>
+
+    <el-dialog :visible.sync="mapEditorShow" top="8vh" width="1040px" append-to-body :close-on-click-modal="false">
+      <DataMapEditor :item="map" @save="saveMap"/>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import RuleEditor from './RuleEditor'
 import RuleUtil from '@/components/rule/RuleUtil'
+
+import DataMapList from '@/components/rule/list/DataMapList'
+import DataMapEditor from './request/DataMapEditor'
 
 export default {
   mixins: [RuleEditor],
@@ -212,11 +225,17 @@ export default {
       },
     },
   },
+  components: {
+    DataMapList,
+    DataMapEditor,
+  },
   data() {
     return {
       tgtType: '',
-      userListShow: false,
-      users: null,
+      dataMapShow: false,
+      dataMap: null,
+      mapEditorShow: false,
+      map: null,
     }
   },
   methods: {
@@ -398,6 +417,98 @@ export default {
         this.item.rcvAdmin.positionName = (row.positionName ? row.positionName : '--')
       }
     }, // cbUserRowClick
+
+    showDataMapList () {
+      this.searchMapList(() => {
+        this.dataMapShow = true
+      })
+    }, // showDataMapList
+
+    searchMapList (cbFunc) {
+      const loading = this.$startLoading()
+      this.$http.get('/api/datamap', {
+      }).then(response => {
+        this.dataMap = response.data
+        typeof cbFunc === 'function' && cbFunc()
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
+    }, // searchMapList
+
+    showMapEditor (type) {
+      this.tgtType = type
+      if (type === 'req') {
+        this.editMap(this.item.reqDataMappingId)
+      } else if (type === 'res') {
+        this.editMap(this.item.resDataMappingId)
+      }
+    }, // showMapEditor
+
+    editMap (id) {
+      if (id) {
+        console.log('edit datamap : ' + id)
+        const loading = this.$startLoading()
+        this.$http.get('/api/datamap/' + id, {
+        }).then(response => {
+          this.map = response.data
+          this.initMap(this.map)
+          this.mapEditorShow = true
+        }).catch(error => {
+          this.$handleHttpError(error)
+        }).finally(() => {
+          loading.close()
+        })
+      } else {
+        this.map = this.getNewMap()
+        this.mapEditorShow = true
+      }
+    }, // editMap
+
+    saveMap (map) {
+      console.log('save datamap', map)
+      this.$http({
+        method : 'POST',
+        url: '/api/datamap',
+        data: map,
+      }).then(response => {
+        this.$message({message: this.$t('message.0001'), type: 'success'})
+        map.id = response.data.id
+        this.searchMapList()
+      }).catch(error => {
+        this.$handleHttpError(error)
+      })
+    }, // saveMap
+
+    getNewMap () {
+      return {
+        id: '',
+        sourceDataId: '',
+        targetDataId: '',
+        mapLines: [],
+        mapValues: [],
+
+        sourceData: {},
+        targetData: {},
+      }
+    }, // getNewMap
+
+    initMap (map) {
+      let newMap = this.getNewMap()
+      if (!map.mapLines) {
+        map.mapLines = newMap.mapLines
+      }
+      if (!map.mapValues) {
+        map.mapValues = newMap.mapValues
+      }
+      if (!map.sourceData) {
+        map.sourceData = newMap.sourceData
+      }
+      if (!map.targetData) {
+        map.targetData = newMap.targetData
+      }
+    }, // initMap
   },
   computed: {
     syncTypes: function () {

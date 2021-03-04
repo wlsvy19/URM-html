@@ -36,7 +36,7 @@ export default {
     clickDelete (key) {
       let ids = []
       if (key === 'selected') {
-        ids = this.$refs.table.selection.map((it) => it.id)
+        ids = this.$refs.table.selection.map((row) => row.id)
         if (ids.length <= 0) {
           this.$message({message: this.$t('message.1004'), type: 'warning'})
           return

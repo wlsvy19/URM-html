@@ -78,6 +78,7 @@ export default {
         chgStat: '1',
         syncType: '1',
         trType: '2',
+        dataMapYN: false,
         sendSystemType: '3',
         rcvSystemType: '3',
         sqlPlain: '',

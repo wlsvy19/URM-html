@@ -125,6 +125,10 @@ button.el-button {
 .el-textarea .el-textarea__inner {
   padding: 5px 8px;
 }
+.el-input .el-input-group__append {
+  padding-left: 16px;
+  padding-right: 14px;
+}
 
 .el-input.is-disabled .el-input__inner {
     color: #737373;
