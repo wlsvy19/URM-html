@@ -1,6 +1,6 @@
 <template>
   <div class="urm-list">
-    <el-table ref="table" :height="listHeight" border class="table-striped">
+    <el-table ref="table" :height="listHeight" border stripe>
       <el-table-column label="처리날짜" prop="processDate" />
       <el-table-column label="인터페이스ID" prop="interfaceId" width="200"/>
       <el-table-column label="총건수" prop="totalCount"/>

@@ -85,7 +85,7 @@ export default {
 
     validator () {
       let item = this.item
-      if (!item.id || item.id.trim().length === 0) {
+      if (!item.id || item.id.length === 0) {
         this.$message({message: '[' +  this.$t('label.id') + '] ' + this.$t('message.1015'), type: 'warning'})
         return false
       }
@@ -148,7 +148,7 @@ export default {
       ])
 
       this.$confirm(content, this.$t('label.modifyUserInfo'), confirmProp).then(() => {
-        this.item.id = this.checkedId
+        this.item.id = this.checkedId.trim()
       }).catch(() => {}).finally(() => {
         this.usableId = false
         $input.elm.querySelector('input').value = ''
@@ -158,8 +158,8 @@ export default {
     checkId () {
       // eslint-disable-next-line
       const idRegExp =  /^[0-9a-zA-Z_\-\.]*$/
-      let id = this.checkedId
-      if (id.trim().length === 0) {
+      let id = this.checkedId.trim()
+      if (id.length === 0) {
         return false
       } else if (!id.match(idRegExp)) {
         this.$message({message: '유효하지 않은 아이디입니다.', type: 'error'})

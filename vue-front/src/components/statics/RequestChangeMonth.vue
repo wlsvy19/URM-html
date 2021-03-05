@@ -1,64 +1,34 @@
 <template>
-  <div class="urm-pannel">
+  <div class="urm-panel">
     <div class="search-bar">
       <el-form :inline="true">
         <el-form-item label="일자 선택">
-          <el-date-picker v-model="procDate" type="monthrange" value-format="yyyyMM" range-separator="~" style="width: 220px;"/>
+          <el-date-picker v-model="dateRange" type="monthrange" value-format="yyyyMM" :clearable="false"/>
         </el-form-item>
       </el-form>
       <div class="search-buttons">
         <el-button @click="search">{{$t('label.search')}}</el-button>
       </div>
     </div>
-    <ChangeList ref="list" :items="listItem"/>
+
+    <RequestChangeList ref="list" :items="listItem"/>
   </div>
 </template>
 
 <script>
-import ChangeList from './list/RequestChangeList'
+import StaticsMain from './StaticsMain'
 
 export default {
-  computed: {
-    procDate: {
-      get: function () {
-        return [this.sparam.startDate, this.sparam.endDate]
-      },
-      set: function (nVal) {
-        this.sparam.startDate = nVal[0]
-        this.sparam.endDate = nVal[1]
-      }
-    },
-  },
-  components: {
-    ChangeList,
-  },
-  
+  mixins: [StaticsMain],
   data () {
     return {
-      path: '/api/stat/change/month',
-      listItem: null,
-      sparam: {
-        type: '',
-        startDate: '',
-        endDate: '',
-      }
+      pageUrl: '/change/month',
     }
   },
-
-  methods: {
-    search() {
-      const loading = this.$startLoading()
-      this.$http.get(this.path, {
-        params: this.sparam,
-      }).then(response => {
-        this.listItem = response.data
-        console.log('response.data:' + response.data)
-      }).catch(error => {
-        this.$handleHttpError(error)
-      }).finally(() => {
-        loading.close()
-      })
-    }
-  }
+  mounted () {
+    let today = this.$convertDateFormat('yyyyMM', new Date())
+    this.sparam.startDate = today
+    this.sparam.endDate = today
+  },
 }
 </script>

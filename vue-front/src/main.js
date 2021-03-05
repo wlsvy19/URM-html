@@ -87,6 +87,36 @@ Vue.prototype.$startLoading = function () {
   return loading
 } // $startLoading
 
+Vue.prototype.$convertDateFormat  = function (format, date) {
+  let val = !date ? new Date() : date
+  let res = format
+  if (format.indexOf('yyyy') > -1) {
+    let yyyy = val.getFullYear()
+    res = res.replace('yyyy', yyyy)
+  }
+  if (format.indexOf('MM') > -1) {
+    let MM = val.getMonth() < 9 ? '0' + (val.getMonth() + 1) : (val.getMonth() + 1) // getMonth() is zero-based
+    res = res.replace('MM', MM)
+  }
+  if (format.indexOf('dd') > -1) {
+    let dd = val.getDate() < 10 ? '0' + val.getDate() : val.getDate()
+    res = res.replace('dd', dd)
+  }
+  if (format.indexOf('HH') > -1) {
+    let HH = val.getHours() < 10 ? '0' + val.getHours() : val.getHours()
+    res = res.replace('HH', HH)
+  }
+  if (format.indexOf('mm') > -1) {
+    let mm = val.getMinutes() < 10 ? '0' + val.getMinutes() : val.getMinutes()
+    res = res.replace('mm', mm)
+  }
+  if (format.indexOf('ss') > -1) {
+    let ss = val.getSeconds() < 10 ? '0' + val.getSeconds() : val.getSeconds()
+    res = res.replace('ss', ss)
+  }
+  return res
+}, // $convertDateFormat 
+
 Vue.prototype.$reloadConfig = function () {
   console.log('reload config')
   // set locale

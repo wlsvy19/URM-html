@@ -1,5 +1,5 @@
 <template>
-  <el-table ref="map" :data="data" border class="table-striped">
+  <el-table ref="map" :data="data" border stripe>
     <el-table-column type="selection" width="40" v-if="!isTemplate"/>
     <el-table-column :label="$t('label.index')" prop="sno" width="70" align="center"/>
     <el-table-column :label="$t('label.fieldName')" width="150" class-name="edit-cell">

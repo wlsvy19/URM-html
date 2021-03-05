@@ -5,15 +5,15 @@
     </div>
     <el-form :inline="true">
       <el-form-item :label="$t('label.fileName')">
-        <el-input v-model="fileName" @click.native="changeXlFile" readonly/>
+        <el-input v-model="fileName" class="size-name" @click.native="changeXlFile" readonly/>
         <input type="file" ref="xlFile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
           @change="handleChangeXlFile" style="display: none;"/>
       </el-form-item>
       <el-form-item :label="$t('label.fileSelect')">
         <el-input v-model="sheetName" class="size-name"/>
       </el-form-item>
-      <el-form-item label="">
-        <el-button icon="el-icon-upload" @click.stop="getFields"/>
+      <el-form-item>
+        <el-button icon="el-icon-upload2" @click.stop="getFields"/>
       </el-form-item>
     </el-form>
     <FieldTable :data="fields" :isTemplate="true"/>

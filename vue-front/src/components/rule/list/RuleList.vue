@@ -27,7 +27,7 @@ export default {
   methods: {
     search () {
       this.$emit('search', this.sparam)
-    }, // handleSearch
+    }, // search
 
     clickEdit (id) {
       this.$emit('edit', id)
@@ -36,7 +36,7 @@ export default {
     clickDelete (key) {
       let ids = []
       if (key === 'selected') {
-        ids = this.$refs.table.selection.map((it) => it.id)
+        ids = this.$refs.table.selection.map((row) => row.id)
         if (ids.length <= 0) {
           this.$message({message: this.$t('message.1004'), type: 'warning'})
           return
@@ -86,11 +86,15 @@ export default {
       codes.some((code) => {
         if (code.kind === kind && code.code === val) {
           obj = code
-          return code
+          return true
         }
       })
       return obj.name
     }, // getTypeStr
+
+    getDateStr(val, format) {
+      return this.$convertDateFormat(format, new Date(val))
+    }, // getDateStr
   }, // methods
 
   mounted () {

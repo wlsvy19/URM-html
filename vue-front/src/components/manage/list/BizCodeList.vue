@@ -26,7 +26,7 @@
     </div>
 
     <el-table ref="table" :data="items" @row-dblclick="handleRowDblclick" :height="listHeight"
-        border class="table-striped" :row-key="$randomRowKey" :cell-class-name="cellClass">
+        border stripe :row-key="$randomRowKey" :cell-class-name="cellClass">
       <el-table-column type="selection" width="40" v-if="!onlySearch"/>
       <el-table-column :label="$t('label.bizId')" prop="id" width="130"/>
       <el-table-column :label="$t('label.bizNm')" width="200">

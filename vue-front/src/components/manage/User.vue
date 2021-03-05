@@ -64,15 +64,11 @@ export default {
       }).then(response => {
         this.$message.success(this.$t('message.0001'))
         item.id = response.data.id
-        this.updatedItem()
+        this.handleSearch(this.$refs.list.sparam)
       }).catch(error => {
         this.$message.warning(this.$t('message.1001') + '[' + error.response.statusText + ']')
       })
     }, // handleSave
-
-    updatedItem () {
-      this.$refs.list.handleSearch(this.$refs.list.sparam)
-    }, // updatedItem
 
     getNewItem () {
       return {

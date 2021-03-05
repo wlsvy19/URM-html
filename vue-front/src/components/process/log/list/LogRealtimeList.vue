@@ -1,6 +1,6 @@
 <template>
   <div class="urm-list">
-    <el-table ref="table" :height="listHeight" border class="table-striped">
+    <el-table ref="table" :height="listHeight" border stripe>
       <el-table-column label="인터페이스 ID" prop="interfaceId" width="145"/>
       <el-table-column label="Global ID" prop="globalId"/>
       <el-table-column label="시작 시간" prop="startTime" width="235"/>
@@ -12,7 +12,7 @@
 
     <hr />
 
-    <el-table ref="table" :height="listHeight" border class="table-striped">
+    <el-table ref="table" :height="listHeight" border stripe>
       <el-table-column label="송신단계" width="85"/>
       <el-table-column label="수신단계" width="85"/>
       <el-table-column label="처리시스템" prop="serverName" width="155"/>

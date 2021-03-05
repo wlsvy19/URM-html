@@ -58,8 +58,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="$t('label.testDate')">
-          <el-date-picker v-model="testDate" type="daterange" class="size-name"
-            value-format="yyyyMMdd" :clearable="false"/>
+          <el-date-picker v-model="testDate" type="daterange" class="size-name" value-format="yyyyMMdd" :clearable="false"/>
         </el-form-item>
       </div>
 
@@ -69,15 +68,15 @@
         </el-form-item>
         <div class="row" v-show="item.dataMapYN">
           <el-form-item label="Request">
-            <el-input v-model="item.reqDataMappingId" class="size-id" readonly>
+            <el-input v-model="item.reqDataMappingId" class="size-id" @click.native.prevent="showMapEditor('req')" readonly>
               <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('req')"/>
-              <el-button slot="append" icon="el-icon-search" @click.native="showDataMapList()"/>
+              <el-button slot="append" icon="el-icon-search" @click.stop="showMapList('req')"/>
             </el-input>
           </el-form-item>
           <el-form-item label="Response">
-            <el-input v-model="item.resDataMappingId" class="size-id" readonly>
+            <el-input v-model="item.resDataMappingId" class="size-id" @click.native.prevent="showMapEditor('res')" readonly>
               <i slot="suffix" class="el-input__icon el-icon-close pointer" @click.stop="handleClear('res')"/>
-              <el-button slot="append" icon="el-icon-search" @click.native="showDataMapList()"/>
+              <el-button slot="append" icon="el-icon-search" @click.stop="showMapList('res')"/>
             </el-input>
           </el-form-item>
         </div>
@@ -178,19 +177,20 @@
       <hr/>
       <div class="row">
         <el-form-item :label="$t('label.attachmentFile')">
-          <el-input v-model="item.infFileName" class="size-default" @click.native="changeInfFile" readonly/>
-          <el-button icon="el-icon-download" @click.stop="downloadInfFile"/>
+          <el-input v-model="item.infFileName" class="size-default" @click.native="changeInfFile" readonly>
+            <i slot="suffix" class="el-input__icon el-icon-download pointer" @click.stop="downloadInfFile"/>
+          </el-input>
           <input type="file" ref="infFile" @change="handleChangeInfFile" style="display: none;"/>
         </el-form-item>
       </div>
     </el-form>
 
-    <el-dialog :visible.sync="userListShow" width="1080px" top="5vh" append-to-body :close-on-click-modal="false">
-      <UserList ref="usrList" :items="users" :onlySearch="true" @search="searchUserList" @row-dblclick="cbUserRowClick"/>
+    <el-dialog :visible.sync="mapListShow" top="7vh" width="1140px" append-to-body :close-on-click-modal="false">
+      <DataMapList :items="dataMaps" @search="searchMapList" @row-dblclick="cbMapRowClick"/>
     </el-dialog>
 
-    <el-dialog :visible.sync="dataMapShow" top="7vh" width="1140px" append-to-body :close-on-click-modal="false">
-      <DataMapList ref="dataMapList" :items="dataMap"/>
+    <el-dialog :visible.sync="mapEditorShow" top="8vh" width="1040px" append-to-body :close-on-click-modal="false">
+      <DataMapEditor :item="dataMap" @save="saveMap"/>
     </el-dialog>
   </div>
 </template>
@@ -199,8 +199,8 @@
 import RuleEditor from './RuleEditor'
 import RuleUtil from '@/components/rule/RuleUtil'
 
-import UserList from '@/components/manage/list/UserList'
-import DataMapList from '@/components/rule/list/DataMapList'
+import DataMapEditor from './request/DataMapEditor'
+import DataMapList from './request/DataMapList'
 
 export default {
   mixins: [RuleEditor],
@@ -225,42 +225,42 @@ export default {
     },
   },
   components: {
-    UserList,
+    DataMapEditor,
     DataMapList,
   },
   data() {
     return {
       tgtType: '',
-      userListShow: false,
-      users: null,
-      dataMapShow: false,
+      mapListShow: false,
+      dataMaps: null,
+      mapEditorShow: false,
       dataMap: null,
     }
   },
   methods: {
     customValidator () {
       let item = this.item
-      if (!item.sendSystemId || item.sendSystemId.trim().length === 0) {
+      if (!item.sendSystemId || item.sendSystemId.length === 0) {
         this.$message({message: this.$t('message.1008'), type: 'warning'})
         return false
       }
-      if (!item.rcvSystemId || item.rcvSystemId.trim().length === 0) {
+      if (!item.rcvSystemId || item.rcvSystemId.length === 0) {
         this.$message({message: this.$t('message.1009'), type: 'warning'})
         return false
       }
-      if (!item.sendJobCodeId || item.sendJobCodeId.trim().length === 0) {
+      if (!item.sendJobCodeId || item.sendJobCodeId.length === 0) {
         this.$message({message: this.$t('message.1019'), type: 'warning'})
         return false
       }
-      if (!item.rcvJobCodeId || item.rcvJobCodeId.trim().length === 0) {
+      if (!item.rcvJobCodeId || item.rcvJobCodeId.length === 0) {
         this.$message({message: this.$t('message.1019'), type: 'warning'})
         return false
       }
 
-      if (!item.sendAdminId || item.sendAdminId.trim().length === 0) {
+      if (!item.sendAdminId || item.sendAdminId.length === 0) {
         //item.sendAdminId = this.props.userInfo.id
       }
-      if (!item.rcvAdminId || item.rcvAdminId.trim().length === 0) {
+      if (!item.rcvAdminId || item.rcvAdminId.length === 0) {
         //item.rcvAdminId = this.props.userInfo.id
       }
 
@@ -402,42 +402,8 @@ export default {
 
     showUserList (type) {
       this.tgtType = type
-      if (!this.users) {
-        this.searchUserList(() => {
-          this.userListShow = true
-        })
-      } else {
-        this.userListShow = true
-      }
+      this.$emit('show-usr-list', this.cbUserRowClick)
     }, // showUserList
-
-    searchUserList (cbFunc) {
-      let sparam = this.$refs.usrList ? this.$refs.usrList.sparam : {}
-      const loading = this.$startLoading()
-      this.$http.get('/api/user', {
-        params: sparam
-      }).then(response => {
-        this.users = response.data
-        typeof cbFunc === 'function' && cbFunc()
-      }).catch(error => {
-        this.$handleHttpError(error)
-      }).finally(() => {
-        loading.close()
-      })
-    }, // searchUserList
-
-    showDataMapList () {
-      this.dataMapShow = true
-      const loading = this.$startLoading()
-      this.$http.get('/api/datamap', {
-      }).then(response => {
-        this.dataMap = response.data
-      }).catch(error => {
-        this.$handleHttpError(error)
-      }).finally(() => {
-        loading.close()
-      })
-    },
 
     cbUserRowClick (row) {
       if (this.tgtType === 'send') {
@@ -449,8 +415,123 @@ export default {
         this.item.rcvAdmin.name = row.name
         this.item.rcvAdmin.positionName = (row.positionName ? row.positionName : '--')
       }
-      this.userListShow = false
     }, // cbUserRowClick
+
+    showMapList (type) {
+      this.tgtType = type
+      if (!this.dataMaps) {
+        this.searchMapList(() => {
+          this.mapListShow = true
+        })
+      } else {
+        this.mapListShow = true
+      }
+    }, // showMapList
+
+    cbMapRowClick (row) {
+      if (this.tgtType === 'req') {
+        this.item.reqDataMappingId = row.id
+      } else if (this.tgtType === 'res') {
+        this.item.resDataMappingId = row.id
+      }
+      this.mapListShow = false
+    }, // cbMapRowClick
+
+    searchMapList (cbFunc) {
+      const loading = this.$startLoading()
+      this.$http.get('/api/datamap', {
+      }).then(response => {
+        this.dataMaps = response.data
+        typeof cbFunc === 'function' && cbFunc()
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
+    }, // searchMapList
+
+    showMapEditor (type) {
+      this.tgtType = type
+      if (type === 'req') {
+        this.editMap(this.item.reqDataMappingId)
+      } else if (type === 'res') {
+        this.editMap(this.item.resDataMappingId)
+      }
+    }, // showMapEditor
+
+    editMap (id) {
+      if (id) {
+        console.log('edit datamap : ' + id)
+        const loading = this.$startLoading()
+        this.$http.get('/api/datamap/' + id, {
+        }).then(response => {
+          this.dataMap = response.data
+          this.initMap(this.dataMap)
+          this.mapEditorShow = true
+        }).catch(error => {
+          this.$handleHttpError(error)
+        }).finally(() => {
+          loading.close()
+        })
+      } else {
+        this.dataMap = this.getNewMap()
+        this.mapEditorShow = true
+      }
+    }, // editMap
+
+    saveMap (map) {
+      console.log('save datamap', map)
+      this.$http({
+        method : 'POST',
+        url: '/api/datamap',
+        data: map,
+      }).then(response => {
+        this.$message({message: this.$t('message.0001'), type: 'success'})
+        map.id = response.data.id
+      }).catch(error => {
+        this.$handleHttpError(error)
+      })
+    }, // saveMap
+
+    updateItem (item) {
+      let org = this.item
+      let type = this.tgtType
+      if (type === 'req' && (!org.reqDataMappingId || org.reqDataMappingId.length === 0)) {
+        org.reqDataMappingId = item.id
+      } else if (type === 'res' && (!org.resDataMappingId || org.resDataMappingId.length === 0)) {
+        org.resDataMappingId = item.id
+      }
+      this.mapListShow && this.searchMapList()
+    }, // updateItem
+
+    getNewMap () {
+      return {
+        id: '',
+        sourceDataId: '',
+        targetDataId: '',
+        mapLines: [],
+        mapValues: [],
+
+        sourceData: {},
+        targetData: {},
+      }
+    }, // getNewMap
+
+    initMap (map) {
+      let newMap = this.getNewMap()
+      if (!map.mapLines) {
+        map.mapLines = newMap.mapLines
+      }
+      if (!map.mapValues) {
+        map.mapValues = newMap.mapValues
+      }
+      if (!map.sourceData) {
+        map.sourceData = newMap.sourceData
+      }
+      if (!map.targetData) {
+        map.targetData = newMap.targetData
+      }
+    }, // initMap
   },
   computed: {
     syncTypes: function () {
