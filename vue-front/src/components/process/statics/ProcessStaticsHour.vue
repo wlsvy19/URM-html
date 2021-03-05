@@ -1,10 +1,10 @@
 <template>
   <div class="urm-panel">
-    <div class="urm-header">시간별 {{getInfType()}} 거래처리통계</div>
-    <div class="search-bar" :style="procStatStyle(this.$route.params)">
+    <div class="urm-header">시간별 {{pageTitle}} 거래처리통계</div>
+    <div class="search-bar" :style="searchBarStyle()">
       <el-form :inline="true">
         <el-form-item label="처리날짜">
-          <el-date-picker type="daterange" style="width: 220px;"/>
+          <el-date-picker v-model="dateRange" type="daterange" value-format="yyyyMM" :clearable="false"/>
         </el-form-item>
         <el-form-item label="인터페이스 아이디">
           <el-input class="search-id"/>
@@ -26,43 +26,31 @@
         <el-button @click="search">{{$t('label.search')}}</el-button>
       </div>
     </div>
-    <StaticsHourList ref="list" @edit="handleEdit"/>
+
+    <StaticsHourList :items="listItem"/>
   </div>
 </template>
 
 <script>
+import ProcessMain from '../ProcessMain'
 
 export default {
+  mixins: [ProcessMain],
   data() {
     return {
+      sparam: {
+        ...this.sparam,
+        infType: '',
+      },
+      pageUrl: '/stat/month',
       checked: true
     }
   },
-  methods: {
-    procStatStyle (val) {
-      let type = val.server
-      let style= ''
-      if(type === 'dev') {
-        style = 'backgroundColor: #8888ff'
-      } else if(val.server === 'test') {
-          style = 'backgroundColor: #88ff88'
-      } else if(val.server === 'prod') {
-          style = 'backgroundColor: #ff8888'
-      }
-        return style
-      }, // proLogStyle
-      getInfType () {
-        let infType = ''
-        let type = this.$route.params.type
-        if(type === 'online') {
-          infType = '온라인'
-        } else if(type === 'batch') {
-            infType = '배치'
-        } else if(type === 'deferred') {
-            infType = '디퍼드'
-        }
-        return infType
-      }, // getInfType
-  }
+  mounted () {
+    let today = this.$convertDateFormat('yyyyMM', new Date())
+    this.sparam.startDate = today
+    this.sparam.endDate = today
+    this.sparam.infType = this.$route.params.type
+  },
 }
 </script>

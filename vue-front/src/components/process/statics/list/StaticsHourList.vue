@@ -32,3 +32,12 @@
   </div>
 </template>
 
+<script>
+export default {
+  data () {
+    return {
+      listHeight: 'calc(100vh - 600px)',
+    }
+  },
+}
+</script>
