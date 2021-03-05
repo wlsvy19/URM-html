@@ -47,19 +47,28 @@
       <el-table-column label="등록자" prop="regId" width="75"/>
       <el-table-column :label="$t('label.changeId')" prop="chgId"/>
       <el-table-column :label="$t('label.changeDate')" width="145" :formatter="getChgDateStr"/>
-      <el-table-column label="쿼리" prop="sqlPlain" width="60" class-name="edit-cell">
-        <template>
-          <el-button>쿼리</el-button>
+      <el-table-column label="쿼리" width="60" class-name="edit-cell">
+        <template slot-scope="scope">
+          <el-popover trigger="click" placement="top" width="200">
+            <el-input type="textarea" v-model="scope.row.sqlPlain" readonly/>
+            <el-button slot="reference">쿼리</el-button>
+          </el-popover>
         </template>
       </el-table-column>
-      <el-table-column label="기타 요청" prop="etcRemark" width="95" class-name="edit-cell">
-        <template>
-          <el-button>기타 요청</el-button>
+      <el-table-column label="기타 요청" width="95" class-name="edit-cell">
+        <template slot-scope="scope">
+          <el-popover trigger="click" placement="top" width="200">
+            <el-input type="textarea" v-model="scope.row.etcRemark" readonly/>
+            <el-button slot="reference">기타 요청</el-button>
+          </el-popover>
         </template>
       </el-table-column>
-      <el-table-column label="요청 응답" prop="eaiRemark" width="95" class-name="edit-cell">
-        <template>
-          <el-button>요청 응답</el-button>
+      <el-table-column label="요청 응답" width="95" class-name="edit-cell">
+        <template slot-scope="scope">
+          <el-popover trigger="click" placement="top" width="200">
+            <el-input type="textarea" v-model="scope.row.eaiRemark" readonly/>
+            <el-button slot="reference">요청 응답</el-button>
+          </el-popover>
         </template>
       </el-table-column>
     </el-table>
@@ -72,14 +81,8 @@ export default {
   props: {
     data : {
       type: Array,
-      default: function () {
-        return []
-      },
+      default: () => [],
     },
-  },
-  data () {
-    return {
-    }
   },
   methods: {
     getTypeStr (key, val) {

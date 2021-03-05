@@ -62,7 +62,7 @@
             </el-input>
           </el-form-item>
           <el-form-item :label="$t('label.lastChangeDate')">
-            <el-date-picker v-model="sparam.chgDate" type="daterange" value-format="timestamp" style="width: 220px;"/>
+            <el-date-picker v-model="chgDate" type="daterange" value-format="timestamp" style="width: 220px;"/>
           </el-form-item>
           <el-form-item label="등록자" label-width="65px" class="search-check">
             <el-checkbox v-model="sparam.cRegId"/>
@@ -119,11 +119,15 @@
       </el-table-column>
       <el-table-column width="120" class-name="edit-cell operations">
         <template slot-scope="scope">
-          <div>
+          <el-tooltip :content="$t('label.modify')" placement="top" :open-delay="500" :enterable="false">
             <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
+          </el-tooltip>
+          <el-tooltip :content="$t('label.delete')" placement="top" :open-delay="500" :enterable="false">
             <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row.id)" plain/>
+          </el-tooltip>
+          <el-tooltip :content="$t('label.interfaceHistory')" placement="top" :open-delay="500" :enterable="false">
             <el-button icon="el-icon-refresh-left" @click.stop="viewHistory(scope.row.id)"/>
-          </div>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -157,21 +161,15 @@ export default {
   props: {
     infTypes: {
       type: Array,
-      default: function () {
-        return []
-      },
+      default: () => [],
     },
     chgStats: {
       type: Array,
-      default: function () {
-        return []
-      },
+      default: () => [],
     },
     procStats: {
       type: Array,
-      default: function () {
-        return []
-      },
+      default: () => [],
     },
   },
   components: {
@@ -189,7 +187,7 @@ export default {
         interfaceType: '',
         chgStat: '',
         processStat: '',
-        chgDate: [new Date('2010/01/01').getTime(), new Date().getTime()],
+        chgDate: new Date('2010/01/01').getTime() + ',' + new Date().getTime(),
         sendSystemId: '',
         rcvSystemId: '',
         sendJobCodeId: '',
@@ -305,6 +303,23 @@ export default {
       }
       return 'color: #990000;'
     }, // chgStatStyle
+  },
+  computed: {
+    chgDate: {
+      get: function () {
+        let dates = this.sparam.chgDate.split(',')
+        if (dates.length === 2) {
+          return dates
+        }
+        return []
+      },
+      set: function (nVal) {
+        if (nVal && nVal.length === 2) {
+          this.sparam.chgDate = nVal[0] + ',' + nVal[1]
+        }
+        this.sparam.chgDate = ''
+      },
+    },
   },
 }
 </script>

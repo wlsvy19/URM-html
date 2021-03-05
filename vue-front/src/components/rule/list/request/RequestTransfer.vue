@@ -86,7 +86,7 @@ export default {
       }).catch(() => {
         this.$message.info('취소되었습니다.')
       })
-    },
+    }, // clickConfirm
 
     showUserList (type) {
       this.tgtType = type
@@ -113,7 +113,7 @@ export default {
         }
       })
       return obj.name
-    }, // getTypeStr
+    }, // getInfTypeStr
   },
 }
 </script>

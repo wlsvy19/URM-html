@@ -6,20 +6,18 @@
     <el-form label-width="135px">
       <div class="row">
         <el-form-item :label="$t('label.id')">
-          <el-input v-model="item.id" class="user-input" @click.native="showIdChecker" readonly/>
+          <el-input v-model="item.id" class="user-input" @click.native="showIdChecker" disabled/>
         </el-form-item>
         <el-form-item :label="$t('label.name')">
           <el-input v-model="item.name" class="user-input"/>
         </el-form-item>
       </div>
-
       <div class="row">
         <el-form-item :label="$t('label.pass')">
           <el-input type="password" v-model="item.password" class="user-input"/>
           <el-input type="password" v-model="item.confirm" style="margin-left: 5px; width: 360px;"/>
         </el-form-item>
       </div>
-
       <div class="row">
         <el-form-item :label="$t('label.dept')">
           <el-input v-model="item.deptName" class="user-input"/>
@@ -28,7 +26,6 @@
           <el-input v-model="item.positionName" class="user-input"/>
         </el-form-item>
       </div>
-
       <div class="row">
         <el-form-item :label="$t('label.grade')">
           <el-input v-model="item.gradeName" class="user-input"/>
@@ -37,7 +34,6 @@
           <el-input v-model="item.generalTelNo" class="user-input"/>
         </el-form-item>
       </div>
-
       <div class="row">
         <el-form-item :label="$t('label.officeTel')">
           <el-input v-model="item.officeTelNo" class="user-input"/>
@@ -46,7 +42,6 @@
           <el-input v-model="item.celNo" class="user-input"/>
         </el-form-item>
       </div>
-
       <div class="row">
         <el-form-item :label="$t('label.auth')">
           <el-select v-model="item.authId" class="user-input">
@@ -63,9 +58,7 @@ export default {
   props: {
     item: {
       type: Object,
-      default: function () {
-        return {}
-      },
+      default: () => {},
     }
   },
   data () {
@@ -153,7 +146,7 @@ export default {
         this.usableId = false
         $input.elm.querySelector('input').value = ''
       })
-    }, // showIdCheckConfirm
+    }, // showIdChecker
 
     checkId () {
       // eslint-disable-next-line
@@ -169,8 +162,7 @@ export default {
       this.$http.get('/api/user/check', {
         params: {id: id},
       }).then(response => {
-        let res = response.data
-        if (res > 0) { // duplicate
+        if (response.data > 0) { // duplicate
           this.$message({message: this.$t('message.2002'), type: 'warning'})
         } else {
           this.$message({message: this.$t('message.2001'), type: 'success'})

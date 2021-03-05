@@ -5,7 +5,7 @@
     </div>
     <el-form label-width="135px" :inline="true">
       <el-form-item :label="$t('label.dataMapId')">
-        <el-input v-model="item.id" class="size-id" readonly/>
+        <el-input v-model="item.id" class="size-id" disabled/>
       </el-form-item>
       <el-form-item :label="$t('label.dataMapName')">
         <el-input v-model="item.name" class="size-name"/>
@@ -196,7 +196,7 @@ export default {
           let treeData = []
           data.fields.forEach((f, idx) => {
             let tId = type + '_' + idx
-            let child = {type: 'field', id: tId, label: f.engName, name: f.name, children: []}
+            let child = {type: 'field', id: tId, label: f.engName, name: f.name, fId: f.fieldId, children: []}
             treeData.push(child)
           })
           rootData.children = treeData
@@ -216,9 +216,9 @@ export default {
       }
       const iEl = (<i style="line-height: 18px; width: 18px;" class={icon}/>)
       if (data.type === 'field') {
-        let labelEl1 = (<span style="width: 110px" class="nowarp">{data.label}</span>)
-        let labelEl2 = (<span style="width: 140px;">{data.name}</span>)
         if (data.id.startsWith('s')) { // source
+        let labelEl1 = (<span style="width: 107px" class="nowarp">{data.label}</span>)
+          let labelEl2 = (<span style="width: 152px;" class="nowarp">{data.name}</span>)
           return (
             <span id={data.id} class="nowarp" style="width:100%; display: flex;" draggable="true"
               on-dragstart={(ev) => this.dragStart(ev)}
@@ -227,7 +227,16 @@ export default {
             </span>
           )
         } else { // target
+          let labelEl1 = (<span style="width: 110px" class="nowarp">{data.label}</span>)
+          let labelEl2 = (<span style="width: 158px;" class="nowarp">{data.name}</span>)
           let labelEl3 = (<span></span>)
+          this.item.mapValues.some((v, idx) => {
+            if (v.fieldId === data.fId) {
+              let tId = 'v_' + idx
+              labelEl3 = (<span id={tId} class="nowarp">{v.defaultValue}</span>)
+              return true
+            }
+          })
           return (
             <span id={data.id} class="nowarp droppable" style="width:100%; display: flex;"
               on-dragover={(ev) => this.dragOver(ev)}

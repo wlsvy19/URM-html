@@ -50,7 +50,7 @@
   </el-table>
 </template>
 <script>
-import YesNoSelect from '../YesNoSelect'
+import YesNoSelect from './YesNoSelect'
 
 export default {
   props: {
@@ -69,7 +69,7 @@ export default {
     YesNoSelect,
   },
   computed: {
-    selection: function() {
+    selection () {
       return this.$refs.map.selection
     },
   }

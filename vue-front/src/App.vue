@@ -95,6 +95,15 @@ div.row {
 .urm-editor .size-name {
   width: 220px;
 }
+.urm-editor .el-textarea__inner {
+  height: 100px;
+}
+
+.nowarp {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 
 .el-menu-item, .el-submenu__title {
@@ -137,8 +146,8 @@ button.el-button {
 }
 
 .el-input.is-disabled .el-input__inner {
-    color: #737373;
-    cursor: text !important;
+  color: #737373;
+  cursor: text !important;
 }
 
 .el-dialog__body {

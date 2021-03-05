@@ -3,9 +3,7 @@ export default {
   props: {
     item: {
       type: Object,
-      default: function () {
-        return {}
-      },
+      default: () => {},
     }
   },
   methods: {

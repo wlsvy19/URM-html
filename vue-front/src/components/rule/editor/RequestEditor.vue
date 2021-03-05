@@ -6,7 +6,7 @@
     <el-form label-width="135px">
       <div class="row">
         <el-form-item :label="$t('label.requestId')">
-          <el-input v-model="item.id" class="size-id" readonly/>
+          <el-input v-model="item.id" class="size-id" disabled/>
         </el-form-item>
         <el-form-item :label="$t('label.requestName')">
           <el-input v-model="item.name" class="size-default"/>
@@ -81,6 +81,7 @@
           </el-form-item>
         </div>
       </div>
+
       <hr/>
       <div class="row">
         <div>
@@ -105,7 +106,11 @@
           <!-- DB -->
           <div class="row" v-show="item.sendSystemType === '2'">
             <el-form-item :label="$t('label.sourceQuery')">
-              <el-input v-model="item.sqlPlain" style="width: 390px;" readonly/>
+              <el-popover trigger="click" placement="left" width="400" @hide="setQuery">
+                <div class="popover-title"><span>{{$t('label.sourceQuery')}}</span></div>
+                <el-input type="textarea" v-model="item.sql"/>
+                <el-input slot="reference" :value="queryText" class="size-default" readonly/>
+              </el-popover>
             </el-form-item>
           </div>
           <div class="row">
@@ -207,21 +212,15 @@ export default {
   props: {
     infTypes: {
       type: Array,
-      default: function () {
-        return []
-      },
+      default: () => [],
     },
     chgStats: {
       type: Array,
-      default: function () {
-        return []
-      },
+      default: () => [],
     },
     procStats: {
       type: Array,
-      default: function () {
-        return []
-      },
+      default: () => [],
     },
   },
   components: {
@@ -367,6 +366,11 @@ export default {
           break
       }
     }, // handleClear
+
+    setQuery () {
+      let doc = new DOMParser().parseFromString(this.item.sql, 'text/html');
+      this.item.sqlPlain = doc.body.textContent || ""
+    }, // setQuery
 
     showSystemList (type) {
       this.tgtType = type
@@ -554,6 +558,12 @@ export default {
       let kind = RuleUtil.CODEKEY.fileCrudType
       return this.$store.state.codes.filter(code => (code.kind === kind))
     },
+    queryText: function () {
+      if (this.item.sqlPlain && this.item.sqlPlain.trim().length > 0) {
+        return this.$t('label.selectText')
+      }
+      return ''
+    },
     serviceLabel () {
       return (type) => {
         if (type === 'send') {
@@ -571,13 +581,13 @@ export default {
         }
       }
     },
-    jobCodeName: function () {
+    jobCodeName () {
       return {
         send: this.item.sendJobCode.part2Name + '(' + this.item.sendJobCode.part2Id + ')',
         rcv: this.item.rcvJobCode.part2Name + '(' + this.item.rcvJobCode.part2Id + ')',
       }
     },
-    adminName: function () {
+    adminName () {
       return {
         send: this.item.sendAdmin.name + '(' + this.item.sendAdmin.positionName + ')',
         rcv: this.item.rcvAdmin.name + '(' + this.item.rcvAdmin.positionName + ')',

@@ -3,10 +3,10 @@
     <div class="editor-buttons">
       <el-button @click="clickSave" plain>{{$t('label.save')}}</el-button>
     </div>
-    <el-form label-width="140px">
+    <el-form label-width="140px" style="margin-top: 15px;">
       <div class="row">
         <el-form-item :label="$t('label.systemId')">
-          <el-input v-model="item.id" class="size-id" readonly/>
+          <el-input v-model="item.id" class="size-id" disabled/>
         </el-form-item>
         <el-form-item :label="$t('label.systemCd')">
           <el-input v-model="item.code" class="size-id"/>
@@ -67,13 +67,13 @@
         </div>
         <div class="row">
           <el-form-item :label="$t('label.connectParam')">
-            <el-input type="textarea" v-model="item.dbParams"/>
+            <el-input type="textarea" v-model="item.dbParams" class="size-default"/>
           </el-form-item>
         </div>
       </div>
       <div class="row">
         <el-form-item :label="$t('label.etcRemark')">
-          <el-input type="textarea" v-model="item.remark"/>
+          <el-input type="textarea" v-model="item.remark" class="size-default"/>
         </el-form-item>
       </div>
     </el-form>
@@ -89,15 +89,11 @@ export default {
   props: {
     sysTypes: {
       type: Array,
-      default: function () {
-        return []
-      }
+      default: () => [],
     },
     devTypes: {
       type: Array,
-      default: function () {
-        return []
-      }
+      default: () => [],
     },
   },
   methods: {
@@ -120,13 +116,7 @@ export default {
 </script>
 
 <style scoped>
-div.data-header {
-  display: flex;
-}
-div.data-header .el-button--small {
-  margin: 0;
-}
-div.data-header > .data-row-buttons {
-  margin-left: auto;
+.size-default {
+  width: 490px;
 }
 </style>

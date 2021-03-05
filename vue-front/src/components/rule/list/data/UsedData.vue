@@ -21,9 +21,7 @@ export default {
     },
     data: {
       type: Array,
-      defulat: function () {
-        return []
-      },
+      defulat: () => [],
     },
   },
   methods: {

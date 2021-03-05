@@ -6,7 +6,7 @@
     </div>
     <el-form label-width="135px" :inline="true">
       <el-form-item :label="$t('label.dataId')">
-        <el-input v-model="item.id" class="size-id" readonly/>
+        <el-input v-model="item.id" class="size-id" disabled/>
       </el-form-item>
       <el-form-item :label="$t('label.dataName')">
         <el-input v-model="item.name" class="size-name"/>
@@ -80,11 +80,11 @@ export default {
     
     addByQuery () {
       this.queryDataShow = true
-    },
+    }, // addByQuery
 
     copyData () {
       this.copyDataShow = true
-    },
+    }, // copyData
 
     clickAppend () {
       let fields = this.item.fields
@@ -145,13 +145,13 @@ export default {
   }, // methods
 
   computed: {
-    isNew: function () {
+    isNew () {
       return !this.item.id || this.item.id.length === 0
     },
-    existField: function () {
+    existField () {
       return this.item.fields && this.item.fields.length > 0
     },
-  }
+  },
 }
 </script>
 <style scoped>

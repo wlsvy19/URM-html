@@ -39,11 +39,9 @@
       </el-table-column>
       <el-table-column width="120" class-name="edit-cell operations" v-if="!onlySearch">
         <template slot-scope="scope">
-          <div>
-            <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
-            <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row.id)" plain/>
-            <el-button icon="el-icon-connection" @click.stop="clickUsed(scope.row.id)"/>
-          </div>
+          <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
+          <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row.id)" plain/>
+          <el-button icon="el-icon-connection" @click.stop="clickUsed(scope.row.id)"/>
         </template>
       </el-table-column>
     </el-table>

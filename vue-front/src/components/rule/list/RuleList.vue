@@ -9,9 +9,7 @@ export default {
     },
     items: {
       type: Array,
-      default: function () {
-        return []
-      },
+      default: () => [],
     },
   },
   data () {
