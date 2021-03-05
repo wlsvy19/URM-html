@@ -46,6 +46,12 @@ div.row {
   min-width: 1300px;
 }
 
+.urm-header {
+  margin-top: 10px;
+  padding-left: 10px;
+  font-weight: bold;
+}
+
 .search-bar {
   border: 1px solid #aab3b3;
   margin-top: 10px;
@@ -71,7 +77,7 @@ div.row {
   margin: 0;
 }
 
-.urm-list .table-striped {
+.urm-list .el-table {
   margin-top: 10px;
 }
 .urm-list .operations .el-button--small {
@@ -124,6 +130,10 @@ button.el-button {
 }
 .el-textarea .el-textarea__inner {
   padding: 5px 8px;
+}
+.el-input .el-input-group__append {
+  padding-left: 16px;
+  padding-right: 14px;
 }
 
 .el-input.is-disabled .el-input__inner {

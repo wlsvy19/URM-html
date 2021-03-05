@@ -1,10 +1,10 @@
 <template>
-  <div class="urm-pannel">
-    <p>배치 거래처리로그</p>
+  <div class="urm-panel">
+    <div class="urm-header">배치 거래처리로그</div>
     <div class="search-bar" :style="proLogStyle(this.$route.params)">
       <el-form :inline="true">
         <el-form-item label="처리날짜">
-          <el-date-picker type="daterange" start-placeholder="Start Date" end-placeholder="End Date" style="width: 220px;"/>
+          <el-date-picker type="daterange" style="width: 220px;"/>
         </el-form-item>
         <el-form-item label="인터페이스 아이디">
           <el-input class="search-id"/>
@@ -28,12 +28,8 @@
 </template>
 
 <script>
-import LogBatchList from './list/LogBatchList'
 
 export default {
-  components: {
-    LogBatchList,
-  },
   data () {
     return {
       radio: 'T'

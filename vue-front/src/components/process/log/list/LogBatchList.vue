@@ -1,6 +1,6 @@
 <template>
   <div class="urm-list">
-    <el-table ref="table" :height="listHeight" border class="table-striped">
+    <el-table ref="table" :height="listHeight" border stripe>
       <el-table-column label="인터페이스 ID" prop="interfaceId" width="130"/>
       <el-table-column label="상태" prop="status" width="65"/>
       <el-table-column label="총데이터" prop="totalCount" width="85"/>
@@ -17,7 +17,7 @@
 
     <hr />
 
-    <el-table ref="table" :height="listHeight" border class="table-striped">
+    <el-table ref="table" :height="listHeight" border stripe>
       <el-table-column label="모델 컴포넌트 명" prop="modelName" width="150"/>
       <el-table-column label="APP ID" prop="appId" width="145"/>
       <el-table-column label="처리 내용" prop="processContent"/>

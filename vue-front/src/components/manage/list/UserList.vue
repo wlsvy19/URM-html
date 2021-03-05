@@ -19,7 +19,7 @@
       </div>
     </div>
 
-    <el-table ref="table" :data="items" @row-dblclick="handleRowDblclick" :height="listHeight" border class="table-striped">
+    <el-table ref="table" :data="items" @row-dblclick="handleRowDblclick" :height="listHeight" border stripe>
       <el-table-column type="selection" width="40" v-if="!onlySearch"/>
       <el-table-column :label="$t('label.id')" prop="id" width="145"/>
       <el-table-column :label="$t('label.name')" prop="name" :show-overflow-tooltip="true"/>
@@ -81,7 +81,7 @@ export default {
     clickDelete (key) {
       let ids = []
       if (key === 'selected') {
-        ids = this.$refs.table.selection.map((it) => it.id)
+        ids = this.$refs.table.selection.map((row) => row.id)
         if (ids.length <= 0) {
           this.$message({message: this.$t('message.1004'), type: 'warning'})
           return
@@ -130,7 +130,7 @@ export default {
       auths.some((auth) => {
         if (auth.id === key) {
           obj = auth
-          return auth
+          return true
         }
       })
       return obj.name

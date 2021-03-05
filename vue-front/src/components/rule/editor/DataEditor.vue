@@ -19,7 +19,7 @@
         <div>
           <el-button icon="el-icon-document" @click.stop="addByExcel" :disabled="existField" plain/>
           <el-button icon="el-icon-coin" @click.stop="addByQuery" :disabled="existField" plain/>
-          <el-button icon="el-icon-document-copy" @click.stop="copyData" :disabled="existField" plain/>
+          <el-button icon="el-icon-copy-document" @click.stop="copyData" :disabled="existField" plain/>
         </div>
         <div class="data-row-buttons">
           <el-button icon="el-icon-circle-plus-outline" @click.stop="clickAppend" plain/>
@@ -105,8 +105,8 @@ export default {
       }
       let fields = this.item.fields
       checkedList.forEach((chkItem) => {
-        fields.some((it, idx) => {
-          if (it.sno === chkItem.sno) {
+        fields.some((f, idx) => {
+          if (f.sno === chkItem.sno) {
             fields.splice(idx, 1)
             return true // break
           }
@@ -117,8 +117,8 @@ export default {
 
     refreshIndex () {
       let fields = this.item.fields
-      fields.forEach((it, idx) => {
-        it.sno = idx + 1
+      fields.forEach((f, idx) => {
+        f.sno = idx + 1
       })
     }, // refreshIndex
 

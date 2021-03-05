@@ -2,12 +2,12 @@
   <div class="urm-panel">
     <RequestList ref="list" :items="listItem" :infTypes="infTypes"
       :procStats="procStats" :chgStats="chgStats" @search="handleSearch" @edit="handleEdit"
-      @show-sys-list="showSystemList" @show-biz-list="showBizList"/>
+      @show-sys-list="showSystemList" @show-biz-list="showBizList" @show-usr-list="showUserList"/>
 
     <el-dialog :visible.sync="editorShow" width="1355px">
       <RequestEditor :item="editorItem" :infTypes="infTypes"
         :procStats="procStats" :chgStats="chgStats" @save="handleSave"
-        @show-sys-list="showSystemList" @show-biz-list="showBizList"/>
+        @show-sys-list="showSystemList" @show-biz-list="showBizList" @show-usr-list="showUserList"/>
     </el-dialog>
 
     <el-dialog :visible.sync="systemListShow" width="1300px" top="5vh" append-to-body :close-on-click-modal="false">
@@ -17,6 +17,10 @@
     <el-dialog :visible.sync="bizListShow" width="1300px" top="5vh" append-to-body :close-on-click-modal="false">
       <BizCodeList ref="bizList" :items="bizCodes" :onlySearch="true" @search="searchBizList" @row-dblclick="cbBizRowClick"/>
     </el-dialog>
+
+    <el-dialog :visible.sync="userListShow" width="1300px" top="5vh" append-to-body :close-on-click-modal="false">
+      <UserList ref="usrList" :items="users" :onlySearch="true" @search="searchUserList" @row-dblclick="cbUserRowClick"/>
+    </el-dialog>
   </div>
 </template> 
 
@@ -25,11 +29,13 @@ import RuleMain from './RuleMain'
 import RuleUtil from '@/components/rule/RuleUtil'
 
 import BizCodeList from '@/components/manage/list/BizCodeList'
+import UserList from '@/components/manage/list/UserList'
 
 export default {
   mixins: [RuleMain],
   components: {
     BizCodeList,
+    UserList,
   },
   data () {
     return {
@@ -38,6 +44,8 @@ export default {
       systems: null,
       bizListShow: false,
       bizCodes: null,
+      userListShow: false,
+      users: null,
       cbRowFunc: () => {},
     }
   },
@@ -70,6 +78,7 @@ export default {
         chgStat: '1',
         syncType: '1',
         trType: '2',
+        dataMapYN: false,
         sendSystemType: '3',
         rcvSystemType: '3',
         sqlPlain: '',
@@ -81,28 +90,12 @@ export default {
         testStartYMD: today,
         testEndYMD: week,
 
-        sendSystem: {
-          name: '',
-        },
-        rcvSystem: {
-          name: '',
-        },
-        sendJobCode: {
-          part2Id: '',
-          part2Name: '',
-        },
-        rcvJobCode: {
-          part2Id: '',
-          part2Name: '',
-        },
-        sendAdmin: {
-          name: '',
-          positionName: '--',
-        },
-        rcvAdmin: {
-          name: '',
-          positionName: '--',
-        },
+        sendSystem: { name: '' },
+        rcvSystem: { name: '' },
+        sendJobCode: { part2Id: '', part2Name: '' },
+        rcvJobCode: { part2Id: '', part2Name: '' },
+        sendAdmin: { name: '', positionName: '--' },
+        rcvAdmin: { name: '', positionName: '--' },
       }
     }, // getNewItem
 
@@ -207,6 +200,37 @@ export default {
       this.cbRowFunc(row)
       this.bizListShow = false
     }, // cbBizRowClick
+
+    showUserList (cbRowFunc) {
+      this.cbRowFunc = cbRowFunc
+      if (!this.users) {
+        this.searchUserList(() => {
+          this.userListShow = true
+        })
+      } else {
+        this.userListShow = true
+      }
+    }, // showUserList
+
+    searchUserList (cbFunc) {
+      let sparam = this.$refs.usrList ? this.$refs.usrList.sparam : {}
+      const loading = this.$startLoading()
+      this.$http.get('/api/user', {
+        params: sparam
+      }).then(response => {
+        this.users = response.data
+        typeof cbFunc === 'function' && cbFunc()
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
+    }, // searchUserList
+
+    cbUserRowClick (row) {
+      this.cbRowFunc(row)
+      this.userListShow = false
+    }, // cbUserRowClick
   },
   computed: {
     infTypes: function () {

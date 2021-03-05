@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <el-table ref="table" :data="items" @row-dblclick="handleRowDblclick" :height="listHeight" border class="table-striped">
+    <el-table ref="table" :data="items" @row-dblclick="handleRowDblclick" :height="listHeight" border stripe>
       <el-table-column type="selection" width="40" v-if="!onlySearch"/>
       <el-table-column :label="$t('label.id')" prop="id" width="150"/>
       <el-table-column :label="$t('label.name')" prop="name" :show-overflow-tooltip="true"/>
@@ -34,7 +34,7 @@
       <el-table-column :label="$t('label.registId')" prop="regId" width="200" :show-overflow-tooltip="true"/>
       <el-table-column :label="$t('label.registDate')" width="200">
         <template slot-scope="scope">
-          <span>{{scope.row.regDate}}</span>
+          <span>{{getDateStr(scope.row.regDate, 'yyyy-MM-dd HH:mm:ss')}}</span>
         </template>
       </el-table-column>
       <el-table-column width="120" class-name="edit-cell operations" v-if="!onlySearch">
