@@ -116,17 +116,17 @@ export default {
       }
 
       const $el = this.$createElement
-      let $vue = this
+      let _vue = this
       let $input = $el('el-input', {
         style: { width: '220px' },
         model: {
           callback: function (e) {
-            $vue.checkedId = e
+            _vue.checkedId = e
           },
         },
         nativeOn: {
           input: function (e) {
-            e.target.value = $vue.checkedId
+            e.target.value = _vue.checkedId
           },
         },
       }, null)

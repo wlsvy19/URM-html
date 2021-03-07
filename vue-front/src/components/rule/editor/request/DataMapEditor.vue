@@ -289,11 +289,11 @@ export default {
   }, // methods
 
   computed: {
-    srcTreeData: function () {
+    srcTreeData () {
       console.log('computed src data')
       return this.convertTreeData(this.item.sourceData, 's')
     },
-    tgtTreeData: function () {
+    tgtTreeData () {
       console.log('computed tgt data')
       return this.convertTreeData(this.item.targetData, 't')
     },

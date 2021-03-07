@@ -62,7 +62,7 @@
             </el-input>
           </el-form-item>
           <el-form-item :label="$t('label.lastChangeDate')">
-            <el-date-picker v-model="chgDate" type="daterange" value-format="timestamp" style="width: 220px;"/>
+            <el-date-picker v-model="chgDate" type="daterange" value-format="timestamp" style="width: 235px;"/>
           </el-form-item>
           <el-form-item label="등록자" label-width="65px" class="search-check">
             <el-checkbox v-model="sparam.cRegId"/>
@@ -316,8 +316,9 @@ export default {
       set: function (nVal) {
         if (nVal && nVal.length === 2) {
           this.sparam.chgDate = nVal[0] + ',' + nVal[1]
+        } else {
+          this.sparam.chgDate = ''
         }
-        this.sparam.chgDate = ''
       },
     },
   },

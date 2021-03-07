@@ -58,7 +58,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="$t('label.testDate')">
-          <el-date-picker v-model="testDate" type="daterange" class="size-name" value-format="yyyyMMdd" :clearable="false"/>
+          <el-date-picker v-model="testDate" type="daterange" value-format="yyyyMMdd" class="no-suffix" :clearable="false"/>
         </el-form-item>
       </div>
 

@@ -110,7 +110,8 @@ div.row {
   font-size: 16px;
 }
 .el-table--small, .el-form-item__label,
-.el-input--small, .el-button--small, .el-menu-item-group__title {
+.el-input--small, .el-button--small, .el-menu-item-group__title,
+.el-range-editor--small .el-range-input {
   font-size: 15px;
 }
 
@@ -134,7 +135,7 @@ button.el-button {
   padding: 8px 10px;
 }
 
-.el-input .el-input__inner {
+.el-input:not(.el-date-editor--date) .el-input__inner {
   padding: 0 8px;
 }
 .el-textarea .el-textarea__inner {
@@ -148,6 +149,13 @@ button.el-button {
 .el-input.is-disabled .el-input__inner {
   color: #737373;
   cursor: text !important;
+}
+
+.no-suffix.el-date-editor--daterange {
+  width: 220px;
+}
+.no-suffix .el-range__close-icon {
+  width: 5px;
 }
 
 .el-dialog__body {

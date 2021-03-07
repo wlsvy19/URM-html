@@ -9,7 +9,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="일자 선택">
-          <el-date-picker v-model="dateRange" type="daterange" value-format="yyyyMMdd" :clearable="false"/>
+          <el-date-picker v-model="dateRange" type="daterange" value-format="yyyyMMdd" class="no-suffix" :clearable="false"/>
         </el-form-item>
       </el-form>
       <div class="search-buttons">

@@ -88,14 +88,10 @@ export default {
     getTypeStr (key, val) {
       let kind = RuleUtil.CODEKEY[key]
       let codes = this.$store.state.codes
-      let obj = {}
-      codes.some((code) => {
-        if (code.kind === kind && code.code === val) {
-          obj = code
-          return true
-        }
+      let code = codes.find((code) => {
+        return (code.kind === kind && code.code === val)
       })
-      return obj.name
+      return code ? code.name : ''
     }, // getTypeStr
 
     getTpcYNStr (row) {
