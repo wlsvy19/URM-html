@@ -20,7 +20,7 @@
         <el-form-item label="총건수" >
           <el-checkbox v-model="filter.total" @change="handleChangeFilter('t')"/>
         </el-form-item>
-        <el-form-item v-if="renderSim()" label="시뮬레이션건수" >
+        <el-form-item v-if="isDevOnline" label="시뮬레이션건수" >
           <el-checkbox v-model="filter.sim" @change="handleChangeFilter('sim')"/>
         </el-form-item>
         <el-form-item label="성공건수" >
@@ -65,13 +65,7 @@ export default {
     getHourStr (val) {
       return val < 10 ? '0' + val : val
     }, // getHourStr
-    renderSim () {
-      let type = this.pageTitle
-      if (type === '온라인') {
-        return true
-      } else 
-      return false;
-    },
+
   },
   mounted () {
     let today = this.$convertDateFormat('yyyyMMdd', new Date())
@@ -110,6 +104,14 @@ export default {
       set: function (nVal) {
         this.sparam.endDate = this.endDate + nVal
       },
+    },
+    isDevOnline: function () {
+      let type = this.$route.params.server
+      let infType = this.$route.params.type
+      if (type === 'dev' && infType == 'realtime') {
+        return true
+      } else 
+        return false;
     },
   },
 }
