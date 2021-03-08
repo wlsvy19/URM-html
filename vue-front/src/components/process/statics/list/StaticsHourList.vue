@@ -1,7 +1,7 @@
 <template>
   <div class="urm-list">
     <el-table :data="items" :height="listHeight" border stripe>
-      <el-table-column label="처리날짜" prop="processDate"/>
+      <el-table-column label="처리날짜" prop="processDate" min-width="85"/>
       <el-table-column label="인터페이스ID" prop="interfaceId" width="150"/>
       <el-table-column label="항목" prop="countType"/>
       <el-table-column label="00" prop="hour00"/>

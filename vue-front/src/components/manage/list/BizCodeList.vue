@@ -59,15 +59,23 @@
           <el-input v-model="scope.row.part2Name" v-if="scope.row.editable"/>
         </template>
       </el-table-column>
-      <el-table-column width="85" class-name="edit-cell operations" v-if="!onlySearch">
+      <el-table-column width="85" class-name="edit-cell operations">
         <template slot-scope="scope">
           <div v-if="!scope.row.editable">
-            <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row)"/>
-            <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row)" plain/>
+            <el-tooltip :content="$t('label.modify')" placement="top" :open-delay="500" >
+              <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row)"/>
+            </el-tooltip>
+            <el-tooltip :content="$t('label.delete')" placement="top" :open-delay="500" :enterable="false">
+              <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row)" plain/>
+            </el-tooltip>
           </div>
           <div v-if="scope.row.editable">
-            <el-button icon="el-icon-receiving" @click.stop="clickSave(scope.row)"/>
-            <el-button icon="el-icon-close" @click.stop="clickCancel(scope.row)"/>
+            <el-tooltip :content="$t('label.save')" placement="top" :open-delay="500" :enterable="false">
+              <el-button icon="el-icon-receiving" @click.stop="clickSave(scope.row)"/>
+            </el-tooltip>
+            <el-tooltip :content="$t('label.cancel')" placement="top" :open-delay="500" :enterable="false">
+              <el-button icon="el-icon-close" @click.stop="clickCancel(scope.row)" plain/>
+            </el-tooltip>
           </div>
         </template>
       </el-table-column>

@@ -20,6 +20,9 @@
         <el-form-item label="총건수" >
           <el-checkbox v-model="filter.total" @change="handleChangeFilter('t')"/>
         </el-form-item>
+        <el-form-item v-if="renderSim()" label="시뮬레이션건수" >
+          <el-checkbox v-model="filter.sim" @change="handleChangeFilter('sim')"/>
+        </el-form-item>
         <el-form-item label="성공건수" >
           <el-checkbox v-model="filter.success" @change="handleChangeFilter('s')"/>
         </el-form-item>
@@ -34,7 +37,6 @@
         <el-button @click="search">{{$t('label.search')}}</el-button>
       </div>
     </div>
-
     <StaticsHourList ref="list" :key="$route.path"/>
   </div>
 </template>
@@ -51,6 +53,7 @@ export default {
         success: true,
         fail: true,
         avg: true,
+        sim: true,
       },
       path: 'hour',
     }
@@ -62,6 +65,13 @@ export default {
     getHourStr (val) {
       return val < 10 ? '0' + val : val
     }, // getHourStr
+    renderSim () {
+      let type = this.pageTitle
+      if (type === '온라인') {
+        return true
+      } else 
+      return false;
+    },
   },
   mounted () {
     let today = this.$convertDateFormat('yyyyMMdd', new Date())

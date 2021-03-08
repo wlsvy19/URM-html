@@ -33,10 +33,14 @@
           <span>{{getAuthStr(scope.row.authId)}}</span>
         </template>
       </el-table-column>
-      <el-table-column width="85" class-name="edit-cell operations" v-if="!onlySearch">
+      <el-table-column width="85" class-name="edit-cell operations">
         <template slot-scope="scope">
-          <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
-          <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row.id)" plain/>
+          <el-tooltip :content="$t('label.modify')" placement="top" :open-delay="500" :enterable="false">
+            <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
+          </el-tooltip>
+          <el-tooltip :content="$t('label.delete')" placement="top" :open-delay="500" :enterable="false">
+            <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row.id)" plain/>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>

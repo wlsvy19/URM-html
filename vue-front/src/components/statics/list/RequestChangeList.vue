@@ -3,10 +3,10 @@
     <el-table :data="items" :height="listHeight" border stripe :row-key="$randomRowKey">
       <el-table-column label="변경일자" prop="chgDate" width="150"/>
       <el-table-column label="변경요청" align="center">
-        <el-table-column label="온라인" prop="stat1o" />
-        <el-table-column label="배치" prop="stat1b" />
+        <el-table-column label="온라인" prop="stat1o"/>
+        <el-table-column label="배치" prop="stat1b"/>
         <el-table-column label="디퍼드" prop="stat1d"/>
-        <el-table-column label="TOTAL" prop="stat1" />
+        <el-table-column label="TOTAL" prop="stat1"/>
       </el-table-column>
       <el-table-column label="변경완료" align ="center">
         <el-table-column label="온라인" prop="stat2o"/>

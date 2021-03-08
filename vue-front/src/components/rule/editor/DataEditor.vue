@@ -17,13 +17,23 @@
     <div>
       <div class="data-header">
         <div>
-          <el-button icon="el-icon-document" @click.stop="addByExcel" :disabled="existField" plain/>
-          <el-button icon="el-icon-coin" @click.stop="addByQuery" :disabled="existField" plain/>
-          <el-button icon="el-icon-copy-document" @click.stop="copyData" :disabled="existField" plain/>
+          <el-tooltip content="Excel 로 등록" placement="top" :open-delay="500" :enterable="false">
+            <el-button icon="el-icon-document" @click.stop="addByExcel" :disabled="existField" plain/>
+          </el-tooltip>
+          <el-tooltip content="Query 로 등록" placement="top" :open-delay="500" :enterable="false">
+            <el-button icon="el-icon-coin" @click.stop="addByQuery" :disabled="existField" plain/>
+          </el-tooltip>
+          <el-tooltip content="데이터구조 복사" placement="top" :open-delay="500" :enterable="false">
+            <el-button icon="el-icon-copy-document" @click.stop="copyData" :disabled="existField" plain/>
+          </el-tooltip>
         </div>
         <div class="data-row-buttons">
-          <el-button icon="el-icon-circle-plus-outline" @click.stop="clickAppend" plain/>
-          <el-button icon="el-icon-remove-outline" @click.stop="clickRemove" type="danger" plain/>
+          <el-tooltip content="Field 추가" placement="top" :open-delay="500" :enterable="false">
+            <el-button icon="el-icon-circle-plus-outline" @click.stop="clickAppend" plain/>
+          </el-tooltip>
+          <el-tooltip :content="$t('label.delete')" placement="top" :open-delay="500" :enterable="false">
+            <el-button icon="el-icon-remove-outline" @click.stop="clickRemove" type="danger" plain/>
+          </el-tooltip>
         </div>
       </div>
       <FieldTable ref="fieldTable" :data="item.fields"/>
