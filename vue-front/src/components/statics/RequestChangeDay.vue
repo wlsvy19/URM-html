@@ -26,7 +26,7 @@ export default {
     }
   },
   mounted () {
-    let today = this.$convertDateFormat('yyyyMMdd', new Date())
+    let today = this.$convertDateFormat('yyyyMMdd')
     this.sparam.startDate = today
     this.sparam.endDate = today
   },

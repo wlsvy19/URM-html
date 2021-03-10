@@ -108,7 +108,7 @@ export default {
       }).finally(() => {
         loading.close()
       })
-    }, // handleRowClick
+    }, // viewFields
 
     handleRowDblclick (row) {
       const loading = this.$startLoading()

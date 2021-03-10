@@ -2,10 +2,12 @@
   <div class="urm-list">
     <el-table :data="items" @row-dblclick="handleRowDblclick" :height="mainHeight"
         border stripe :row-key="$randomRowKey">
-      <el-table-column label="인터페이스 ID" prop="interfaceId" width="130"/>
+      <el-table-column label="인터페이스 ID" prop="interfaceId" width="135"/>
       <el-table-column label="상태" width="65">
         <template slot-scope="scope">
-          {{getStatus(scope.row.status)}}
+          <span style="color: #000000" v-if="scope.row.status === 'Y'">성공</span>
+          <span style="color: #FF0000" v-if="scope.row.status === 'E'">실패</span>
+          <span style="color: #0000FF" v-if="scope.row.status !== 'Y' && scope.row.status !== 'E'">미완료</span>
         </template>
       </el-table-column>
       <el-table-column label="총데이터" prop="totalCount" width="85"/>
@@ -33,31 +35,23 @@
 </template>
 
 <script>
+import LogList from './LogList'
+
 export default {
+  mixins: [LogList],
+  props: {
+    items: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data () {
     return {
       mainHeight: 'calc((100vh - 165px)/2)',
       detailHeight: 'calc((100vh - 165px)/2 - 50px)',
-      items: [],
-      details: [],
+      path: 'batch',
       batchId: '',
     }
-  },
-  methods: {
-    handleRowDblclick (row) {
-      let sparam = { batchId: row.batchId }
-      this.batchId = row.batchId
-      this.$emit('row-dblclick', sparam)
-    }, // handleRowDblclick
-
-    getStatus (val) {
-      if (val === 'Y'){
-        return (<span style='color: #000000'>성공</span>)
-      } else if (val === 'E') {
-        return (<span style='color: #FF0000'>실패</span>)
-      }
-      return (<span style='color: #0000FF'>미완료</span>)
-    }, // getStatus
   },
 }
 </script>

@@ -1,10 +1,10 @@
 <template>
   <div class="urm-panel">
     <div class="urm-header">배치 거래처리로그</div>
-    <div class="search-bar" :style="searchBarStyle()">
+    <div class="search-bar" :style="searchBarStyle">
       <el-form :inline="true">
         <el-form-item label="처리날짜">
-          <el-date-picker v-model="sparam.processDate" value-format="yyyyMMdd" class="datepicker" :clearable="false"/>
+          <el-date-picker v-model="sparam.processDate" value-format="yyyyMMdd" class="no-suffix" :clearable="false"/>
           <el-time-picker is-range v-model="timeRange" format="HH:mm" value-format="HHmm" class="no-suffix" :clearable="false"/>
         </el-form-item>
         <el-form-item label="인터페이스 아이디">
@@ -25,15 +25,20 @@
       </div>
     </div>
 
-    <LogBatchList ref="list" :key="$route.path" @row-dblclick="getDetails"/>
+    <LogBatchList :items="listItem"/>
   </div>
 </template>
 
 <script>
 import LogMain from './LogMain'
 
+import LogBatchList from './list/LogBatchList'
+
 export default {
   mixins: [LogMain],
+  components: {
+    LogBatchList,
+  },
   data () {
     return {
       sparam: {
@@ -43,12 +48,11 @@ export default {
         endTime: '2359',
         result: 'T',
       },
-      pageUrl: '/log/batch',
+      path: 'batch',
     }
   },
   mounted () {
-    let today = this.$convertDateFormat('yyyyMMdd', new Date ())
-    this.sparam.processDate = today
+    this.sparam.processDate = this.$convertDateFormat('yyyyMMdd')
   },
   computed: {
     timeRange: {

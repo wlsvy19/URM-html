@@ -1,8 +1,8 @@
 <template>
   <div class="urm-editor">
     <div class="editor-buttons">
-      <el-button @click="downloadExcel" :disabled="isNew" plain>Excel 내려받기</el-button>
-      <el-button @click="clickSave" plain>{{$t('label.save')}}</el-button>
+      <el-button @click="downloadExcel" :disabled="isNew">Excel 내려받기</el-button>
+      <el-button @click="clickSave" :disabled="!isSaveAuth">{{$t('label.save')}}</el-button>
     </div>
     <el-form label-width="135px" :inline="true">
       <el-form-item :label="$t('label.dataId')">

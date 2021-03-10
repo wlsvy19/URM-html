@@ -140,6 +140,17 @@ Vue.prototype.$reloadConfig = function () {
   })
 } // reloadConfig
 
+Vue.prototype.$checkLogin = function () {
+  console.log('check login')
+  this.$store.state.user = {id: 'eai', name: 'eai', authId: '0'}
+  // this.$http.get('/api/check/login', {
+  // }).then(response => {
+  //   this.$store.state.user = response.data
+  // }).catch(error => {
+  //   throw error
+  // })
+} // checkLogin
+
 new Vue({
   render: h => h(App),
   store,

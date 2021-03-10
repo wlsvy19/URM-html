@@ -721,7 +721,7 @@ class ARIAEngine {
 				break;
 			}
 			
-			// 하나의 단어가 2 byte
+			// 하나의 단어가 2바이트 
 			int code = key.getBytes()[i];
 			mk[i*2 + 0] = (byte)((code - (code%256))/256);
 			mk[i*2 + 1] = (byte)(code % 256);
@@ -738,7 +738,7 @@ class ARIAEngine {
 //					break;
 //				}
 //				
-//				// 하나의 단어가 2 byte
+//				// 하나의 단어가 2바이트 
 //				int code = value.getBytes()[i];
 //				plain[i*2 + 0] = (byte)((code - (code%256))/256);
 //				plain[i*2 + 1] = (byte)(code % 256);
@@ -769,7 +769,7 @@ class ARIAEngine {
 				break;
 			}
 			
-			// 하나의 단어가 2 byte
+			// 하나의 단어가 2바이트 
 			int code = key.getBytes()[i];
 			mk[i*2 + 0] = (byte)((code - (code%256))/256);
 			mk[i*2 + 1] = (byte)(code % 256);

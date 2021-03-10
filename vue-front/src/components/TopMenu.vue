@@ -5,15 +5,15 @@
         <img src="@/assets/logo.gif"/>
         <img src="@/assets/urm_text.gif"/>
       </el-menu-item>
-      <el-menu-item index="/request">{{$t('urm.request')}}</el-menu-item>
-      <el-menu-item index="/data">{{$t('urm.data')}}</el-menu-item>
-      <el-menu-item index="/system">{{$t('urm.system')}}</el-menu-item>
-      <el-submenu index="Manage">
+      <el-menu-item index="/request" v-if="isViewAuth('request')">{{$t('urm.request')}}</el-menu-item>
+      <el-menu-item index="/data" v-if="isViewAuth('data')">{{$t('urm.data')}}</el-menu-item>
+      <el-menu-item index="/system" v-if="isViewAuth('system')">{{$t('urm.system')}}</el-menu-item>
+      <el-submenu index="Manage" v-if="isViewAuth('manage')">
         <template slot="title">{{$t('urm.manage')}}</template>
-        <el-menu-item index="/user">{{$t('urm.user')}}</el-menu-item>
+        <el-menu-item index="/user" v-if="isViewAuth('user')">{{$t('urm.user')}}</el-menu-item>
         <el-menu-item index="/bizcode">{{$t('urm.biz')}}</el-menu-item>     
       </el-submenu>
-      <el-submenu index="Statics">
+      <el-submenu index="Statics" v-if="isViewAuth('stat')">
         <template slot="title">{{$t('urm.stat')}}</template>
         <el-menu-item-group title="요건진행상태">
           <el-menu-item index="/process/day">일별 진행상태</el-menu-item>
@@ -24,7 +24,7 @@
           <el-menu-item index="/change/month">월별 변경상태</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      <el-submenu index="Process">
+      <el-submenu index="Process" v-if="isViewAuth('process')">
         <template slot="title">{{$t('urm.process')}}</template>
           <el-menu-item-group title="거래처리로그">
             <el-submenu index="ldev">
@@ -41,9 +41,9 @@
             </el-submenu>
             <el-submenu index="lprod">
               <template slot="title">운영</template>
-              <el-menu-item index="/log/realtime/prod">REALTIME</el-menu-item>
-              <el-menu-item index="/log/batch/prod">BATCH</el-menu-item>
-              <el-menu-item index="/log/deferred/prod">DEFERRED</el-menu-item>
+              <el-menu-item index="/log/realtime/pro">REALTIME</el-menu-item>
+              <el-menu-item index="/log/batch/pro">BATCH</el-menu-item>
+              <el-menu-item index="/log/deferred/pro">DEFERRED</el-menu-item>
             </el-submenu>
           </el-menu-item-group>
 
@@ -68,12 +68,12 @@
             </el-submenu>
             <el-submenu index="sprod">
               <template slot="title">운영</template>
-              <el-menu-item index="/stat/hour/realtime/prod">시간별 REALTIME</el-menu-item>
-              <el-menu-item index="/stat/hour/batch/prod">시간별 BATCH</el-menu-item>
-              <el-menu-item index="/stat/hour/deferred/prod">시간별 DEFERRED</el-menu-item>
-              <el-menu-item index="/stat/day/realtime/prod">일자별 REALTIME</el-menu-item>
-              <el-menu-item index="/stat/day/batch/prod">일자별 BATCH</el-menu-item>
-              <el-menu-item index="/stat/day/deferred/prod">일자별 DEFERRED</el-menu-item>
+              <el-menu-item index="/stat/hour/realtime/pro">시간별 REALTIME</el-menu-item>
+              <el-menu-item index="/stat/hour/batch/pro">시간별 BATCH</el-menu-item>
+              <el-menu-item index="/stat/hour/deferred/pro">시간별 DEFERRED</el-menu-item>
+              <el-menu-item index="/stat/day/realtime/pro">일자별 REALTIME</el-menu-item>
+              <el-menu-item index="/stat/day/batch/pro">일자별 BATCH</el-menu-item>
+              <el-menu-item index="/stat/day/deferred/pro">일자별 DEFERRED</el-menu-item>
             </el-submenu>
           </el-menu-item-group>
       </el-submenu>
@@ -112,8 +112,11 @@ export default {
   }, // mounted
 
   computed: {
-    hasAuth: function () {
-      return true
+    isViewAuth () {
+      return (type) => {
+        console.log(type)
+        return true
+      }
     }
   },
 }

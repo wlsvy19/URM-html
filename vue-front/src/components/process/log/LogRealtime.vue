@@ -1,10 +1,10 @@
 <template>
   <div class="urm-panel">
     <div class="urm-header">온라인 거래처리로그</div>
-    <div class="search-bar" :style="searchBarStyle()">
+    <div class="search-bar" :style="searchBarStyle">
       <el-form :inline="true">
         <el-form-item label="처리날짜">
-          <el-date-picker v-model="sparam.processDate" value-format="yyyyMMdd" class="datepicker" :clearable="false"/>
+          <el-date-picker v-model="sparam.processDate" value-format="yyyyMMdd" class="no-suffix" :clearable="false"/>
           <el-time-picker is-range v-model="timeRange" value-format="HHmmss" class="no-suffix" :clearable="false"/>
         </el-form-item>
         <el-form-item label="인터페이스 아이디">
@@ -21,15 +21,20 @@
         <el-button @click="search">{{$t('label.search')}}</el-button>
       </div>
     </div>
-    <LogRealtimeList ref="list" :key="$route.path" @row-dblclick="getDetails"/>
+    <LogRealtimeList :items="listItem"/>
   </div>
 </template>
 
 <script>
 import LogMain from './LogMain'
 
+import LogRealtimeList from './list/LogRealtimeList'
+
 export default {
   mixins: [LogMain],
+  components: {
+    LogRealtimeList,
+  },
   data () {
     return {
       sparam: {
@@ -39,7 +44,7 @@ export default {
         endTime: '',
         error: false,
       },
-      pageUrl: '/log/realtime',
+      path: 'realtime',
     }
   },
   mounted () {
@@ -47,8 +52,8 @@ export default {
     let today = this.$convertDateFormat('yyyyMMdd', now)
     let hour = this.$convertDateFormat('HH', now)
     this.sparam.processDate = today
-    this.sparam.startTime = hour+'0000'
-    this.sparam.endTime = hour+'5959'
+    this.sparam.startTime = hour + '0000'
+    this.sparam.endTime = hour + '5959'
   },
   computed: {
     timeRange: {
@@ -65,7 +70,7 @@ export default {
 </script>
 <style scoped>
 .search-bar .el-date-editor--date {
-  width: 140px;
+  width: 120px;
 }
 .search-bar .el-date-editor--timerange {
   width: 185px;

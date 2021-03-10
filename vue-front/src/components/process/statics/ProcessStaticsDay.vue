@@ -1,7 +1,7 @@
 <template>
   <div class="urm-panel">
     <div class="urm-header">일자별 {{pageTitle}} 거래처리통계</div>
-    <div class="search-bar" :style="searchBarStyle()">
+    <div class="search-bar" :style="searchBarStyle">
       <el-form :inline="true">
         <el-form-item label="처리날짜">
           <el-date-picker v-model="dateRange" type="daterange" value-format="yyyyMMdd" class="no-suffix" :clearable="false"/>
@@ -15,22 +15,27 @@
       </div>
     </div>
 
-    <StaticsDayList ref="list" :key="$route.path"/>
+    <StaticsDayList :items="listItem"/>
   </div>
 </template>
 
 <script>
 import ProcessStaticsMain from './ProcessStaticsMain'
 
+import StaticsDayList from './list/StaticsDayList'
+
 export default {
   mixins: [ProcessStaticsMain],
+  components: {
+    StaticsDayList,
+  },
   data () {
     return {
       path: 'day',
     }
   },
   mounted () {
-    let today = this.$convertDateFormat('yyyyMMdd', new Date())
+    let today = this.$convertDateFormat('yyyyMMdd')
     this.sparam.startDate = today
     this.sparam.endDate = today
   },

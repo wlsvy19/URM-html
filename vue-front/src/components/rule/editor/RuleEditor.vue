@@ -26,5 +26,10 @@ export default {
       return true
     }, // validator
   }, // methods
+  computed: {
+    isSaveAuth: function () {
+      return true
+    },
+  },
 }
 </script>

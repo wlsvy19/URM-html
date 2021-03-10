@@ -16,9 +16,9 @@
         </el-form-item>
       </el-form>
       <div class="search-buttons">
-        <el-button @click="search">{{$t('label.search')}}</el-button>
-        <el-button @click="clickEdit()" v-if="!onlySearch">{{$t('label.add')}}</el-button>
-        <el-button @click="clickDelete('selected')" type="danger" v-if="!onlySearch" plain>{{$t('label.delete')}}</el-button>
+        <el-button @click.stop="search">{{$t('label.search')}}</el-button>
+        <el-button @click.stop="clickEdit()" v-if="!onlySearch">{{$t('label.add')}}</el-button>
+        <el-button @click.stop="clickDelete('selected')" type="danger" :disabled="!isDeleteAuth" v-if="!onlySearch" plain>{{$t('label.delete')}}</el-button>
       </div>
     </div>
 
@@ -37,13 +37,13 @@
           <span>{{getDateStr(scope.row.regDate, 'yyyy-MM-dd HH:mm:ss')}}</span>
         </template>
       </el-table-column>
-      <el-table-column width="120" class-name="edit-cell operations">
+      <el-table-column width="120" class-name="edit-cell operations" v-if="!onlySearch">
         <template slot-scope="scope">
           <el-tooltip :content="$t('label.modify')" placement="top" :open-delay="500" :enterable="false">
             <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
           </el-tooltip>
           <el-tooltip :content="$t('label.delete')" placement="top" :open-delay="500" :enterable="false">
-            <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row.id)" plain/>
+            <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row.id)" :disabled="!isDeleteAuth" plain/>
           </el-tooltip>
           <el-tooltip content="영향도" placement="top" :open-delay="500" :enterable="false">
             <el-button icon="el-icon-connection" @click.stop="clickUsed(scope.row.id)"/>

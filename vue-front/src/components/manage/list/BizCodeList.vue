@@ -21,7 +21,7 @@
       <div class="search-buttons">
         <el-button @click="search">{{$t('label.search')}}</el-button>
         <el-button @click="clickEdit()" v-if="!onlySearch">{{$t('label.add')}}</el-button>
-        <el-button @click="clickDelete('selected')" v-if="!onlySearch">{{$t('label.delete')}}</el-button>
+        <el-button @click="clickDelete('selected')" type="danger" :disabled="!isDeleteAuth" v-if="!onlySearch" plain>{{$t('label.delete')}}</el-button>
       </div>
     </div>
 
@@ -59,14 +59,14 @@
           <el-input v-model="scope.row.part2Name" v-if="scope.row.editable"/>
         </template>
       </el-table-column>
-      <el-table-column width="85" class-name="edit-cell operations">
+      <el-table-column width="85" class-name="edit-cell operations" v-if="!onlySearch">
         <template slot-scope="scope">
           <div v-if="!scope.row.editable">
             <el-tooltip :content="$t('label.modify')" placement="top" :open-delay="500" >
               <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row)"/>
             </el-tooltip>
             <el-tooltip :content="$t('label.delete')" placement="top" :open-delay="500" :enterable="false">
-              <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row)" plain/>
+              <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row)" :disabled="!isDeleteAuth" plain/>
             </el-tooltip>
           </div>
           <div v-if="scope.row.editable">
@@ -74,7 +74,7 @@
               <el-button icon="el-icon-receiving" @click.stop="clickSave(scope.row)"/>
             </el-tooltip>
             <el-tooltip :content="$t('label.cancel')" placement="top" :open-delay="500" :enterable="false">
-              <el-button icon="el-icon-close" @click.stop="clickCancel(scope.row)" plain/>
+              <el-button icon="el-icon-close" type="warning" @click.stop="clickCancel(scope.row)" plain/>
             </el-tooltip>
           </div>
         </template>
@@ -164,7 +164,7 @@ export default {
         }).then(response => {
           let res = response.data
           if (res.code === 0) {
-            this.$message({message: 'delete ' + this.path.toUpperCase() + ' [ ' + res.obj + ' ]', type: 'success'})
+            this.$message({message: 'delete business code [ ' + res.obj + ' ]', type: 'success'})
             this.search()
           } else if (res.code === 1) {
             this.$message({message: '삭제 실패하였습니다. - ' + res.message + ' \n 영향도를 확인하여 주세요.', type: 'warning'})
@@ -223,6 +223,11 @@ export default {
     if (!this.onlySearch) {
       this.search()
     }
+  },
+  computed: {
+    isDeleteAuth: function () {
+      return true
+    },
   },
 }
 </script>

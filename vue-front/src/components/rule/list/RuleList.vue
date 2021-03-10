@@ -96,5 +96,11 @@ export default {
       this.search()
     }
   },
+
+  computed: {
+    isDeleteAuth: function () {
+      return true
+    },
+  },
 }
 </script>

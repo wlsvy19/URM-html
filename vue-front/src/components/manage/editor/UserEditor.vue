@@ -1,7 +1,7 @@
 <template>
   <div class="urm-editor">
     <div class="editor-buttons">
-      <el-button @click="clickSave" plain>{{$t('label.save')}}</el-button>
+      <el-button @click="clickSave" :disabled="!isSaveAuth">{{$t('label.save')}}</el-button>
     </div>
     <el-form label-width="135px">
       <div class="row">
@@ -91,7 +91,7 @@ export default {
           this.$message({message: '[' +  this.$t('label.pass') + '] ' + this.$t('message.1015'), type: 'warning'})
           return false
         }
-        if (!item.password !== item.confirm) {
+        if (item.password !== item.confirm) {
           this.$message({message: this.$t('message.1016'), type: 'warning'})
           return false
         }
@@ -103,6 +103,18 @@ export default {
       if (this.item.id) {
         return
       }
+
+      let inputEl = (
+        <el-input style="width: 220px;" nativeOnInput={(ev) => this.handleCkInput(ev)}
+          nativeOnKeydown={(ev) => this.handleCkKeydown(ev)}/>
+      )
+      let contentEl = (
+        <div style="text-align: center;">
+          {inputEl}
+          <el-button on-click={this.checkId}>{this.$t('label.idConfirm')}</el-button>
+        </div>
+      )
+
       let confirmProp = {
         confirmButtonText: this.$t('label.idUse'),
         cancelButtonText: 'NO',
@@ -114,39 +126,32 @@ export default {
           }
         },
       }
-
-      const $el = this.$createElement
-      let _vue = this
-      let $input = $el('el-input', {
-        style: { width: '220px' },
-        model: {
-          callback: function (e) {
-            _vue.checkedId = e
-          },
-        },
-        nativeOn: {
-          input: function (e) {
-            e.target.value = _vue.checkedId
-          },
-        },
-      }, null)
-
-      let content = $el('div', {
-        style: { textAlign: 'center' }
-      }, [
-        $input,
-        $el('el-button', {
-          on: { click: this.checkId }
-        }, this.$t('label.idConfirm'))
-      ])
-
-      this.$confirm(content, this.$t('label.modifyUserInfo'), confirmProp).then(() => {
+      this.$confirm(contentEl, this.$t('label.modifyUserInfo'), confirmProp).then(() => {
         this.item.id = this.checkedId.trim()
       }).catch(() => {}).finally(() => {
         this.usableId = false
-        $input.elm.querySelector('input').value = ''
+        this.checkedId = ''
+        inputEl.elm.querySelector('input').value = ''
       })
     }, // showIdChecker
+
+    handleCkInput (ev) {
+      ev.data && (this.checkedId += ev.data)
+      ev.target.value = this.checkedId
+    }, // handleCkInput
+
+    handleCkKeydown (ev) {
+      if (ev.keyCode === 13) {
+        this.checkId()
+        return
+      }
+      let el = ev.target
+      if (el.selectionStart !== el.selectionEnd) {
+        this.checkedId = this.checkedId.substring(0, el.selectionStart)
+      } else if (ev.keyCode === 8 || ev.keyCode === 46) {
+        this.checkedId = this.checkedId.substring(0, el.selectionStart - 1)
+      }
+    }, // handleCkKeydown
 
     checkId () {
       // eslint-disable-next-line
@@ -156,6 +161,7 @@ export default {
         return false
       } else if (!id.match(idRegExp)) {
         this.$message({message: '유효하지 않은 아이디입니다.', type: 'error'})
+        return false
       }
 
       const loading = this.$startLoading()
@@ -163,7 +169,7 @@ export default {
         params: {id: id},
       }).then(response => {
         if (response.data > 0) { // duplicate
-          this.$message({message: this.$t('message.2002'), type: 'warning'})
+          this.$message({message: this.$t('message.2002'), type: 'error'})
         } else {
           this.$message({message: this.$t('message.2001'), type: 'success'})
           this.usableId = true
@@ -174,6 +180,11 @@ export default {
         loading.close()
       })
     }, // checkId
+  },
+  computed: {
+    isSaveAuth: function () {
+      return true
+    },
   },
 }
 </script>

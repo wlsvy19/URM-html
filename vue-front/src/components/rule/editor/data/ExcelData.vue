@@ -68,10 +68,10 @@ export default {
 
     changeXlFile () {
       this.$refs.xlFile.click()
-    }, // changeFile
+    }, // changeXlFile
 
     handleChangeXlFile (e) {
-      this.fileName = e.target.files[0].name
+      this.fileName = e.target ? e.target.files[0].name : ''
     }, // handleChangeFile
   },
 }

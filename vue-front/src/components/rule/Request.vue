@@ -68,7 +68,6 @@ export default {
     }, // handleSearch
 
     getNewItem () {
-      let today = new Date()
       let week = new Date()
       week.setDate(week.getDate() + 7)
       return {
@@ -87,8 +86,8 @@ export default {
         infFileName: '',
         reqDataMappingId: '',
         resDataMappingId: '',
-        testStartYMD: today,
-        testEndYMD: week,
+        testStartYMD: this.$convertDateFormat('yyyyMMdd'),
+        testEndYMD: this.$convertDateFormat('yyyyMMdd', week),
 
         sendSystem: { name: '' },
         rcvSystem: { name: '' },

@@ -1,8 +1,5 @@
 <script>
-import ProcessMain from '../ProcessMain'
-
 export default {
-  mixins: [ProcessMain],
   data () {
     return {
       sparam: {
@@ -10,42 +7,47 @@ export default {
         startTime: '0000',
         endTime: '2359',
       },
+      listItems: {},
     }
   },
   methods: {
     search () {
-      this.sparam.type = this.serverType
+      this.sparam.type = this.$route.params.server
 
       const loading = this.$startLoading()
       console.log('search log : ' + this.path, this.sparam)
       this.$http.get('/api/process/log/' + this.path, {
         params: this.sparam,
       }).then(response => {
-        this.$refs.list.items = response.data
+        let item = this.listItems[this.$route.path]
+        if (item) {
+          this.listItems[this.$route.path] = response.data
+        } else {
+          this.$set(this.listItems, this.$route.path, response.data)
+        }
       }).catch(error => {
         this.$handleHttpError(error)
       }).finally(() => {
         loading.close()
       })
     }, // search
-
-    getDetails (sparam) {
-      sparam.type = this.serverType
-
-      const loading = this.$startLoading()
-      console.log('get ' + this.path + ' details', sparam)
-      this.$http.get('/api/process/log/' + this.path + '/detail', {
-        params: sparam,
-      }).then(response => {
-        this.$refs.details = response.data
-      }).catch(error => {
-        this.$handleHttpError(error)
-      }).finally(() => {
-        loading.close()
-      })
-    }, // getDetails
   },
   computed: {
+    searchBarStyle: function () {
+      let type = this.$route.params.server
+      if (type === 'dev') {
+        return 'background-color: #8888FF;'
+      } else if (type === 'test') {
+        return 'background-color: #88FF88;'
+      } else if (type === 'pro') {
+        return 'background-color: #FF8888;'
+      }
+      return 'background-color: #E6F7FF;'
+    },
+    listItem: function () {
+      let item = this.listItems[this.$route.path]
+      return item ? item : []
+    },
     timeRange: {
       get: function () {
         return [this.sparam.startTime, this.sparam.endTime]
@@ -59,7 +61,10 @@ export default {
 }
 </script>
 <style scoped>
-.search-bar .el-date-editor--date, .search-bar .el-date-editor--timerange {
+.search-bar .el-date-editor--date {
+  width: 120px;
+}
+.search-bar .el-date-editor--timerange {
   width: 140px;
 }
 </style>
