@@ -104,6 +104,7 @@ export default {
         this.item.dbName = null
         this.item.dbParams = null
       }
+      return true
     },
   },
   computed: {
