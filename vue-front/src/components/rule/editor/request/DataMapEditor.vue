@@ -22,8 +22,12 @@
           </el-input>
         </div>
         <div class="mapping-buttons">
-          <el-button icon="el-icon-circle-close" @click="clearMapping"/>
-          <el-button icon="el-icon-link"/>
+          <el-tooltip :content="$t('label.deleteMapping')" placement="top" :open-delay="500" :enterable="false">
+            <el-button @click="clearMapping"><i class="el-icon-brush" style="transform: rotate(195deg);"/></el-button>
+          </el-tooltip>
+          <el-tooltip :content="$t('label.connectName')" placement="top" :open-delay="500" :enterable="false">
+            <el-button icon="el-icon-link" @click="mappingByName"/>
+          </el-tooltip>
         </div>
         <div class="el-form-item el-form-item--small tgt">
           <label class="el-form-item__label">{{$t('label.inData')}}</label>
@@ -67,10 +71,17 @@
   </div>
 </template>
 <script>
+import _ from 'lodash'
+import Raphael from 'raphael'
+
 import RuleEditor from '@/components/rule/editor/RuleEditor'
 
 import DataEditor from '@/components/rule/editor/DataEditor'
 import DataList from '@/components/rule/list/DataList'
+
+const NOR_COLOR = '#0000FF'
+const BLUR_COLOR = '#00FFFF'
+const SEL_COLOR = '#FF0000'
 
 export default {
   mixins: [RuleEditor],
@@ -90,6 +101,8 @@ export default {
         children: 'children',
         label: 'label',
       },
+
+      dragNodeId: null,
     }
   },
 
@@ -131,6 +144,10 @@ export default {
           this.item.targetDataId = data.id
           this.item.targetData = data
         }
+        this.item.mapLines = []
+        this.$nextTick(() => {
+          this.updateMappingLines()
+        })
         this.dataListShow = false
       })
     }, // cbDataRowClick
@@ -142,7 +159,7 @@ export default {
       } else if (type === 'tgt') {
         this.editData(this.item.targetDataId)
       }
-    },
+    }, // showDataEditor
 
     editData (id) {
       let newItem = { id: '', fields: [] }
@@ -191,12 +208,17 @@ export default {
     convertTreeData (data, type) {
       let tree = []
       if (data && data.id) {
-        let rootData = {type: 'data', id: type, label: data.id}
+        let rootData = {type: 'data', id: type + '-data', label: data.id}
         if (data.fields && data.fields.length > 0) {
           let treeData = []
-          data.fields.forEach((f, idx) => {
-            let tId = type + '_' + idx
-            let child = {type: 'field', id: tId, label: f.engName, name: f.name, fId: f.fieldId, children: []}
+          data.fields.forEach((f) => {
+            let tId = type + '-' + f.fieldId
+            let child = {type: 'field', id: tId, fId: f.fieldId, field: f, isEdit: false}
+            this.item.mapValues.some((v) => {
+              if (v.fieldId === data.fId) {
+                child.value = v.defaultValue
+              }
+            })
             treeData.push(child)
           })
           rootData.children = treeData
@@ -216,33 +238,35 @@ export default {
       }
       const iEl = (<i style="line-height: 18px; width: 18px;" class={icon}/>)
       if (data.type === 'field') {
+        let f = data.field
         if (data.id.startsWith('s')) { // source
-        let labelEl1 = (<span style="width: 107px" class="nowarp">{data.label}</span>)
-          let labelEl2 = (<span style="width: 152px;" class="nowarp">{data.name}</span>)
+          let labelEl1 = (<span style="width: 109px;" class="nowarp">{f.engName}</span>)
+          let labelEl2 = (<span style="width: 141px;" class="nowarp">{f.name}</span>)
           return (
-            <span id={data.id} class="nowarp" style="width:100%; display: flex;" draggable="true"
-              on-dragstart={(ev) => this.dragStart(ev)}
-              on-dragend={(ev) => this.dragEnd(ev)}>
+            <span id={data.id} class="nowarp" style="width: 100%; height: 22px; display: flex;" draggable="true"
+                on-dragstart={(ev) => this.dragStart(ev)}
+                on-dragend={(ev) => this.dragEnd(ev)}>
               {iEl}{labelEl1}{labelEl2}
             </span>
           )
         } else { // target
-          let labelEl1 = (<span style="width: 110px" class="nowarp">{data.label}</span>)
-          let labelEl2 = (<span style="width: 158px;" class="nowarp">{data.name}</span>)
-          let labelEl3 = (<span></span>)
-          this.item.mapValues.some((v, idx) => {
-            if (v.fieldId === data.fId) {
-              let tId = 'v_' + idx
-              labelEl3 = (<span id={tId} class="nowarp">{v.defaultValue}</span>)
-              return true
-            }
-          })
+          let labelEl1 = (<span style="width: 112px;" class="nowarp">{f.engName}</span>)
+          let labelEl2 = (<span style="width: 161px;" class="nowarp">{f.name}</span>)
+          let labelEl3 = (
+            <span style="width: 144px;" class="nowarp" on-click={(ev) => this.clickValueData(ev, data)}>
+              <span v-show={!data.isEdit}>{data.value}</span>
+              <span v-show={data.isEdit}>
+                <el-input v-model={data.value} class="tree-node-input"
+                  nativeOnFocusout={() => this.changeValueData(data)}/>
+              </span>
+            </span>
+          )
           return (
-            <span id={data.id} class="nowarp droppable" style="width:100%; display: flex;"
-              on-dragover={(ev) => this.dragOver(ev)}
-              on-dragleave={(ev) => this.dragLeave(ev)}
-              on-dragenter={(ev) => this.dragEnter(ev)}
-              on-drop={(ev) => this.drop(ev)}>
+            <span id={data.id} class="nowarp droppable" style="width: 100%; height: 22px; display: flex;"
+                on-dragover={(ev) => this.dragOver(ev)}
+                on-dragleave={(ev) => this.dragLeave(ev)}
+                on-dragenter={(ev) => this.dragEnter(ev)}
+                on-drop={(ev) => this.drop(ev)}>
               {iEl}{labelEl1}{labelEl2}{labelEl3}
             </span>
           )
@@ -250,29 +274,275 @@ export default {
       } else {
         let labelEl = (<span class="nowarp">{data.label}</span>)
         return (
-          <span id={data.id} class="nowarp droppable" style="width:100%; display: flex;">
+          <span id={data.id} class="nowarp droppable" style="width: 100%; display: flex;">
             {iEl}{labelEl}
           </span>
         )
       }
     }, // renderData
 
-    handleNodeClick () {
+    dragStart (ev) {
+      console.log('dragStart')
+      this.dragNodeId = ev.target.id
+      ev.dataTransfer.setData('text', this.dragNodeId)
+      ev.target.style.color = '#409EFF'
+      ev.target.closest('div.el-tree-node__content').style.backgroundColor = '#ffffd0'
+    }, // dragStart
 
+    dragEnd (ev) {
+      console.log('dragEnd')
+      ev.preventDefault()
+      ev.target.style.color = ''
+      ev.target.closest('div.el-tree-node__content').style.backgroundColor = ''
+      this.dragNodeId = null
+    }, // dragEnd
+
+    dragEnter (ev) {
+      let dropNodeId = ev.target.id
+      !dropNodeId && (dropNodeId = ev.target.closest('span.droppable').id)
+      let sData = this.$refs.srcDataTree.getNode(this.dragNodeId).data
+      let tData = this.$refs.tgtDataTree.getNode(dropNodeId).data
+      let droppable = (sData.type === 'field' && tData.type === 'field') ? true : false
+      if (!droppable) {
+        return
+      }
+      ev.preventDefault()
+      ev.stopPropagation()
+      ev.target.style.color = '#409EFF'
+      ev.target.closest('div.el-tree-node__content').style.backgroundColor = '#ffffd0'
+    }, // dragEnter
+
+    dragOver (ev) {
+      let dropNodeId = ev.target.id
+      !dropNodeId && (dropNodeId = ev.target.closest('span.droppable').id)
+      let sData = this.$refs.srcDataTree.getNode(this.dragNodeId).data
+      let tData = this.$refs.tgtDataTree.getNode(dropNodeId).data
+      let droppable = (sData.type === 'field' && tData.type === 'field') ? true : false
+      if (!droppable) {
+        return
+      }
+      ev.preventDefault()
+      ev.stopPropagation()
+      ev.target.style.color = '#409EFF'
+      ev.target.closest('div.el-tree-node__content').style.backgroundColor = '#ffffd0'
+    }, // dragOver
+
+    dragLeave (ev) {
+      ev.preventDefault()
+      ev.stopPropagation()
+      ev.target.style.color = ''
+      ev.target.closest('div.el-tree-node__content').style.backgroundColor = ''
+    }, // dragLeave
+
+    drop (ev) {
+      ev.preventDefault()
+      ev.stopPropagation()
+      ev.target.style.color = ''
+      ev.target.closest('div.el-tree-node__content').style.backgroundColor = ''
+
+      let dragNodeId = ev.dataTransfer.getData('text')
+      let dropNodeId = ev.target.id
+      !dropNodeId && (dropNodeId = ev.target.closest('span.droppable').id)
+      let sData = this.$refs.srcDataTree.getNode(dragNodeId).data
+      let tData = this.$refs.tgtDataTree.getNode(dropNodeId).data
+      let isOk = this.addMappingData(sData, tData)
+      if (isOk) {
+        this.drawMappingLine(dragNodeId, dropNodeId)
+      }
+    }, // drop
+
+    clickValueData (ev, data) {
+      ev.stopPropagation()
+      data.isEdit = true
+      this.$nextTick(() => {
+        this.$refs.tgtDataTree.$el.querySelector('#' + data.id + ' input').focus()
+      })
+    }, // clickValueData
+
+    changeValueData (data) {
+      console.log('in')
+      this.item.mapValues.some((v) => {
+        if (v.fieldId === data.fId) {
+          v.defaultValue = data.value
+        }
+      })
+      data.isEdit = false
+    }, // changeValueData
+
+    addMappingData(sData, tData) {
+      console.log('addMappingData', sData, tData)
+      let isOk = false
+      let isExist = false
+      this.item.mapLines.some((line) => {
+        if (line.sourceFieldId === sData.fId && line.targetFieldId === tData.fId) {
+          isExist = true
+        }
+        if (isExist) {
+          return true // break
+        }
+      })
+      if (isExist) {
+        let mapping = sData.fId + ' to ' + tData.fId
+        this.$message({type: 'warning', message: 'already exist mapping [' + mapping + ']'})
+        isOk = false
+      } else {
+        this.item.mapLines.push({ sourceFieldId: sData.fId, targetFieldId: tData.fId })
+        isOk = true
+      }
+      return isOk
+    }, // addMappingData
+
+    handleNodeClick (data) {
+      console.log('handleNodeClick', data)
+      this.selectedNode = data
     }, // handleNodeClick
 
+    mappingByName () {
+      let lines = this.item.mapLines
+      let srcFlds = this.item.sourceData.fields
+      let tgtFlds = this.item.targetData.fields
+      
+      tgtFlds.forEach((tFld) => {
+        let src = srcFlds.find((sFld) => (sFld.engName === tFld.engName))
+        let filteredLines = []
+        if (src) {
+          if (lines && lines.length > 0) {
+            filteredLines = lines.filter((line) =>
+              (line.sourceFieldId === src.fieldId && line.targetFieldId === tFld.fieldId))
+          }
+          
+          if (filteredLines.length === 0) {
+            lines.push({
+              sourceFieldId: src.fieldId,
+              targetFieldId: tFld.fieldId
+            })
+          }
+        }
+      })
+      this.updateMappingLines()
+    }, // mappingByName
+
     clearMapping () {
-      this.item.mapLines = []
+      let confirmProp = {
+        confirmButtonText: 'YES',
+        cancelButtonText: 'NO',
+        closeOnClickModal: false,
+        dangerouslyUseHTMLString: false,
+        type: 'error',
+      }
+      this.$confirm('매핑을 전부 삭제하시겠습니까?', confirmProp).then(() => {
+        this.item.mapLines = []
+        this.mapPaper.clear()
+      }).catch(() => {})
     }, // clearMapping
 
     updateMappingLines () {
-
+      let newDiv = document.createElement('div')
+      let newPaper = Raphael(newDiv, 200, 555)
+      this.item.mapLines.forEach((line) => {
+        let tgtNodeId = 't-' + line.targetFieldId
+        try {
+          let srcNodeId = 's-' + line.sourceFieldId
+          this.drawMappingLine(srcNodeId, tgtNodeId, newPaper)
+        } catch (err) {
+          console.error(err)
+        }
+      })
+      this.mapPaper && this.mapPaper.clear()
+      let mapCanvas = this.$refs.mapCanvas
+      while (mapCanvas.hasChildNodes()) {
+        mapCanvas.removeChild(mapCanvas.firstChild)
+      }
+      mapCanvas.appendChild(newDiv.firstChild)
+      this.mapPaper = newPaper
     }, // updateMappingLines
 
-    throttleUpdateMapping: function() {//_.throttle( function () {
-    //   this.updateMappingLines()
-    // }, 100), // handleTreeScroll
-    },
+    drawMappingLine (srcNodeId, tgtNodeId, paper) {
+      !paper && (paper = this.mapPaper)
+      const canvasY = this.getElTop(this.$refs.mapCanvas)
+      let srcDataTree = this.$refs.srcDataTree
+      let tgtDataTree = this.$refs.tgtDataTree
+      let srcNode = srcDataTree.getNode(srcNodeId)
+      let tgtNode = tgtDataTree.getNode(tgtNodeId)
+      let srcNodeEl = srcDataTree.$el.querySelector('#' + srcNodeId)
+      let tgtNodeEl = tgtDataTree.$el.querySelector('#' + tgtNodeId)
+      if (!srcNodeEl || !tgtNodeEl) {
+        return
+      }
+      let sInfo = this.getLineInfo(srcDataTree, srcNode, srcNodeEl, canvasY)
+      let tInfo = this.getLineInfo(tgtDataTree, tgtNode, tgtNodeEl, canvasY)
+
+      let centerY = sInfo.y + ((tInfo.y - sInfo.y) / 2)
+      let pathStr = 'M0,' + sInfo.y + ' Q50,' + sInfo.y + ',100,' + centerY + ' Q150,' + tInfo.y + ',200,' + tInfo.y
+      let line = paper.path(pathStr)
+      let lineColor = (sInfo.isBlur || tInfo.isBlur) ? BLUR_COLOR : NOR_COLOR
+      line.attr({'stroke': lineColor, 'stroke-width': 3})
+      line.node.style.cursor = 'pointer'
+
+      line.linedata = {target: tgtNode.data, source: srcNode.data}
+      line.selected = false
+      line.click(function () {
+        if (this.attr('stroke') === BLUR_COLOR) {
+          return
+        }
+        this.selected ? this.attr({'stroke': lineColor}) : this.attr({'stroke': SEL_COLOR})
+        this.selected = !this.selected
+      })
+    }, // drawMappingLine
+
+    throttleUpdateMapping: _.throttle(function () {
+      this.updateMappingLines()
+    }, 100), // handleTreeScroll
+
+    deleteLine () {
+      let delItems = []
+      this.mapPaper.forEach((el) => {
+        el.selected && delItems.push(el)
+      })
+      while (delItems.length > 0) {
+        let item = delItems.shift()
+        let sData = item.linedata.source, tData = item.linedata.target
+        item.remove() // delete line
+        this.item.mapLines.some((line, idx) => {
+          if (line.sourceFieldId === sData.fId && line.targetFieldId === tData.fId) {
+            this.item.mapLines.splice(idx, 1)
+            return true
+          }
+        })
+      }
+    }, // deleteLine
+
+    getElTop (el) {
+      let box = el.getBoundingClientRect()
+      let body = document.body
+      let docEl = document.documentElement
+      let scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop
+      let clientTop = docEl.clientTop || body.clientTop || 0
+      let top  = box.top +  scrollTop - clientTop
+      return Math.round(top)
+    }, // getElTop
+
+    getLineInfo (dataTree, node, nodeEl, canvasY) {
+      let isBlur = false
+      while (node) {
+        if (nodeEl.offsetHeight !== 0 || nodeEl.offsetWidth !== 0) {
+          break
+        }
+        node = node.parent
+        nodeEl = dataTree.$el.querySelector('#' + node.key)
+        isBlur = true
+        if (!nodeEl) {
+          console.error('does not exist node element - ' + node.key)
+          break
+        }
+      }
+      let y = this.getElTop(nodeEl) - canvasY + 8
+      if (y < 0 || y > 600) {
+        y = y < 0 ? 0 : 600
+        isBlur = true
+      }
+      return {y: y, isBlur: isBlur}
+    }, // getLineInfo
 
     customValidator () {
       let item = this.item
@@ -290,14 +560,12 @@ export default {
 
   computed: {
     srcTreeData () {
-      console.log('computed src data')
       return this.convertTreeData(this.item.sourceData, 's')
     },
     tgtTreeData () {
-      console.log('computed tgt data')
       return this.convertTreeData(this.item.targetData, 't')
     },
-  }
+  },
 }
 </script>
 <style scoped>

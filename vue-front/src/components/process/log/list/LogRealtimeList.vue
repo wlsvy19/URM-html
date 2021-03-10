@@ -9,7 +9,8 @@
       <el-table-column label="처리 시간" prop="processTime" width="135"/>
       <el-table-column label="결과" width="100">
         <template slot-scope="scope">
-          {{getResult(scope.row.errorCode)}}
+          <span style="color: #000000" v-if="scope.row.errorCode === 0">성공</span>
+          <span style="color: #FF0000" v-if="scope.row.errorCode !== 0">실패</span>
         </template>
       </el-table-column>
       <el-table-column label="에러코드" prop="errorCode" width="230"/>
@@ -35,7 +36,8 @@
       <el-table-column label="처리 시간" prop="processTime" width="115"/>
       <el-table-column label="결과" width="60">
         <template slot-scope="scope">
-          {{getDetailResult(scope.row.errMessage)}}
+          <span style="color: #000000" v-if="!scope.row.errMessage || scope.row.errMessage.length === 0">성공</span>
+          <span style="color: #FF0000" v-if="scope.row.errMessage && scope.row.errMessage.length > 0">실패</span>
         </template>
       </el-table-column>
       <el-table-column label="에러메시지" prop="errMessage" :show-overflow-tooltip="true"/>
@@ -48,15 +50,24 @@
 
     <el-dialog :visible.sync="messageShow" width="800px" top="8vh"
       append-to-body :close-on-click-modal="false" :destroy-on-close="true">
-      <RealtimeMessageList/>
+      <RealtimeMessageList :data="msgList"/>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import LogList from './LogList'
+
 import RealtimeMessageList from './RealtimeMessageList'
 
 export default {
+  mixins: [LogList],
+  props: {
+    items: {
+      type: Array,
+      default: () => [],
+    },
+  },
   components: {
     RealtimeMessageList,
   },
@@ -64,54 +75,31 @@ export default {
     return {
       mainHeight: 'calc((100vh - 165px)/2)',
       detailHeight: 'calc((100vh - 165px)/2 - 50px)',
-      items: [],
-      details: [],
+      path: 'realtime',
       messageShow: false,
+      msgList: [],
     }
   },
   methods: {
-    handleRowDblclick (row) {
+    getMessage (row) {
       let sparam = {
         processDate: row.processDate,
-        globalId: row.globalId,
+        interfaceId: row.interfaceId,
+        serialNumber: row.serialNumber,
       }
-      this.$emit('row-dblclick', sparam)
-    }, // handleRowDblclick
-
-    getMessage (row) {
-      this.messageShow = true
-      console.log(row)
-      // let sparam = {
-      //   processDate: row.processDate,
-      //   interfaceId: row.interfaceId,
-      //   serialNumber: row.serialNumber,
-      // }
-      // const loading = this.$startLoading()
-      // console.log('get online message', sparam)
-      // this.$http.get('/api/process/log/online/message', {
-      //   params: sparam,
-      // }).then(response => {
-      //   //
-      // }).catch(error => {
-      //   this.$handleHttpError(error)
-      // }).finally(() => {
-      //   loading.close()
-      // })
+      const loading = this.$startLoading()
+      console.log('get message', sparam)
+      this.$http.get('/api/process/log/realtime/message', {
+        params: sparam,
+      }).then(response => {
+        this.msgList = response.data
+        this.messageShow = true
+      }).catch(error => {
+        this.$handleHttpError(error)
+      }).finally(() => {
+        loading.close()
+      })
     }, // getMessage
-
-    getResult (val) {
-      if (val !== 0) {
-        return (<span style='color: #FF0000;'>실패</span>)
-      }
-      return (<span style='color: #000000;'>성공</span>)
-    }, // getResult
-
-    getDetailResult (val) {
-      if (!val || val.length === 0) {
-        return (<span style='color: #000000;'>성공</span>)
-      }
-      return (<span style='color: #FF0000;'>실패</span>)
-    }, // getDetailResult
   },
 }
 </script>

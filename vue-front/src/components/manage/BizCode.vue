@@ -19,7 +19,7 @@ export default {
   methods: {
     handleSearch (sparam) {
       const loading = this.$startLoading()
-      console.log('search : bisuness code', sparam)
+      console.log('search : business code', sparam)
       this.$http.get('/api/code/business', {
         params: sparam,
       }).then(response => {

@@ -27,13 +27,13 @@ public class ProcessController {
 
     @GetMapping("/process/stat/day")
     public List<ProcessStaticsDay> getProcessStaticsDay(
-            @RequestParam int type,
+            @RequestParam String type,
             @RequestParam String infType,
             @RequestParam Map<String, String> params) throws Exception {
         List<ProcessStaticsDay> rtn = null;
         try {
             if (infType.equals("realtime")) {
-                if (type == 1) {
+                if ("dev".equals(type)) {
                     rtn = service.getProcessStaticsRealtimeDaySim(type, params);
                 } else {
                     rtn = service.getProcessStaticsRealtimeDay(type, params);
@@ -51,13 +51,13 @@ public class ProcessController {
 
     @GetMapping("/process/stat/hour")
     public List<ProcessStaticsHour> getProcessStaticsHour(
-            @RequestParam int type,
+            @RequestParam String type,
             @RequestParam String infType,
             @RequestParam Map<String, String> params) throws Exception {
         List<ProcessStaticsHour> rtn = null;
         try {
             if (infType.equals("realtime")) {
-                if (type == 1) {
+                if ("dev".equals(type)) {
                     rtn = service.getProcessStaticsRealtimeHourSim(type, params);
                 } else {
                     rtn = service.getProcessStaticsRealtimeHour(type, params);
@@ -75,7 +75,7 @@ public class ProcessController {
 
     @GetMapping("/process/log/batch")
     public List<LogBatch> getLogBatch(
-            @RequestParam int type,
+            @RequestParam String type,
             @RequestParam Map<String, String> params) throws Exception {
         List<LogBatch> rtn = null;
         try {
@@ -88,7 +88,7 @@ public class ProcessController {
 
     @GetMapping("/process/log/batch/detail")
     public List<LogBatchDetail> getLogBatchDetail(
-            @RequestParam int type,
+            @RequestParam String type,
             @RequestParam String batchId) throws Exception {
         List<LogBatchDetail> rtn = null;
         try {
@@ -101,7 +101,7 @@ public class ProcessController {
 
     @GetMapping("/process/log/deferred")
     public List<LogDeferred> getLogDeferred(
-            @RequestParam int type,
+            @RequestParam String type,
             @RequestParam Map<String, String> params) throws Exception {
         List<LogDeferred> rtn = null;
         try {
@@ -114,7 +114,7 @@ public class ProcessController {
 
     @GetMapping("/process/log/deferred/detail")
     public List<LogDeferred> getLogDeferredDetail(
-            @RequestParam int type,
+            @RequestParam String type,
             @RequestParam Map<String, String> params) throws Exception {
         List<LogDeferred> rtn = null;
         try {
@@ -127,7 +127,7 @@ public class ProcessController {
 
     @GetMapping("/process/log/deferred/error")
     public List<LogDeferredError> getLogDeferredError(
-            @RequestParam int type,
+            @RequestParam String type,
             @RequestParam Map<String, String> params) throws Exception {
         List<LogDeferredError> rtn = null;
         try {
@@ -140,7 +140,7 @@ public class ProcessController {
 
     @GetMapping("/process/log/realtime")
     public List<LogRealtime> getLogRealtime(
-            @RequestParam int type,
+            @RequestParam String type,
             @RequestParam Map<String, String> params) throws Exception {
         List<LogRealtime> rtn = null;
         try {
@@ -153,7 +153,7 @@ public class ProcessController {
 
     @GetMapping("/process/log/realtime/detail")
     public List<LogRealtimeDetail> getLogRealtimeDetail(
-            @RequestParam int type,
+            @RequestParam String type,
             @RequestParam Map<String, String> params) throws Exception {
         List<LogRealtimeDetail> rtn = null;
         try {
@@ -166,7 +166,7 @@ public class ProcessController {
 
     @GetMapping("/process/log/realtime/message")
     public List<MessageField> getMessage(
-            @RequestParam int type,
+            @RequestParam String type,
             @RequestParam String processDate,
             @RequestParam String interfaceId,
             @RequestParam int serialNumber) throws Exception {

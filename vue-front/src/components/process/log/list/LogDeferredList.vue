@@ -40,26 +40,27 @@
 </template>
 
 <script>
+import LogList from './LogList'
+
 export default {
+  mixins: [LogList],
+  props: {
+    items: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data () {
     return {
       listHeight: 'calc(100vh - 245px)',
       mainHeight: 'calc((100vh - 215px)/2)',
       detailHeight: 'calc((100vh - 215px)/2 - 50px)',
+      path: 'deferred',
       dataType: 'log',
-      items: [],
-      details: [],
       errors: [],
     }
   },
   methods: {
-    handleRowDblclick (row) {
-      let sparam = {
-        processDate: row.processDate,
-        interfaceId: row.interfaceId,
-      }
-      this.$emit('row-dblclick', sparam)
-    }, // handleRowDblclick
   },
 }
 </script>

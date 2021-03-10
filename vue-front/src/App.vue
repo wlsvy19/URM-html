@@ -20,6 +20,7 @@ export default {
 
   created () {
     this.$reloadConfig()
+    this.$checkLogin()
   },
 }
 </script>
@@ -99,10 +100,25 @@ div.row {
   height: 100px;
 }
 
+.no-suffix.el-date-editor--daterange {
+  width: 220px;
+}
+.no-suffix .el-range__close-icon {
+  width: 5px;
+}
+.no-suffix.el-date-editor--date .el-input__inner {
+  padding-right: 10px;
+}
+
 .nowarp {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.tree-node-input .el-input__inner {
+  height: 20px;
+  font-size: 14px;
 }
 
 
@@ -149,13 +165,6 @@ button.el-button {
 .el-input.is-disabled .el-input__inner {
   color: #737373;
   cursor: text !important;
-}
-
-.no-suffix.el-date-editor--daterange {
-  width: 220px;
-}
-.no-suffix .el-range__close-icon {
-  width: 5px;
 }
 
 .el-dialog__body {

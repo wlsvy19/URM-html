@@ -13,10 +13,15 @@
 
 <script>
 export default {
+  props: {
+    items: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data () {
     return {
       listHeight: 'calc(100vh - 195px)',
-      items: [],
     }
   },
 }

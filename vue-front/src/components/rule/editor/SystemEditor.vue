@@ -1,7 +1,7 @@
 <template>
   <div class="urm-editor">
     <div class="editor-buttons">
-      <el-button @click="clickSave" plain>{{$t('label.save')}}</el-button>
+      <el-button @click="clickSave" :disabled="!isSaveAuth">{{$t('label.save')}}</el-button>
     </div>
     <el-form label-width="140px" style="margin-top: 15px;">
       <div class="row">

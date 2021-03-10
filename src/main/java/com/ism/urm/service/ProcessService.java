@@ -40,17 +40,17 @@ public class ProcessService {
         dao = new ProcessDao();
         ismd = HiberUtill.getSessionFactory("dev");
         ismt = HiberUtill.getSessionFactory("test");
-        ismp = HiberUtill.getSessionFactory("prod");
+        ismp = HiberUtill.getSessionFactory("pro");
     }
 
-    public List<LogBatch> getLogBatch(int type, Map<String, String> params) throws Exception {
+    public List<LogBatch> getLogBatch(String type, Map<String, String> params) throws Exception {
         List<LogBatch> rtn = new ArrayList<>();
         Session session = null;
         try {
-            if (type == 1) {
+            if ("dev".equals(type)) {
                 session = ismd.openSession();
                 rtn = dao.getLogBatch(session, params);
-            } else if (type == 2) {
+            } else if ("test".equals(type)) {
                 session = ismt.openSession();
                 rtn = dao.getLogBatch(session, params);
             } else {
@@ -66,14 +66,14 @@ public class ProcessService {
         return rtn;
     }
 
-    public List<LogBatchDetail> getLogBatchDetail(int type, String batchId) throws Exception {
+    public List<LogBatchDetail> getLogBatchDetail(String type, String batchId) throws Exception {
         List<LogBatchDetail> rtn = new ArrayList<>();
         Session session = null;
         try {
-            if (type == 1) {
+            if ("dev".equals(type)) {
                 session = ismd.openSession();
                 rtn = dao.getLogBatchDetail(session, batchId);
-            } else if (type == 2) {
+            } else if ("test".equals(type)) {
                 session = ismt.openSession();
                 rtn = dao.getLogBatchDetail(session, batchId);
             } else {
@@ -89,14 +89,14 @@ public class ProcessService {
         return rtn;
     }
     
-    public List<LogDeferred> getLogDeferred(int type, Map<String, String> params) throws Exception {
+    public List<LogDeferred> getLogDeferred(String type, Map<String, String> params) throws Exception {
         List<LogDeferred> rtn = new ArrayList<>();
         Session session = null;
         try {
-            if (type == 1) {
+            if ("dev".equals(type)) {
                 session = ismd.openSession();
                 rtn = dao.getLogDeferred(session, params);
-            } else if (type == 2) {
+            } else if ("test".equals(type)) {
                 session = ismt.openSession();
                 rtn = dao.getLogDeferred(session, params);
             } else {
@@ -112,14 +112,14 @@ public class ProcessService {
         return rtn;
     }
     
-    public List<LogDeferred> getLogDeferredDetail(int type, Map<String, String> params) throws Exception {
+    public List<LogDeferred> getLogDeferredDetail(String type, Map<String, String> params) throws Exception {
         List<LogDeferred> rtn = new ArrayList<>();
         Session session = null;
         try {
-            if (type == 1) {
+            if ("dev".equals(type)) {
                 session = ismd.openSession();
                 rtn = dao.getLogDeferredDetail(session, params);
-            } else if (type == 2) {
+            } else if ("test".equals(type)) {
                 session = ismt.openSession();
                 rtn = dao.getLogDeferredDetail(session, params);
             } else {
@@ -135,14 +135,14 @@ public class ProcessService {
         return rtn;
     }
 
-    public List<LogDeferredError> getLogDeferredError(int type, Map<String, String> params) throws Exception {
+    public List<LogDeferredError> getLogDeferredError(String type, Map<String, String> params) throws Exception {
         List<LogDeferredError> rtn = new ArrayList<>();
         Session session = null;
         try {
-            if (type == 1) {
+            if ("dev".equals(type)) {
                 session = ismd.openSession();
                 rtn = dao.getLogDeferredError(session, params);
-            } else if (type == 2) {
+            } else if ("test".equals(type)) {
                 session = ismt.openSession();
                 rtn = dao.getLogDeferredError(session, params);
             } else {
@@ -159,7 +159,7 @@ public class ProcessService {
     }
     
     
-    public List<LogRealtime> getLogRealtime(int type, Map<String, String> params) throws Exception {
+    public List<LogRealtime> getLogRealtime(String type, Map<String, String> params) throws Exception {
         List<LogRealtime> rtn = new ArrayList<>();
         Session session = null;
         try {
@@ -178,10 +178,10 @@ public class ProcessService {
             params.put("startTime", processDate + startTime + "000");
             params.put("endTime",   processDate + endTime   + "999");
             
-            if (type == 1) {
+            if ("dev".equals(type)) {
                 session = ismd.openSession();
                 rtn = dao.getLogRealtime(session, params);
-            } else if (type == 2) {
+            } else if ("test".equals(type)) {
                 session = ismt.openSession();
                 rtn = dao.getLogRealtime(session, params);
             } else {
@@ -197,17 +197,17 @@ public class ProcessService {
         return rtn;
     }
     
-    public List<LogRealtimeDetail> getLogRealtimeDetail(int type, Map<String, String> params) throws Exception {
+    public List<LogRealtimeDetail> getLogRealtimeDetail(String type, Map<String, String> params) throws Exception {
         List<LogRealtimeDetail> rtn = new ArrayList<>();
         Session session = null;
         try {
             String processDate = params.get("processDate");
             params.put("logTable", "LOG_REALTIME" + processDate.substring(6));
             
-            if (type == 1) {
+            if ("dev".equals(type)) {
                 session = ismd.openSession();
                 rtn = dao.getLogRealtimeDetail(session, params);
-            } else if (type == 2) {
+            } else if ("test".equals(type)) {
                 session = ismt.openSession();
                 rtn = dao.getLogRealtimeDetail(session, params);
             } else {
@@ -223,14 +223,14 @@ public class ProcessService {
         return rtn;
     }
     
-    public List<ProcessStaticsHour> getProcessStaticsBatchHour(int type, Map<String, String> params) throws Exception {
+    public List<ProcessStaticsHour> getProcessStaticsBatchHour(String type, Map<String, String> params) throws Exception {
         List<ProcessStaticsHour> rtn = null;
         Session session = null;
         try {
-            if (type == 1) {
+            if ("dev".equals(type)) {
                 session = ismd.openSession();
                 rtn = dao.getProcessStaticsBatchHour(session, params);
-            } else if (type == 2) {
+            } else if ("test".equals(type)) {
                 session = ismt.openSession();
                 rtn = dao.getProcessStaticsBatchHour(session, params);
             } else {
@@ -246,14 +246,14 @@ public class ProcessService {
         return rtn;
     }
     
-    public List<ProcessStaticsHour> getProcessStaticsRealtimeHour(int type, Map<String, String> params) throws Exception {
+    public List<ProcessStaticsHour> getProcessStaticsRealtimeHour(String type, Map<String, String> params) throws Exception {
         List<ProcessStaticsHour> rtn = null;
         Session session = null;
         try {
-            if (type == 1) {
+            if ("dev".equals(type)) {
                 session = ismd.openSession();
                 rtn = dao.getProcessStaticsRealtimeHour(session, params);
-            } else if (type == 2) {
+            } else if ("test".equals(type)) {
                 session = ismt.openSession();
                 rtn = dao.getProcessStaticsRealtimeHour(session, params);
             } else {
@@ -270,14 +270,14 @@ public class ProcessService {
     }
     
     
-    public List<ProcessStaticsHour> getProcessStaticsRealtimeHourSim(int type, Map<String, String> params) throws Exception {
+    public List<ProcessStaticsHour> getProcessStaticsRealtimeHourSim(String type, Map<String, String> params) throws Exception {
         List<ProcessStaticsHour> rtn = null;
         Session session = null;
         try {
-            if (type == 1) {
+            if ("dev".equals(type)) {
                 session = ismd.openSession();
                 rtn = dao.getProcessStaticsRealtimeHourSim(session, params);
-            } else if (type == 2) {
+            } else if ("test".equals(type)) {
                 session = ismt.openSession();
                 rtn = dao.getProcessStaticsRealtimeHourSim(session, params);
             } else {
@@ -294,14 +294,14 @@ public class ProcessService {
     }
     
     
-    public List<ProcessStaticsHour> getProcessStaticsDeferredHour(int type, Map<String, String> params) throws Exception {
+    public List<ProcessStaticsHour> getProcessStaticsDeferredHour(String type, Map<String, String> params) throws Exception {
         List<ProcessStaticsHour> rtn = null;
         Session session = null;
         try {
-            if (type == 1) {
+            if ("dev".equals(type)) {
                 session = ismd.openSession();
                 rtn = dao.getProcessStaticsDeferredHour(session, params);
-            } else if (type == 2) {
+            } else if ("test".equals(type)) {
                 session = ismt.openSession();
                 rtn = dao.getProcessStaticsDeferredHour(session, params);
             } else {
@@ -317,14 +317,14 @@ public class ProcessService {
         return rtn;
     }
 
-    public List<ProcessStaticsDay> getProcessStaticsBatchDay(int type, Map<String, String> params) throws Exception {
+    public List<ProcessStaticsDay> getProcessStaticsBatchDay(String type, Map<String, String> params) throws Exception {
         List<ProcessStaticsDay> rtn = null;
         Session session = null;
         try {
-            if (type == 1) {
+            if ("dev".equals(type)) {
                 session = ismd.openSession();
                 rtn = dao.getProcessStaticsBatchDay(session, params);
-            } else if (type == 2) {
+            } else if ("test".equals(type)) {
                 session = ismt.openSession();
                 rtn = dao.getProcessStaticsBatchDay(session, params);
             } else {
@@ -340,14 +340,14 @@ public class ProcessService {
         return rtn;
     }
     
-    public List<ProcessStaticsDay> getProcessStaticsRealtimeDay(int type, Map<String, String> params) throws Exception {
+    public List<ProcessStaticsDay> getProcessStaticsRealtimeDay(String type, Map<String, String> params) throws Exception {
         List<ProcessStaticsDay> rtn = null;
         Session session = null;
         try {
-            if (type == 1) {
+            if ("dev".equals(type)) {
                 session = ismd.openSession();
                 rtn = dao.getProcessStaticsRealtimeDay(session, params);
-            } else if (type == 2) {
+            } else if ("test".equals(type)) {
                 session = ismt.openSession();
                 rtn = dao.getProcessStaticsRealtimeDay(session, params);
             } else {
@@ -363,14 +363,14 @@ public class ProcessService {
         return rtn;
     }
     
-    public List<ProcessStaticsDay> getProcessStaticsRealtimeDaySim(int type, Map<String, String> params) throws Exception {
+    public List<ProcessStaticsDay> getProcessStaticsRealtimeDaySim(String type, Map<String, String> params) throws Exception {
         List<ProcessStaticsDay> rtn = null;
         Session session = null;
         try {
-            if (type == 1) {
+            if ("dev".equals(type)) {
                 session = ismd.openSession();
                 rtn = dao.getProcessStaticsRealtimeDaySim(session, params);
-            } else if (type == 2) {
+            } else if ("test".equals(type)) {
                 session = ismt.openSession();
                 rtn = dao.getProcessStaticsRealtimeDaySim(session, params);
             } else {
@@ -386,14 +386,14 @@ public class ProcessService {
         return rtn;
     }
     
-    public List<ProcessStaticsDay> getProcessStaticsDeferredDay(int type, Map<String, String> params) throws Exception {
+    public List<ProcessStaticsDay> getProcessStaticsDeferredDay(String type, Map<String, String> params) throws Exception {
         List<ProcessStaticsDay> rtn = null;
         Session session = null;
         try {
-            if (type == 1) {
+            if ("dev".equals(type)) {
                 session = ismd.openSession();
                 rtn = dao.getProcessStaticsDeferredDay(session, params);
-            } else if (type == 2) {
+            } else if ("test".equals(type)) {
                 session = ismt.openSession();
                 rtn = dao.getProcessStaticsDeferredDay(session, params);
             } else {
@@ -457,15 +457,15 @@ public class ProcessService {
         return rtnList;
     }
     
-    public List<MessageField> getMessage(int type, String processDate, String interfaceId, int serialNumber) throws Exception {
+    public List<MessageField> getMessage(String type, String processDate, String interfaceId, int serialNumber) throws Exception {
         List<MessageField> rtn = null;
         Session session = null;
         try {
             List<HeaderField> fields = null;
-            if (type == 1) {
+            if ("dev".equals(type)) {
                 session = ismd.openSession();
                 fields =  dao.getHeaderField(session);
-            } else if (type == 2) {
+            } else if ("test".equals(type)) {
                 session = ismt.openSession();
                 fields  = dao.getHeaderField(session);
             } else {
@@ -474,92 +474,33 @@ public class ProcessService {
             }
             
             byte[] message = null;
-            if (type == 1) {
-                for (int i = 0; ; i++) {
-                    String server = System.getProperty("urm.dev.realtime." + i + ".server");
-                    if (server == null || server.length() == 0) {
-                        break;
-                    }
-                    String[] serverinfo = server.split(":");
-                    if (serverinfo.length != 2) {
-                        logger.error("server info get fail..");
-                        break;
-                    }
-                    try {
-                        Integer.parseInt(serverinfo[1]);
-                    } catch (Exception e) {
-                        logger.error("server info get fail..");
-                        break;
-                    }
-                    byte[] sndMsg = ("S" + processDate + interfaceId + getNumString(serialNumber, 10)).getBytes();
-                    byte[] length = getNumString(sndMsg.length, 8).getBytes();
-                    byte[] fullMsg = new byte[sndMsg.length + length.length];
-                    System.arraycopy(length, 0, fullMsg, 0, length.length);
-                    System.arraycopy(sndMsg, 0, fullMsg, length.length, sndMsg.length);
-                    
-                    message = getDetailRealtimeMessage(fullMsg, serverinfo);
-                    if (message != null && message.length != 0) {
-                        break;
-                    }
+            for (int i = 0; ; i++) {
+                String server = System.getProperty("urm." + type + ".realtime." + i + ".server");
+                if (server == null || server.length() == 0) {
+                    break;
                 }
-            } else if (type == 2) {
-                for (int i = 0; ; i++) {
-                    String server = System.getProperty("urm.tst.realtime." + i + ".server");
-                    if (server == null || server.length() == 0) {
-                        break;
-                    }
-                    String[] serverinfo = server.split(":");
-                    if (serverinfo.length != 2) {
-                        logger.error("server info get fail..");
-                        break;
-                    }
+                String[] serverinfo = server.split(":");
+                if (serverinfo.length != 2) {
+                    logger.error("server info get fail..");
+                    break;
+                }
+                try {
+                    Integer.parseInt(serverinfo[1]);
+                } catch (Exception e) {
+                    logger.error("server info get fail..");
+                    break;
+                }
+                byte[] sndMsg = ("S" + processDate + interfaceId + getNumString(serialNumber, 10)).getBytes();
+                byte[] length = getNumString(sndMsg.length, 8).getBytes();
+                byte[] fullMsg = new byte[sndMsg.length + length.length];
+                System.arraycopy(length, 0, fullMsg, 0, length.length);
+                System.arraycopy(sndMsg, 0, fullMsg, length.length, sndMsg.length);
+                
+                message = getDetailRealtimeMessage(fullMsg, serverinfo);
+                if (message != null && message.length != 0) {
+                    break;
+                }
 
-                    try {
-                        Integer.parseInt(serverinfo[1]);
-                    } catch(Exception e) {
-                        logger.error("server info get fail..");
-                        break;
-                    }
-                    byte[] sndMsg = ("S" + processDate + interfaceId + getNumString(serialNumber, 10)).getBytes();
-                    byte[] length = getNumString(sndMsg.length, 8).getBytes();
-                    byte[] fullMsg = new byte[sndMsg.length + length.length];
-                    System.arraycopy(length, 0, fullMsg, 0, length.length);
-                    System.arraycopy(sndMsg, 0, fullMsg, length.length, sndMsg.length);
-                    
-                    message = getDetailRealtimeMessage(fullMsg, serverinfo);
-                    if (message != null && message.length != 0) {
-                        break;
-                    }
-                }
-            } else {
-                for (int i = 0; ; i++) {
-                    String server = System.getProperty("urm.pro.realtime." + i + ".server");
-                    if (server == null || server.length() == 0) {
-                        break;
-                    }
-                    String[] serverinfo = server.split(":");
-                    if (serverinfo.length != 2) {
-                        logger.error("server info get fail..");
-                        break;
-                    }
-                    try {
-                        Integer.parseInt(serverinfo[1]);
-                    } catch (Exception e) {
-                        logger.error("server info get fail..");
-                        break;
-                    }
-                    byte[] sndMsg = ("S" + processDate + interfaceId + getNumString(serialNumber, 10)).getBytes();
-                    byte[] length = getNumString(sndMsg.length, 8).getBytes();
-                    byte[] fullMsg = new byte[sndMsg.length + length.length];
-                    System.arraycopy(length, 0, fullMsg, 0, length.length);
-                    System.arraycopy(sndMsg, 0, fullMsg, length.length, sndMsg.length);
-                    
-                    message = getDetailRealtimeMessage(fullMsg, serverinfo);
-                    if (message != null && message.length != 0) {
-                        break;
-                    }
-
-                }
             }
             
             if (message != null && fields != null) {

@@ -47,7 +47,7 @@
           </el-form-item>
           <div class="search-buttons">
             <el-button @click.stop="clickEdit()">{{$t('label.add')}}</el-button>
-            <el-button @click.stop="clickDelete('selected')" type="danger" plain>{{$t('label.delete')}}</el-button>
+            <el-button @click.stop="clickDelete('selected')" type="danger" :disabled="!isDeleteAuth" plain>{{$t('label.delete')}}</el-button>
           </div>
         </div>
         <div class="row">
@@ -65,16 +65,16 @@
             <el-date-picker v-model="chgDate" type="daterange" value-format="timestamp" style="width: 235px;"/>
           </el-form-item>
           <el-form-item label="등록자" label-width="65px" class="search-check">
-            <el-checkbox v-model="sparam.cRegId"/>
+            <el-checkbox v-model="cRegId"/>
           </el-form-item>
           <el-form-item label="송신자" label-width="65px" class="search-check">
-            <el-checkbox v-model="sparam.cSendAdminId"/>
+            <el-checkbox v-model="cSendAdminId"/>
           </el-form-item>
           <el-form-item label="수신자" label-width="65px" class="search-check">
-            <el-checkbox v-model="sparam.cRcvAdminId"/>
+            <el-checkbox v-model="cRcvAdminId"/>
           </el-form-item>
           <div class="search-buttons">
-            <el-button @click="search">{{$t('label.search')}}</el-button>
+            <el-button @click.stop="search">{{$t('label.search')}}</el-button>
           </div>
         </div>
       </el-form>
@@ -123,7 +123,7 @@
             <el-button icon="el-icon-edit" @click.stop="clickEdit(scope.row.id)"/>
           </el-tooltip>
           <el-tooltip :content="$t('label.delete')" placement="top" :open-delay="500" :enterable="false">
-            <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row.id)" plain/>
+            <el-button icon="el-icon-delete" type="danger" @click.stop="clickDelete(scope.row.id)" :disabled="!isDeleteAuth" plain/>
           </el-tooltip>
           <el-tooltip :content="$t('label.interfaceHistory')" placement="top" :open-delay="500" :enterable="false">
             <el-button icon="el-icon-refresh-left" @click.stop="viewHistory(scope.row.id)"/>
@@ -192,6 +192,9 @@ export default {
         rcvSystemId: '',
         sendJobCodeId: '',
         rcvJobCodeId: '',
+        regId: (!this.isDeleteAuth ? 'checked true' : ''),
+        sendAdminId: (!this.isDeleteAuth ? 'checked true' : ''),
+        rcvAdminId: (!this.isDeleteAuth ? 'checked true' : ''),
       },
       curPage: 1,
       totalCount: 1,
@@ -319,6 +322,30 @@ export default {
         } else {
           this.sparam.chgDate = ''
         }
+      },
+    },
+    cRegId: {
+      get: function () {
+        return this.sparam.regId === 'checked true'
+      },
+      set: function (nVal) {
+        this.sparam.regId = nVal ? 'checked true' : ''
+      },
+    },
+    cSendAdminId: {
+      get: function () {
+        return this.sparam.sendAdminId === 'checked true'
+      },
+      set: function (nVal) {
+        this.sparam.sendAdminId = nVal ? 'checked true' : ''
+      },
+    },
+    cRcvAdminId: {
+      get: function () {
+        return this.sparam.rcvAdminId === 'checked true'
+      },
+      set: function (nVal) {
+        this.sparam.rcvAdminId = nVal ? 'checked true' : ''
       },
     },
   },

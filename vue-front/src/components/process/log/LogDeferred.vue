@@ -1,10 +1,10 @@
 <template>
   <div class="urm-panel">
     <div class="urm-header">디퍼드 거래처리로그</div>
-    <div class="search-bar" :style="searchBarStyle()">
+    <div class="search-bar" :style="searchBarStyle">
       <el-form :inline="true">
         <el-form-item label="처리날짜">
-          <el-date-picker v-model="sparam.processDate" value-format="yyyyMMdd" class="datepicker" :clearable="false"/>
+          <el-date-picker v-model="sparam.processDate" value-format="yyyyMMdd" class="no-suffix" :clearable="false"/>
           <el-time-picker is-range v-model="timeRange" format="HH:mm" value-format="HHmm" class="no-suffix" :clearable="false"/>
         </el-form-item>
         <el-form-item label="인터페이스 아이디">
@@ -16,15 +16,20 @@
       </div>
     </div>
 
-    <LogDeferredList ref="list" :key="$route.path" @row-dblclick="getDetails"/>
+    <LogDeferredList :items="listItem"/>
   </div>
 </template>
 
 <script>
 import LogMain from './LogMain'
 
+import LogDeferredList from './list/LogDeferredList'
+
 export default {
   mixins: [LogMain],
+  components: {
+    LogDeferredList,
+  },
   data () {
     return {
       sparam: {
@@ -33,12 +38,11 @@ export default {
         startTime: '0000',
         endTime: '2359',
       },
-      pageUrl: '/log/deferred',
+      path: 'deferred',
     }
   },
   mounted () {
-    let today = this.$convertDateFormat('yyyyMMdd', new Date())
-    this.sparam.processDate = today
+    this.sparam.processDate = this.$convertDateFormat('yyyyMMdd')
   },
   computed: {
     timeRange: {

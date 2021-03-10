@@ -1,7 +1,7 @@
 <template>
   <div class="urm-editor">
     <div class="editor-buttons">
-      <el-button @click="clickSave" plain>{{$t('label.save')}}</el-button>
+      <el-button @click="clickSave" :disabled="!isSaveAuth">{{$t('label.save')}}</el-button>
     </div>
     <el-form label-width="135px">
       <div class="row">
@@ -109,6 +109,7 @@
               <el-popover trigger="click" placement="left" width="400" @hide="setQuery">
                 <div class="popover-title"><span>{{$t('label.sourceQuery')}}</span></div>
                 <el-input type="textarea" v-model="item.sql"/>
+                <!-- <quill-editor v-model="item.sql" :options="quillOption"/> -->
                 <el-input slot="reference" :value="queryText" class="size-default" readonly/>
               </el-popover>
             </el-form-item>
@@ -183,7 +184,7 @@
       <div class="row">
         <el-form-item :label="$t('label.attachmentFile')">
           <el-input v-model="item.infFileName" class="size-default" @click.native="changeInfFile" readonly>
-            <i slot="suffix" class="el-input__icon el-icon-download pointer" @click.stop="downloadInfFile"/>
+            <el-button slot="append" icon="el-icon-download" @click.stop="downloadInfFile"/>
           </el-input>
           <input type="file" ref="infFile" @change="handleChangeInfFile" style="display: none;"/>
         </el-form-item>
@@ -195,12 +196,15 @@
     </el-dialog>
 
     <el-dialog :visible.sync="mapEditorShow" top="8vh" width="1040px" append-to-body :close-on-click-modal="false">
-      <DataMapEditor :item="dataMap" @save="saveMap"/>
+      <DataMapEditor ref="mapEditor" :item="dataMap" @save="saveMap"/>
     </el-dialog>
   </div>
 </template>
 
 <script>
+// import 'quill/dist/quill.snow.css'
+// import { quillEditor } from 'vue-quill-editor'
+
 import RuleEditor from './RuleEditor'
 import RuleUtil from '@/components/rule/RuleUtil'
 
@@ -224,6 +228,7 @@ export default {
     },
   },
   components: {
+    // quillEditor,
     DataMapEditor,
     DataMapList,
   },
@@ -234,6 +239,14 @@ export default {
       dataMaps: null,
       mapEditorShow: false,
       dataMap: null,
+      quillOption: {
+        modules: {
+          toolbar: [
+            ['bold', 'italic', 'underline'],
+            [{ 'color': [] }],
+          ],
+        },
+      },
     }
   },
   methods: {
@@ -257,10 +270,10 @@ export default {
       }
 
       if (!item.sendAdminId || item.sendAdminId.length === 0) {
-        //item.sendAdminId = this.props.userInfo.id
+        item.sendAdminId = this.$store.state.user.id
       }
       if (!item.rcvAdminId || item.rcvAdminId.length === 0) {
-        //item.rcvAdminId = this.props.userInfo.id
+        item.rcvAdminId = this.$store.state.user.id
       }
 
       if (!item.dataMapYN) {
@@ -278,15 +291,16 @@ export default {
         item.dbCrudType = null
       }
 
-      /*if( !urmsc.isSelectAuth('prcStat', data.processStat, this.props.userInfo.auth) ) {
-        message.warning(locale['message.1010']);
+      if (!this.isSelectAuth('prcStat')) {
+      // if( !urmsc.isSelectAuth('prcStat', data.processStat, this.props.userInfo.auth) ) {
+        this.$message.warning(this.$t('message.1010'));
         return false
       }
-      if( !urmsc.isSelectAuth('chgStat', data.chgStat, this.props.userInfo.auth) ) {
-        message.warning('\'변경 신청\' 으로 수정합니다.');
-        this.setState({ item: {...this.state.item, chgStat: 0} })
-        return false
-      }*/
+      if (!this.isSelectAuth('chgStat')) {
+      // if( !urmsc.isSelectAuth('chgStat', data.chgStat, this.props.userInfo.auth) ) {
+        this.$message.warning('[변경 신청] 으로 수정합니다.');
+        item.chgStat = 0
+      }
       return true
     }, // customValidator
 
@@ -331,6 +345,7 @@ export default {
 
     handleChangeInfFile (e) {
       let file = e.target.files[0]
+      if (!file) return false
 
       let formData = new FormData()
       formData.append('file', file, file.name)
@@ -413,11 +428,11 @@ export default {
       if (this.tgtType === 'send') {
         this.item.sendAdminId = row.id
         this.item.sendAdmin.name = row.name
-        this.item.sendAdmin.positionName = (row.positionName ? row.positionName : '--')
+        this.item.sendAdmin.positionName = row.positionName
       } else if (this.tgtType === 'rcv') {
         this.item.rcvAdminId = row.id
         this.item.rcvAdmin.name = row.name
-        this.item.rcvAdmin.positionName = (row.positionName ? row.positionName : '--')
+        this.item.rcvAdmin.positionName = row.positionName
       }
     }, // cbUserRowClick
 
@@ -472,6 +487,9 @@ export default {
           this.dataMap = response.data
           this.initMap(this.dataMap)
           this.mapEditorShow = true
+          this.$nextTick(() => {
+            this.$refs.mapEditor.updateMappingLines()
+          })
         }).catch(error => {
           this.$handleHttpError(error)
         }).finally(() => {
@@ -480,6 +498,9 @@ export default {
       } else {
         this.dataMap = this.getNewMap()
         this.mapEditorShow = true
+        this.$nextTick(() => {
+          this.$refs.mapEditor.updateMappingLines()
+        })
       }
     }, // editMap
 
@@ -564,6 +585,12 @@ export default {
       }
       return ''
     },
+    isSelectAuth () {
+      return (type) => {
+        console.log(type)
+        return true
+      }
+    },
     serviceLabel () {
       return (type) => {
         if (type === 'send') {
@@ -582,15 +609,19 @@ export default {
       }
     },
     jobCodeName () {
+      let send = this.item.sendJobCode
+      let rcv = this.item.rcvJobCode
       return {
-        send: this.item.sendJobCode.part2Name + '(' + this.item.sendJobCode.part2Id + ')',
-        rcv: this.item.rcvJobCode.part2Name + '(' + this.item.rcvJobCode.part2Id + ')',
+        send: send.part2Name + '(' + (send.part2Id ? send.part2Id : '') + ')',
+        rcv: rcv.part2Name + '(' + (rcv.part2Id ? rcv.part2Id : '') + ')',
       }
     },
     adminName () {
+      let send = this.item.sendAdmin
+      let rcv = this.item.rcvAdmin
       return {
-        send: this.item.sendAdmin.name + '(' + this.item.sendAdmin.positionName + ')',
-        rcv: this.item.rcvAdmin.name + '(' + this.item.rcvAdmin.positionName + ')',
+        send: send.name + '(' + (send.positionName ? send.positionName : '--') + ')',
+        rcv: rcv.name + '(' + (rcv.positionName ? rcv.positionName : '--') + ')',
       }
     },
     testDate: {
